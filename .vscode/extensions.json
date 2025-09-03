@@ -1,0 +1,10 @@
+{
+  "recommendations": [
+    "esbenp.prettier-vscode", // Prettier - Code formatter
+    "dbaeumer.vscode-eslint", // ESLint
+    "eamodio.gitlens", // GitLens (선택: Git 기록/블레임 보기)
+    "formulahendry.auto-close-tag", // HTML/JSX 태그 자동 닫기
+    "formulahendry.auto-rename-tag" // 태그 이름 동시 변경
+  ],
+  "unwantedRecommendations": []
+}
