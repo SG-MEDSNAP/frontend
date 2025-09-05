@@ -1,9 +1,11 @@
 import * as React from 'react';
 import { useFonts } from 'expo-font';
-import { View, Text, TextInput, ActivityIndicator } from 'react-native';
+import { TextInput, ActivityIndicator } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { StatusBar } from 'expo-status-bar';
+import { StyleSheet, Text, View } from 'react-native';
+import './global.css';
 
 import HomeScreen from './src/screens/HomeScreen';
 import RegisterScreen from './src/screens/RegisterScreen';
