@@ -1,47 +1,41 @@
 import React from 'react';
 import { View, Text, Pressable } from 'react-native';
+import Button from './Button';
 
 interface MedicationCardProps {
   name: string;
   time: string;
-  frequency: string;
   taken?: boolean;
-  onTakePress?: () => void;
 }
 
 export default function MedicationCard({
   name,
   time,
-  frequency,
   taken = false,
-  onTakePress,
 }: MedicationCardProps) {
   return (
-    <View className="bg-white rounded-[16px] p-4 mb-3 shadow-sm border border-[#F0F0F0]">
-      <View className="flex-row items-center justify-between mb-3">
-        <View className="flex-1">
-          <Text className="text-[18px] font-bold text-[#333] mb-1">{name}</Text>
-          <Text className="text-[14px] text-[#666]">
-            {time} • {frequency}
+    <View className="flex-col grow p-4 mb-4 bg-white rounded-2xl">
+      <View className="flex-row items-center">
+        <View className="bg-[#F6F6F6] w-[92px] h-[30px] rounded-lg items-center justify-center mr-2">
+          <Text className="text-[16px]/[20px] text-[#5D5D5D] font-bold">
+            {time}
           </Text>
         </View>
-        <Pressable
-          onPress={onTakePress}
+        <Text className="text-[18px] font-bold text-[#333]">{name}</Text>
+        <Text
           className={[
-            'w-[80px] h-[36px] rounded-[18px] items-center justify-center',
-            taken ? 'bg-[#E8F5E8]' : 'bg-[#597AFF]',
+            'ml-[5px] text-[17px]/[26px] font-bold',
+            taken ? 'text-[#597AFF]' : 'text-[#F89900]',
           ].join(' ')}
         >
-          <Text
-            className={[
-              'text-[14px] font-semibold',
-              taken ? 'text-[#4CAF50]' : 'text-white',
-            ].join(' ')}
-          >
-            {taken ? '복용완료' : '복약 알림 대기'}
-          </Text>
-        </Pressable>
+          {taken ? '복용완료' : '복약 알림 대기'}
+        </Text>
       </View>
+      {!taken && (
+        <View className="mt-5">
+          <Button title="촬영하기" />
+        </View>
+      )}
     </View>
   );
 }
