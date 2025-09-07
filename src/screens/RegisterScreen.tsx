@@ -145,16 +145,30 @@ export default function RegisterScreen({ navigation }: Props) {
         </View>
 
         {/* 시간 선택 (+ 추가 / − 삭제) */}
+        <View className="flex-col mb-4">
+    <Text className="text-[18px] font-semibold text-[#404040]">
+      시간을 선택해주세요
+    </Text>
         <TimePickField control={control} />
+        </View>
 
-        {/* 보호자 문자 수신 */}
-        <ToggleSwitch
-          label="보호자 문자 수신(결과 전송)"
-          value={guardianSms}
-          onValueChange={setGuardianSms}
-          description={undefined}
-        />
-        {guardianSms && <PhoneField control={control} />}
+        {/* 보호자 문자 수신 영역 */}
+        <View className="mb-7">
+          {/* 헤더: 라벨 / 토글  → justify-between */}
+          <View className="flex-row items-center justify-between ">
+            <Text className="text-[18px] font-semibold text-[#404040]">
+              보호자 문자 수신(결과 전송)
+            </Text>
+            <ToggleSwitch
+              // 라벨은 안 쓰고 스위치만 오른쪽에
+              value={guardianSms}
+              onValueChange={setGuardianSms}
+            />
+          </View>
+
+          {/* 전화번호 인풋: 항상 노출 */}
+          <PhoneField control={control} /* withInnerLabel={false} 기본값 */ />
+        </View>
 
         {/* 10분 전 알림 */}
         <ToggleSwitch
