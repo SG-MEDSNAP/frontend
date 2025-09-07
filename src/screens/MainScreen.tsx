@@ -4,7 +4,6 @@ import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../../App';
 import Button from '../components/Button';
 import TodayTimeLine from '../components/TodayTimeLine';
-import QuickActions from '../components/QuickActions';
 
 type MainScreenNavigationProp = NativeStackNavigationProp<
   RootStackParamList,
@@ -97,7 +96,7 @@ export default function MainScreen({ navigation }: Props) {
                 처방 받은 약을 등록해보세요
               </Text>
             </View>
-            <View className="flex-row justify-between items-center">
+            <View className="mt-4 flex-row justify-between items-center">
               <Button
                 className="w-[136px]"
                 title="약 등록하기"
