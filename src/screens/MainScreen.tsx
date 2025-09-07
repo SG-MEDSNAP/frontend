@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
-import { View, Text, ScrollView, SafeAreaView } from 'react-native';
+import { View, Text, Image, ScrollView, SafeAreaView } from 'react-native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../../App';
-import TodaySchedule from '../components/TodaySchedule';
+import Button from '../components/Button';
+import TodayTimeLine from '../components/TodayTimeLine';
 import QuickActions from '../components/QuickActions';
 
 type MainScreenNavigationProp = NativeStackNavigationProp<
@@ -30,7 +31,7 @@ export default function MainScreen({ navigation }: Props) {
       name: '혈압약',
       time: '오전 8:00',
       frequency: '매일',
-      taken: false,
+      taken: true,
     },
     {
       id: '2',
@@ -48,57 +49,77 @@ export default function MainScreen({ navigation }: Props) {
     },
   ]);
 
-  const handleTakeMedication = (id: string) => {
-    setMedications((prev) =>
-      prev.map((med) => (med.id === id ? { ...med, taken: !med.taken } : med)),
-    );
-  };
+  // const handleTakeMedication = (id: string) => {
+  //   setMedications((prev) =>
+  //     prev.map((med) => (med.id === id ? { ...med, taken: !med.taken } : med)),
+  //   );
+  // };
 
   const handleRegisterPress = () => {
     navigation.navigate('MedicationRegister');
   };
 
-  const handleHistoryPress = () => {
-    // TODO: 복용 기록 화면으로 이동
-    console.log('복용 기록 화면으로 이동');
-  };
-
-  const handleReportPress = () => {
-    // TODO: 리포트 화면으로 이동
-    console.log('리포트 화면으로 이동');
-  };
-
-  const handleSettingsPress = () => {
-    // TODO: 설정 화면으로 이동
-    console.log('설정 화면으로 이동');
-  };
+  function LogoTitle() {
+    return (
+      <Image
+        className="w-[44px] h-[34px]"
+        source={require('../../assets/icons/Logo.png')}
+        // resizeMode="contain"
+      />
+    );
+  }
 
   return (
     <SafeAreaView className="flex-1 bg-[#F8F9FA]">
       <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
         {/* 헤더 */}
-        <View className="bg-white px-5 pt-4 pb-6">
-          <Text className="text-[28px] font-bold text-[#333] mb-2">
-            MEDSNAP
-          </Text>
-          <Text className="text-[16px] text-[#666]">
-            안녕하세요! 오늘도 건강한 하루 보내세요 ✨
-          </Text>
+        <View className="flex-row items-center bg-white px-5 h-[60px]">
+          <LogoTitle />
+          <View className="flex-row items-center ml-2.5">
+            <Text className="text-[26px] font-extrabold">MED</Text>
+            <Text className="text-[26px] font-light text-[#5B5B5B]">SNAP</Text>
+          </View>
         </View>
 
-        {/* 메인 콘텐츠 */}
-        <View className="px-5 pt-6">
-          <TodaySchedule
-            medications={medications}
-            onTakeMedication={handleTakeMedication}
-          />
-
-          <QuickActions
-            onRegisterPress={handleRegisterPress}
-            onHistoryPress={handleHistoryPress}
-            onReportPress={handleReportPress}
-            onSettingsPress={handleSettingsPress}
-          />
+        {/* 메인  영역 */}
+        <View className="flex-col bg-[#F2F4FF]">
+          {/* 안내 */}
+          {/* 360*937 기준  h-[337px] */}
+          <View className="grow mx-4">
+            <View className="mt-12">
+              <Text className="text-[34px]/[46px] font-bold text-[#404040]">
+                고령자를 위한
+              </Text>
+              <Text className="text-[34px]/[46px] font-bold text-[#404040]">
+                복약 알림 서비스
+              </Text>
+              <Text className="text-[18px]/[18px] mt-[15px] font-normal text-[#404040]">
+                처방 받은 약을 등록해보세요
+              </Text>
+            </View>
+            <View className="flex-row justify-between items-center">
+              <Button
+                className="w-[136px]"
+                title="약 등록하기"
+                size="sm"
+                onPress={handleRegisterPress}
+              />
+              <Image
+                className="w-[140px] h-[140px]"
+                source={require('../../assets/images/PillBackgroundIcon4x.png')}
+                // resizeMethod="scale"
+              />
+            </View>
+          </View>
+          {/* 타임 라인 */}
+          <View className="grow mx-4">
+            <View className="mb-4">
+              <Text className="text-[24px] font-bold text-[#333]">
+                타임라인
+              </Text>
+            </View>
+            <TodayTimeLine medications={medications} />
+          </View>
 
           {/* 하단 여백 */}
           <View className="h-6" />
