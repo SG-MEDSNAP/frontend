@@ -69,7 +69,7 @@ export function TimePickField({ control }: { control: Control<MedicationForm> })
                   {toKoreanTimeLabel(t)}
                 </Text>
                 <Pressable onPress={() => remove(t)} hitSlop={8}>
-                  <Text className="text-[28px] leading-[28px] text-black">−</Text>
+                  <Text className="text-[28px] leading-[28px] text-[#597AFF]">−</Text>
                 </Pressable>
               </View>
             ))}
@@ -130,7 +130,7 @@ export function TimePickField({ control }: { control: Control<MedicationForm> })
                   {/* 추가하기 버튼 */}
                   <Pressable
                     onPress={addTime}
-                    className="mt-4 mx-2 h-[56px] rounded-2xl bg-[#597AFF] items-center justify-center"
+                    className="my-4 mx-2 h-[56px] rounded-2xl bg-[#597AFF] items-center justify-center"
                   >
                     <Text className="text-white text-[16px] font-semibold">추가하기</Text>
                   </Pressable>

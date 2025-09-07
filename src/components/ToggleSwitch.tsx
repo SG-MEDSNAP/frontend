@@ -3,10 +3,13 @@ import React from 'react';
 import { View, Text, Switch } from 'react-native';
 
 interface ToggleSwitchProps {
-  label?: string;                       // ← optional
+  label?: string;
   value: boolean;
   onValueChange: (value: boolean) => void;
-  description?: string;
+  description?: React.ReactNode;
+  labelClassName?: string;
+  descriptionClassName?: string;
+  containerClassName?: string; // 부모가 간격 관리
 }
 
 export default function ToggleSwitch({
@@ -14,6 +17,9 @@ export default function ToggleSwitch({
   value,
   onValueChange,
   description,
+  labelClassName = 'text-[18px] font-semibold text-[#404040]',
+  descriptionClassName = 'text-[18px] text-[#999999] mt-2 font-semibold',
+  containerClassName = '',
 }: ToggleSwitchProps) {
   const SwitchOnly = (
     <Switch
@@ -24,20 +30,15 @@ export default function ToggleSwitch({
     />
   );
 
-  // 라벨 없으면 스위치만 반환
   if (!label) return SwitchOnly;
 
   return (
-    <View className="mb-7">
+    <View className={containerClassName}>
       <View className="flex-row items-center justify-between">
-        <Text className="text-[16px] font-semibold text-[#333]">{label}</Text>
+        <Text className={labelClassName}>{label}</Text>
         {SwitchOnly}
       </View>
-      {description && (
-        <Text className="text-[12px] text-[#999] mt-2 leading-4">
-          {description}
-        </Text>
-      )}
+      {description ? <Text className={descriptionClassName}>{description}</Text> : null}
     </View>
   );
 }

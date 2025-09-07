@@ -13,6 +13,7 @@ import { NameField } from '../components/field/NameField';
 import { TimePickField } from '../components/field/TimePickField';
 import { PhoneField } from '../components/field/PhoneField';
 import ToggleSwitch from '../components/ToggleSwitch';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 type RegisterScreenNavigationProp = NativeStackNavigationProp<
   RootStackParamList,
@@ -86,6 +87,7 @@ export default function RegisterScreen({ navigation }: Props) {
   };
 
   return (
+    <SafeAreaView className="flex-1 bg-white" edges={['bottom']}>
     <ScrollView className="flex-1 bg-white p-[16px] ">
       <View>
         <View className="mb-[80px] mt-[26px] gap-[10px]">
@@ -96,6 +98,8 @@ export default function RegisterScreen({ navigation }: Props) {
             입력해주세요
           </Text>
         </View>
+        <View className="flex-col gap-[30px]">
+
 
         {/* 약 이름 */}
         <NameField control={control} />
@@ -145,15 +149,13 @@ export default function RegisterScreen({ navigation }: Props) {
         </View>
 
         {/* 시간 선택 (+ 추가 / − 삭제) */}
-        <View className="flex-col mb-4">
-    <Text className="text-[18px] font-semibold text-[#404040]">
-      시간을 선택해주세요
-    </Text>
+        <View className="flex-col gap-[8px]">
+        <Text className="text-[18px] font-semibold text-[#404040]">시간을 선택해주세요</Text>
         <TimePickField control={control} />
-        </View>
+      </View>
 
         {/* 보호자 문자 수신 영역 */}
-        <View className="mb-7">
+        <View className='flex-col gap-[8px]'>
           {/* 헤더: 라벨 / 토글  → justify-between */}
           <View className="flex-row items-center justify-between ">
             <Text className="text-[18px] font-semibold text-[#404040]">
@@ -175,7 +177,12 @@ export default function RegisterScreen({ navigation }: Props) {
           label="10분전 알림"
           value={tenMinuteReminder}
           onValueChange={setTenMinuteReminder}
-          description="지정 시간에 알려드려요. 켜두면 10분 전에도 알림을 받아요."
+          description={
+            <>
+              지정 시간에 알려드려요, 체크하시면{"\n"}
+              10분전에도 알림을 받아보실 수 있어요
+            </>
+          }
         />
 
         {/* 등록 버튼 */}
@@ -187,6 +194,8 @@ export default function RegisterScreen({ navigation }: Props) {
           onPress={handleSubmit(onSubmit)}
         />
       </View>
+      </View>
     </ScrollView>
+    </SafeAreaView>
   );
 }
