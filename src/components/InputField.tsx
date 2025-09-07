@@ -14,21 +14,27 @@ export function InputField({
   right?: React.ReactNode;
   children: React.ReactNode;
 }) {
-  const border = error ? 'border-[#FF5B6B]' : 'border-neutral-200';
+  const border = error ? 'border-[#FF5B6B]' : 'border-[#D7E0FF]';
   return (
-    <View className="mb-4">
-      <View className="flex-row justify-between items-center mb-2">
-        <Text className="text-sm text-neutral-700">{label}</Text>
+    <View className="gap-2">
+    <View className="gap-4">
+      <View className="flex-row justify-between items-center ">
+        <Text className="text-[18px] font-semibold text-[#404040]">
+          {label}
+        </Text>
         {right}
       </View>
-      <View className={`rounded-2xl bg-white border ${border} px-4 py-3`}>
+      <View className={`py-[20px] px-[16px] rounded-[16px] min-h-[60px] border ${border} justify-center `}>
         {children}
+        </View>
+        
       </View>
       {error ? (
-        <Text className="mt-1 text-xs text-[#FF5B6B]">{error}</Text>
+        <Text className=" text-[12px] text-[#FF5B6B]">{error}</Text>
       ) : helpText ? (
-        <Text className="mt-1 text-xs text-neutral-500">{helpText}</Text>
+        <Text className=" text-[20px] text-[#99979C] font-semibold">{helpText}</Text>
       ) : null}
-    </View>
+      </View>
+   
   );
 }
