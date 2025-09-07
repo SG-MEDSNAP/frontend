@@ -21,7 +21,8 @@ export function NameField({ control }: { control: Control<MedicationForm> }) {
             }}
             onBlur={onBlur}
             placeholder="혈압약"
-            className="text-[20px] text-[#99979C] font-semibold"
+            className="text-[20px] text-[#000000] font-semibold"
+            placeholderTextColor="#99979C" 
            
             maxLength={15}
             autoCapitalize="none"
