@@ -1,83 +1,128 @@
-import React, { useState } from 'react';
-import { View, Text, TextInput, ScrollView, Switch, Pressable } from 'react-native';
+// RegisterScreen.tsx
+import React, { useEffect, useState } from 'react';
+import { View, Text, ScrollView, Pressable } from 'react-native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../../App';
 import Button from '../components/Button';
+
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+
+import { medicationSchema, type MedicationForm } from '../schemas/medication'; // name/times/caregiverPhone 스키마
+import { NameField } from '../components/field/NameField';
+import { TimePickField } from '../components/field/TimePickField';
+import { PhoneField } from '../components/field/PhoneField';
+import ToggleSwitch from '../components/ToggleSwitch';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 type RegisterScreenNavigationProp = NativeStackNavigationProp<
   RootStackParamList,
   'MedicationRegister'
 >;
-
 interface Props {
   navigation: RegisterScreenNavigationProp;
 }
 
 export default function RegisterScreen({ navigation }: Props) {
-  const [medicationName, setMedicationName] = useState('');
-  const [selectedDays, setSelectedDays] = useState<string[]>(['월', '화', '수', '목', '금']);
-  const [everyDay, setEveryDay] = useState(false);
-  const [time, setTime] = useState('오전 00:00');
-  const [guardianSms, setGuardianSms] = useState(false);
-  const [guardianPhone, setGuardianPhone] = useState('');
-  const [tenMinuteReminder, setTenMinuteReminder] = useState(false);
-
   const days = ['월', '화', '수', '목', '금', '토', '일'];
+  const [selectedDays, setSelectedDays] = useState<string[]>([
+    '월',
+    '화',
+    '수',
+    '목',
+    '금',
+  ]);
+  const [everyDay, setEveryDay] = useState(false);
+  const [guardianSms, setGuardianSms] = useState(false);
+  const [tenMinuteReminder, setTenMinuteReminder] = useState(false);
 
   const toggleDay = (day: string) => {
     setSelectedDays((prev) =>
-      prev.includes(day) ? prev.filter((d) => d !== day) : [...prev, day]
+      prev.includes(day) ? prev.filter((d) => d !== day) : [...prev, day],
     );
   };
 
   const toggleEveryDay = () => {
     setEveryDay((prev) => {
       const next = !prev;
-      if (!prev) setSelectedDays(days);
+      if (next) {
+        // 켤 때: 모든 요일 선택
+        setSelectedDays(days);
+      } else {
+        // 끌 때: 선택된 요일 초기화
+        setSelectedDays([]);
+      }
       return next;
     });
   };
 
-  return (
-    <ScrollView className="flex-1 bg-white">
-      <View className="p-5">
-        {/* 제목 */}
-        <Text className="text-2xl font-bold text-[#333] text-center mb-7">
-          처방 받은 약 정보를 입력해주세요
-        </Text>
+  // ✅ RHF: onChange 검증 + 에러 표시 지연
+  const { control, handleSubmit, setValue, watch } = useForm<MedicationForm>({
+    resolver: zodResolver(medicationSchema),
+    defaultValues: { name: '', times: [], caregiverPhone: '' },
+    mode: 'onChange',
+    reValidateMode: 'onChange',
+    delayError: 2000,
+  });
 
-        {/* 약 이름 입력 */}
-        <View className="mb-7">
-          <Text className="text-[16px] font-semibold text-[#333] mb-3">
-            어떤 약을 드시나요?
+  // 보호자 스위치 끄면 폰 입력 비우기
+  const caregiverPhone = watch('caregiverPhone');
+  useEffect(() => {
+    if (!guardianSms && caregiverPhone) setValue('caregiverPhone', '');
+  }, [guardianSms]);
+
+  // 제출: RHF 데이터 + 로컬 상태(요일/토글) 취합
+  const onSubmit = (form: MedicationForm) => {
+    const payload = {
+      name: form.name,
+      times: form.times, // ['09:00','21:30']
+      caregiverPhone: guardianSms ? form.caregiverPhone : undefined,
+      selectedDays,
+      everyDay,
+      tenMinuteReminder,
+    };
+    console.log('등록 payload:', payload);
+    // TODO: API 호출 or 로컬 저장
+    // 성공 후 navigation.goBack() 등
+  };
+
+  return (
+    <SafeAreaView className="flex-1 bg-white" edges={['bottom']}>
+    <ScrollView className="flex-1 bg-white p-[16px] ">
+      <View>
+        <View className="mb-[80px] mt-[26px] gap-[10px]">
+          <Text className="text-[30px] font-bold text-[#333] text-start ">
+            처방 받은 약 정보를
           </Text>
-          <TextInput
-            className="border border-[#E5E5E5] rounded-lg p-4 text-[16px] bg-white"
-            placeholder="혈압약"
-            value={medicationName}
-            onChangeText={setMedicationName}
-            placeholderTextColor="#999"
-          />
+          <Text className="text-[30px] font-bold text-[#333] text-start ">
+            입력해주세요
+          </Text>
         </View>
+        <View className="flex-col gap-[30px]">
+
+
+        {/* 약 이름 */}
+        <NameField control={control} />
 
         {/* 요일 선택 */}
         <View className="mb-7">
-          <View className="flex-row items-center justify-between mb-4">
-            <Text className="text-[16px] font-semibold text-[#333]">
-              요일을 선택해주세요
-            </Text>
-            <View className="flex-row items-center">
-              <Text className="text-[14px] text-[#666] mr-2">매일</Text>
-              <Switch
-                value={everyDay}
-                onValueChange={toggleEveryDay}
-                trackColor={{ false: '#E5E5E5', true: '#007AFF' }}
-                thumbColor="#fff"
-              />
-            </View>
-          </View>
+          {/* 헤더: 왼쪽 라벨, 오른쪽 '매일'+토글 */}
+  <View className="flex-row items-center justify-between mb-4">
+    <Text className="text-[18px] font-semibold text-[#404040]">
+      요일을 선택해주세요
+    </Text>
+    <View className="flex-row items-center">
+      <Text className="text-[16px] text-[#404040] font-semibold mr-2">매일</Text>
+      {/* 라벨 없이 스위치만 사용 */}
+      <ToggleSwitch
+        value={everyDay}
+        onValueChange={toggleEveryDay}
+      />
+    </View>
+  </View>
 
-          <View className="flex-row justify-between">
+          {/* 요일 칩들 */}
+          <View className="flex-row w-full gap-[6px]">
             {days.map((day) => {
               const selected = selectedDays.includes(day);
               return (
@@ -85,14 +130,14 @@ export default function RegisterScreen({ navigation }: Props) {
                   key={day}
                   onPress={() => toggleDay(day)}
                   className={[
-                    'flex-1 mx-0.5 py-3 rounded-lg items-center',
-                    selected ? 'bg-[#E3F2FD]' : 'bg-[#F5F5F5]',
+                    ' py-3 rounded-lg items-center h-[42px] flex-1',
+                    selected ? 'bg-[#F1F4FF]' : 'bg-[#F5F5F5]',
                   ].join(' ')}
                 >
                   <Text
                     className={[
-                      'text-[14px] font-medium',
-                      selected ? 'text-[#007AFF]' : 'text-[#999]',
+                      'text-[20px] font-bold',
+                      selected ? 'text-[#597AFF]' : 'text-[#999]',
                     ].join(' ')}
                   >
                     {day}
@@ -103,66 +148,42 @@ export default function RegisterScreen({ navigation }: Props) {
           </View>
         </View>
 
-        {/* 시간 선택 */}
-        <View className="mb-7">
-          <Text className="text-[16px] font-semibold text-[#333] mb-3">
-            시간을 선택해주세요
-          </Text>
-          <View className="flex-row items-center">
-            <TextInput
-              className="flex-1 border border-[#E5E5E5] rounded-lg p-4 text-[16px] bg-white mr-2.5"
-              value={time}
-              onChangeText={setTime}
-              placeholderTextColor="#333"
-            />
-            <Pressable className="w-10 h-10 rounded-full bg-[#007AFF] items-center justify-center pressed:opacity-90">
-              <Text className="text-white text-[20px] font-bold">+</Text>
-            </Pressable>
-          </View>
-        </View>
+        {/* 시간 선택 (+ 추가 / − 삭제) */}
+        <View className="flex-col gap-[8px]">
+        <Text className="text-[18px] font-semibold text-[#404040]">시간을 선택해주세요</Text>
+        <TimePickField control={control} />
+      </View>
 
-        {/* 보호자 SMS 알림 */}
-        <View className="mb-7">
-          <View className="flex-row items-center justify-between mb-3">
-            <Text className="text-[16px] font-semibold text-[#333]">
+        {/* 보호자 문자 수신 영역 */}
+        <View className='flex-col gap-[8px]'>
+          {/* 헤더: 라벨 / 토글  → justify-between */}
+          <View className="flex-row items-center justify-between ">
+            <Text className="text-[18px] font-semibold text-[#404040]">
               보호자 문자 수신(결과 전송)
             </Text>
-            <Switch
+            <ToggleSwitch
+              // 라벨은 안 쓰고 스위치만 오른쪽에
               value={guardianSms}
               onValueChange={setGuardianSms}
-              trackColor={{ false: '#E5E5E5', true: '#007AFF' }}
-              thumbColor="#fff"
             />
           </View>
-          {guardianSms && (
-            <TextInput
-              className="border border-[#E5E5E5] rounded-lg p-4 text-[16px] bg-white"
-              placeholder="010-0000-0000"
-              value={guardianPhone}
-              onChangeText={setGuardianPhone}
-              placeholderTextColor="#999"
-              keyboardType="phone-pad"
-            />
-          )}
+
+          {/* 전화번호 인풋: 항상 노출 */}
+          <PhoneField control={control} /* withInnerLabel={false} 기본값 */ />
         </View>
 
-        {/* 10분전 알림 */}
-        <View className="mb-7">
-          <View className="flex-row items-center justify-between">
-            <Text className="text-[16px] font-semibold text-[#333]">
-              10분전 알림
-            </Text>
-            <Switch
-              value={tenMinuteReminder}
-              onValueChange={setTenMinuteReminder}
-              trackColor={{ false: '#E5E5E5', true: '#007AFF' }}
-              thumbColor="#fff"
-            />
-          </View>
-          <Text className="text-[12px] text-[#999] mt-2 leading-4">
-            (지정 시간에 알려드려요, 체크하시면 10분전에도 알림을 받아보실 수 있어요)
-          </Text>
-        </View>
+        {/* 10분 전 알림 */}
+        <ToggleSwitch
+          label="10분전 알림"
+          value={tenMinuteReminder}
+          onValueChange={setTenMinuteReminder}
+          description={
+            <>
+              지정 시간에 알려드려요, 체크하시면{"\n"}
+              10분전에도 알림을 받아보실 수 있어요
+            </>
+          }
+        />
 
         {/* 등록 버튼 */}
         <Button
@@ -170,11 +191,11 @@ export default function RegisterScreen({ navigation }: Props) {
           type="primary"
           size="lg"
           className="mt-2"
-          onPress={() => {
-            console.log('약 등록 완료');
-          }}
+          onPress={handleSubmit(onSubmit)}
         />
       </View>
+      </View>
     </ScrollView>
+    </SafeAreaView>
   );
 }
