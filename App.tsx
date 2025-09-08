@@ -9,9 +9,11 @@ import './global.css';
 
 import HomeScreen from './src/screens/HomeScreen';
 import RegisterScreen from './src/screens/RegisterScreen';
+import MainScreen from './src/screens/MainScreen';
 
 export type RootStackParamList = {
   Home: undefined;
+  Main: undefined;
   MedicationRegister: undefined;
 };
 
@@ -47,7 +49,32 @@ export default function App() {
 
   return (
     <NavigationContainer>
-      <Stack.Navigator initialRouteName="Home">
+      <Stack.Navigator
+        initialRouteName="Main"
+        screenOptions={{
+          headerShown: true,
+          // headerBackTitle: '뒤로',
+          headerStyle: {
+            backgroundColor: '#FFFFFF',
+          },
+          headerTitleStyle: {
+            fontFamily: 'Pretendard',
+            fontSize: 22,
+            fontWeight: 'semibold',
+          },
+          // headerBackButtonMenuEnabled: false,
+          headerBackButtonDisplayMode: 'minimal',
+          headerBackImageSource: require('./assets/icons/icon_back.svg'),
+        }}
+      >
+        <Stack.Screen
+          name="Main"
+          component={MainScreen}
+          options={{
+            // headerTitle: () => <LogoTitle />,
+            headerShown: false,
+          }}
+        />
         <Stack.Screen
           name="Home"
           component={HomeScreen}
@@ -56,7 +83,9 @@ export default function App() {
         <Stack.Screen
           name="MedicationRegister"
           component={RegisterScreen}
-          options={{ title: '약 등록' }}
+          options={{
+            title: '약 등록',
+          }}
         />
       </Stack.Navigator>
       <StatusBar style="auto" />
