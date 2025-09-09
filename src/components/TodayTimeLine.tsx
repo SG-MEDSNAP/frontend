@@ -9,11 +9,11 @@ interface Medication {
   taken: boolean;
 }
 
-interface TodayScheduleProps {
+interface TodayTimeLineProps {
   medications: Medication[];
 }
 
-export default function TodayTimeLine({ medications }: TodayScheduleProps) {
+export default function TodayTimeLine({ medications }: TodayTimeLineProps) {
   return (
     <View className="mt-1">
       {medications.length > 0 ? (
