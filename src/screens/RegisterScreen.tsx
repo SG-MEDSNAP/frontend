@@ -15,6 +15,7 @@ import { PhoneField } from '../components/field/PhoneField';
 import ToggleSwitch from '../components/ToggleSwitch';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
+
 type RegisterScreenNavigationProp = NativeStackNavigationProp<
   RootStackParamList,
   'MedicationRegister'
@@ -191,7 +192,7 @@ export default function RegisterScreen({ navigation }: Props) {
           type="primary"
           size="lg"
           className="mt-2"
-          onPress={handleSubmit(onSubmit)}
+          onPress={() => navigation.navigate('RegisterDoneScreen')}
         />
       </View>
       </View>
