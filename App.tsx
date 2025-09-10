@@ -10,10 +10,10 @@ import './global.css';
 import HomeScreen from './src/screens/HomeScreen';
 import RegisterScreen from './src/screens/RegisterScreen';
 import MainScreen from './src/screens/MainScreen';
-import PhotoScreen from './src/screens/PhotoScreen';
+import PhotoRegisterScreen from './src/screens/PhotoRegisterScreen';
 
 export type RootStackParamList = {
-  Photo: undefined;
+  PhotoRegister: undefined;
   Home: undefined;
   Main: undefined;
   MedicationRegister: undefined;
@@ -77,8 +77,8 @@ export default function App() {
           }}
         />
         <Stack.Screen
-          name="Photo"
-          component={PhotoScreen}
+          name="PhotoRegister"
+          component={PhotoRegisterScreen}
           options={{
             title: '약 등록',
           }}
