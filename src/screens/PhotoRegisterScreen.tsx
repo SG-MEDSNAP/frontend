@@ -1,9 +1,23 @@
 import React, { useState } from 'react';
 import { View, Text, Image, ScrollView, SafeAreaView } from 'react-native';
+import { launchCamera } from 'react-native-image-picker';
 import { RootStackParamList } from '../../App';
 import Button from '../components/Button';
 
 export default function PhotoScreen() {
+  const [capturedImage, setCapturedImage] = useState<string | null>(null);
+
+  const handleCapture = async () => {
+    const result = await launchCamera({
+      mediaType: 'photo',
+      quality: 1,
+    });
+
+    if (result.assets && result.assets[0]?.uri) {
+      setCapturedImage(result.assets[0].uri);
+    }
+  };
+
   return (
     <SafeAreaView className="flex-1 bg-[#FFF]">
       <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
@@ -31,10 +45,25 @@ export default function PhotoScreen() {
               />
             </View>
           </View>
+
+          {capturedImage && (
+            <View className="mt-[44px]">
+              <Text className="mb-2 font-bold text-[#597AFF] text-[16px]/[24px]">
+                촬영된 사진
+              </Text>
+              <View className="w-full aspect-[328/230]">
+                <Image
+                  className="w-full h-full"
+                  source={{ uri: capturedImage }}
+                  resizeMode="contain"
+                />
+              </View>
+            </View>
+          )}
         </View>
       </ScrollView>
       <View className="m-4">
-        <Button title="촬영하기" />
+        <Button title="촬영하기" onPress={handleCapture} />
       </View>
     </SafeAreaView>
   );
