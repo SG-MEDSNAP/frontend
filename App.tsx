@@ -10,12 +10,14 @@ import './global.css';
 import HomeScreen from './src/screens/HomeScreen';
 import RegisterScreen from './src/screens/RegisterScreen';
 import MainScreen from './src/screens/MainScreen';
+import PhotoRegisterScreen from './src/screens/PhotoRegisterScreen';
 
 // ✅ 새로 추가되는 화면 import
 import RegisterDoneScreen from './src/screens/RegisterDoneScreen';
 import VerifyIntakeResultScreen from './src/screens/VerifyResultScreen';
 
 export type RootStackParamList = {
+  PhotoRegister: undefined;
   Home: undefined;
   Main: undefined;
   MedicationRegister: undefined;
@@ -79,6 +81,13 @@ export default function App() {
           name="Main"
           component={MainScreen}
           options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          name="PhotoRegister"
+          component={PhotoRegisterScreen}
+          options={{
+            title: '약 등록',
+          }}
         />
         <Stack.Screen
           name="Home"
