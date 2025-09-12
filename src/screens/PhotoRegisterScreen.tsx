@@ -1,13 +1,25 @@
 import React, { useState } from 'react';
 import { View, Text, Image, ScrollView, SafeAreaView } from 'react-native';
 import { launchCamera } from 'react-native-image-picker';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../../App';
 import Button from '../components/Button';
 
-export default function PhotoScreen() {
+
+type PhotoScreenNavigationProp = NativeStackNavigationProp<
+  RootStackParamList,
+   'PhotoRegister'
+>;
+
+interface Props {
+  navigation: PhotoScreenNavigationProp;
+}
+
+export default function PhotoScreen({ navigation }: Props) {
   const [capturedImage, setCapturedImage] = useState<string | null>(null);
 
   const handleCapture = async () => {
+    navigation.navigate('RegisterScreen');
     const result = await launchCamera({
       mediaType: 'photo',
       quality: 1,
@@ -16,6 +28,9 @@ export default function PhotoScreen() {
     if (result.assets && result.assets[0]?.uri) {
       setCapturedImage(result.assets[0].uri);
     }
+
+    
+   
   };
 
   return (
