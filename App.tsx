@@ -21,7 +21,7 @@ export type RootStackParamList = {
   Home: undefined;
   Main: undefined;
   MedicationRegister: undefined;
-  // ✅ 추가
+  RegisterScreen: undefined;
   RegisterDoneScreen: undefined;
   VerifyIntakeResult:
     | { result?: 'success' | 'not_taken' | 'error'; delayMs?: number }
@@ -99,6 +99,7 @@ export default function App() {
           component={RegisterScreen}
           options={{ title: '약 등록' }}
         />
+        <Stack.Screen name="RegisterScreen" component={RegisterScreen} />
 
         {/* ✅ 약 등록 완료 */}
         <Stack.Screen
