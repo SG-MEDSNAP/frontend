@@ -20,19 +20,18 @@ import { size } from 'zod';
 
 export type RootStackParamList = {
   PhotoRegister: undefined;
-  Home: undefined;
-  // Main: undefined;
+  // Home: undefined;
   MedicationRegister: undefined;
   // ✅ 추가
   RegisterDoneScreen: undefined;
   VerifyIntakeResult:
     | { result?: 'success' | 'not_taken' | 'error'; delayMs?: number }
     | undefined;
+  MainTabs: undefined;
 };
 
 export type BottomTabParamList = {
   Home: undefined;
-  Settings: undefined;
   VerifyIntakeResult:
     | { result?: 'success' | 'not_taken' | 'error'; delayMs?: number }
     | undefined;
@@ -41,6 +40,46 @@ export type BottomTabParamList = {
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
 const BottomTab = createBottomTabNavigator<BottomTabParamList>();
+
+function MainTabNavigator() {
+  return (
+    <BottomTab.Navigator
+      screenOptions={{
+        headerShown: false,
+        tabBarActiveTintColor: '#007AFF',
+        tabBarInactiveTintColor: '#8E8E93',
+        tabBarStyle: { backgroundColor: '#FFFFFF' },
+      }}
+    >
+      {/* BottomTab에 있던 화면들을 이곳으로 옮깁니다. */}
+      {/* Home 화면도 탭에 포함시키는 것이 일반적인 구조입니다. */}
+      <BottomTab.Screen
+        name="Home"
+        component={HomeScreen}
+        options={{
+          tabBarIcon: ({ color, size }) => (
+            <Ionicons name="home-outline" color={color} size={size} />
+          ),
+          title: '홈',
+        }}
+      />
+      <BottomTab.Screen
+        name="VerifyIntakeResult"
+        component={VerifyIntakeResultScreen}
+        options={{
+          tabBarIcon: ({ color, size }) => (
+            <Ionicons
+              name="checkmark-circle-outline"
+              color={color}
+              size={size}
+            />
+          ),
+          title: '복약 인증',
+        }}
+      />
+    </BottomTab.Navigator>
+  );
+}
 
 export default function App() {
   const [loaded] = useFonts({
@@ -72,7 +111,7 @@ export default function App() {
   return (
     <NavigationContainer>
       <Stack.Navigator
-        initialRouteName="Home"
+        initialRouteName="MainTabs"
         screenOptions={{
           headerShown: true,
           headerStyle: { backgroundColor: '#FFFFFF' },
@@ -96,11 +135,11 @@ export default function App() {
             title: '약 등록',
           }}
         />
-        <Stack.Screen
+        {/* <Stack.Screen
           name="Home"
           component={HomeScreen}
           options={{ title: '홈 화면', headerShown: false }}
-        />
+        /> */}
         <Stack.Screen
           name="MedicationRegister"
           component={RegisterScreen}
@@ -115,31 +154,17 @@ export default function App() {
         />
 
         {/* ✅ 복약 인증 결과(분석중 → 성공/실패를 한 화면에서 처리) */}
-        <Stack.Screen
+        {/* <Stack.Screen
           name="VerifyIntakeResult"
           component={VerifyIntakeResultScreen}
           options={{ title: '복약 인증' }}
+        /> */}
+        <Stack.Screen
+          name="MainTabs"
+          component={MainTabNavigator}
+          options={{ headerShown: false }}
         />
       </Stack.Navigator>
-      {/* <BottomTab.Navigator
-        screenOptions={{
-          headerShown: false,
-          tabBarActiveTintColor: '#007AFF',
-          tabBarInactiveTintColor: '#8E8E93',
-          tabBarStyle: { backgroundColor: '#FFFFFF' },
-        }}
-      >
-        <BottomTab.Screen
-          name="VerifyIntakeResult"
-          component={VerifyIntakeResultScreen}
-          options={{
-            tabBarIcon: ({ color, size }) => (
-              <Ionicons name="home" color={color} size={size} />
-            ),
-            title: '복약 인증',
-          }}
-        />
-      </BottomTab.Navigator> */}
       <StatusBar style="auto" />
     </NavigationContainer>
   );
