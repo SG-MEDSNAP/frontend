@@ -12,11 +12,15 @@ import './global.css';
 import HomeScreen from './src/screens/HomeScreen';
 import RegisterScreen from './src/screens/RegisterScreen';
 import PhotoRegisterScreen from './src/screens/PhotoRegisterScreen';
-
-// ✅ 새로 추가되는 화면 import
 import RegisterDoneScreen from './src/screens/RegisterDoneScreen';
 import VerifyIntakeResultScreen from './src/screens/VerifyResultScreen';
 import { size } from 'zod';
+
+// icons
+import HomeIcon from '/assets/icons/HomeIcon.svg';
+import LogIcon from '/assets/icons/LogIcon.svg';
+import SupportIcon from '/assets/icons//SupportIcon.svg';
+import MyPageIcon from '/assets/icons/MyPageIcon.svg';
 
 export type RootStackParamList = {
   PhotoRegister: undefined;
@@ -80,7 +84,8 @@ function MainTabNavigator() {
         component={HomeScreen}
         options={{
           tabBarIcon: ({ color, size }) => (
-            <Ionicons name="calendar-outline" color={color} size={size} />
+            // <Ionicons name="calendar-outline" color={color} size={size} />
+            <HomeIcon />
           ),
           title: '복약 현황',
         }}
