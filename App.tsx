@@ -4,22 +4,24 @@ import { useFonts } from 'expo-font';
 import { TextInput, ActivityIndicator, Text, View, Image } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { StatusBar } from 'expo-status-bar';
+import Ionicons from '@expo/vector-icons/Ionicons';
 import './global.css';
 
 import HomeScreen from './src/screens/HomeScreen';
 import RegisterScreen from './src/screens/RegisterScreen';
-import MainScreen from './src/screens/MainScreen';
 import PhotoRegisterScreen from './src/screens/PhotoRegisterScreen';
 
 // ✅ 새로 추가되는 화면 import
 import RegisterDoneScreen from './src/screens/RegisterDoneScreen';
 import VerifyIntakeResultScreen from './src/screens/VerifyResultScreen';
+import { size } from 'zod';
 
 export type RootStackParamList = {
   PhotoRegister: undefined;
   Home: undefined;
-  Main: undefined;
+  // Main: undefined;
   MedicationRegister: undefined;
   // ✅ 추가
   RegisterDoneScreen: undefined;
@@ -28,7 +30,17 @@ export type RootStackParamList = {
     | undefined;
 };
 
+export type BottomTabParamList = {
+  Home: undefined;
+  Settings: undefined;
+  VerifyIntakeResult:
+    | { result?: 'success' | 'not_taken' | 'error'; delayMs?: number }
+    | undefined;
+};
+
 const Stack = createNativeStackNavigator<RootStackParamList>();
+
+const BottomTab = createBottomTabNavigator<BottomTabParamList>();
 
 export default function App() {
   const [loaded] = useFonts({
@@ -60,7 +72,7 @@ export default function App() {
   return (
     <NavigationContainer>
       <Stack.Navigator
-        initialRouteName="Main"
+        initialRouteName="Home"
         screenOptions={{
           headerShown: true,
           headerStyle: { backgroundColor: '#FFFFFF' },
@@ -71,17 +83,12 @@ export default function App() {
             fontWeight: '600',
           },
           headerBackButtonDisplayMode: 'minimal',
-          // ❗️SVG가 에러나면 headerBackImage로 PNG 사용 권장
+          // SVG가 에러나면 headerBackImage로 PNG 사용 권장
           // headerBackImage: () => (
           //   <Image source={require('./assets/icons/icon_back.png')} style={{ width: 24, height: 24 }} />
           // ),
         }}
       >
-        <Stack.Screen
-          name="Main"
-          component={MainScreen}
-          options={{ headerShown: false }}
-        />
         <Stack.Screen
           name="PhotoRegister"
           component={PhotoRegisterScreen}
@@ -92,7 +99,7 @@ export default function App() {
         <Stack.Screen
           name="Home"
           component={HomeScreen}
-          options={{ title: '홈 화면' }}
+          options={{ title: '홈 화면', headerShown: false }}
         />
         <Stack.Screen
           name="MedicationRegister"
@@ -114,6 +121,25 @@ export default function App() {
           options={{ title: '복약 인증' }}
         />
       </Stack.Navigator>
+      {/* <BottomTab.Navigator
+        screenOptions={{
+          headerShown: false,
+          tabBarActiveTintColor: '#007AFF',
+          tabBarInactiveTintColor: '#8E8E93',
+          tabBarStyle: { backgroundColor: '#FFFFFF' },
+        }}
+      >
+        <BottomTab.Screen
+          name="VerifyIntakeResult"
+          component={VerifyIntakeResultScreen}
+          options={{
+            tabBarIcon: ({ color, size }) => (
+              <Ionicons name="home" color={color} size={size} />
+            ),
+            title: '복약 인증',
+          }}
+        />
+      </BottomTab.Navigator> */}
       <StatusBar style="auto" />
     </NavigationContainer>
   );
