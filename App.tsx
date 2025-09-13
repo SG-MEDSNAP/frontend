@@ -54,8 +54,8 @@ function MainTabNavigator() {
         tabBarInactiveTintColor: '#888888',
         tabBarStyle: {
           backgroundColor: '#FFFFFF',
-          height: 78,
-          paddingBottom: 20,
+          height: 90,
+          paddingBottom: 12,
         },
         tabBarIconStyle: {
           width: 42,
