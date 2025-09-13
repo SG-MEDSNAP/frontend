@@ -4,31 +4,114 @@ import { useFonts } from 'expo-font';
 import { TextInput, ActivityIndicator, Text, View, Image } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { StatusBar } from 'expo-status-bar';
+import Ionicons from '@expo/vector-icons/Ionicons';
 import './global.css';
 
 import HomeScreen from './src/screens/HomeScreen';
 import RegisterScreen from './src/screens/RegisterScreen';
-import MainScreen from './src/screens/MainScreen';
 import PhotoRegisterScreen from './src/screens/PhotoRegisterScreen';
-
-// ✅ 새로 추가되는 화면 import
 import RegisterDoneScreen from './src/screens/RegisterDoneScreen';
 import VerifyIntakeResultScreen from './src/screens/VerifyResultScreen';
+import { size } from 'zod';
+
+// icons
+import HomeIcon from './assets/icons/HomeIcon.svg';
+import LogIcon from './assets//icons/LogIcon.svg';
+import SupportIcon from './assets/icons//SupportIcon.svg';
+import MyPageIcon from './assets/icons/MyPageIcon.svg';
 
 export type RootStackParamList = {
   PhotoRegister: undefined;
-  Home: undefined;
-  Main: undefined;
+  // Home: undefined;
   MedicationRegister: undefined;
   // ✅ 추가
   RegisterDoneScreen: undefined;
   VerifyIntakeResult:
     | { result?: 'success' | 'not_taken' | 'error'; delayMs?: number }
     | undefined;
+  MainTabs: undefined;
+};
+
+export type BottomTabParamList = {
+  Home: undefined;
+  MedicationLog: undefined;
+  Support: undefined;
+  MyPage: undefined;
 };
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
+
+const BottomTab = createBottomTabNavigator<BottomTabParamList>();
+
+function MainTabNavigator() {
+  return (
+    <BottomTab.Navigator
+      screenOptions={{
+        headerShown: false,
+        tabBarActiveTintColor: '#597AFF',
+        tabBarInactiveTintColor: '#888888',
+        tabBarStyle: {
+          backgroundColor: '#FFFFFF',
+          height: 90,
+          paddingBottom: 12,
+        },
+        tabBarIconStyle: {
+          width: 42,
+          height: 42,
+        },
+        tabBarLabelStyle: {
+          fontSize: 15,
+          fontWeight: '600',
+          lineHeight: 18,
+          marginTop: 2,
+        },
+      }}
+    >
+      <BottomTab.Screen
+        name="Home"
+        component={HomeScreen}
+        options={{
+          tabBarIcon: ({ focused }) => (
+            <HomeIcon fill={focused ? '#597AFF' : '#888888'} />
+          ),
+          title: '홈',
+        }}
+      />
+      <BottomTab.Screen
+        name="MedicationLog"
+        component={HomeScreen}
+        options={{
+          tabBarIcon: ({ focused }) => (
+            <LogIcon fill={focused ? '#597AFF' : '#888888'} />
+          ),
+          title: '복약 현황',
+        }}
+      />
+      <BottomTab.Screen
+        name="Support"
+        component={HomeScreen}
+        options={{
+          tabBarIcon: ({ focused }) => (
+            <SupportIcon fill={focused ? '#597AFF' : '#888888'} />
+          ),
+          title: '고객 센터',
+        }}
+      />
+      <BottomTab.Screen
+        name="MyPage"
+        component={HomeScreen}
+        options={{
+          tabBarIcon: ({ focused }) => (
+            <MyPageIcon fill={focused ? '#597AFF' : '#888888'} />
+          ),
+          title: '마이페이지',
+        }}
+      />
+    </BottomTab.Navigator>
+  );
+}
 
 export default function App() {
   const [loaded] = useFonts({
@@ -60,7 +143,7 @@ export default function App() {
   return (
     <NavigationContainer>
       <Stack.Navigator
-        initialRouteName="Main"
+        initialRouteName="MainTabs"
         screenOptions={{
           headerShown: true,
           headerStyle: { backgroundColor: '#FFFFFF' },
@@ -71,17 +154,8 @@ export default function App() {
             fontWeight: '600',
           },
           headerBackButtonDisplayMode: 'minimal',
-          // ❗️SVG가 에러나면 headerBackImage로 PNG 사용 권장
-          // headerBackImage: () => (
-          //   <Image source={require('./assets/icons/icon_back.png')} style={{ width: 24, height: 24 }} />
-          // ),
         }}
       >
-        <Stack.Screen
-          name="Main"
-          component={MainScreen}
-          options={{ headerShown: false }}
-        />
         <Stack.Screen
           name="PhotoRegister"
           component={PhotoRegisterScreen}
@@ -89,11 +163,11 @@ export default function App() {
             title: '약 등록',
           }}
         />
-        <Stack.Screen
+        {/* <Stack.Screen
           name="Home"
           component={HomeScreen}
-          options={{ title: '홈 화면' }}
-        />
+          options={{ title: '홈 화면', headerShown: false }}
+        /> */}
         <Stack.Screen
           name="MedicationRegister"
           component={RegisterScreen}
@@ -108,10 +182,15 @@ export default function App() {
         />
 
         {/* ✅ 복약 인증 결과(분석중 → 성공/실패를 한 화면에서 처리) */}
-        <Stack.Screen
+        {/* <Stack.Screen
           name="VerifyIntakeResult"
           component={VerifyIntakeResultScreen}
           options={{ title: '복약 인증' }}
+        /> */}
+        <Stack.Screen
+          name="MainTabs"
+          component={MainTabNavigator}
+          options={{ headerShown: false }}
         />
       </Stack.Navigator>
       <StatusBar style="auto" />
