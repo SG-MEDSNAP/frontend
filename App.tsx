@@ -17,10 +17,10 @@ import VerifyIntakeResultScreen from './src/screens/VerifyResultScreen';
 import { size } from 'zod';
 
 // icons
-import HomeIcon from '/assets/icons/HomeIcon.svg';
-import LogIcon from '/assets/icons/LogIcon.svg';
-import SupportIcon from '/assets/icons//SupportIcon.svg';
-import MyPageIcon from '/assets/icons/MyPageIcon.svg';
+import HomeIcon from './assets/icons/HomeIcon.svg';
+import LogIcon from './assets//icons/LogIcon.svg';
+import SupportIcon from './assets/icons//SupportIcon.svg';
+import MyPageIcon from './assets/icons/MyPageIcon.svg';
 
 export type RootStackParamList = {
   PhotoRegister: undefined;
@@ -57,8 +57,10 @@ function MainTabNavigator() {
           height: 78,
           paddingBottom: 20,
         },
-        // tabBarItemStyle: { marginTop: 10 },
-        tabBarIconStyle: { width: 42, height: 42 },
+        tabBarIconStyle: {
+          width: 42,
+          height: 42,
+        },
         tabBarLabelStyle: {
           fontSize: 15,
           fontWeight: '600',
@@ -67,14 +69,12 @@ function MainTabNavigator() {
         },
       }}
     >
-      {/* BottomTab에 있던 화면들을 이곳으로 옮깁니다. */}
-      {/* Home 화면도 탭에 포함시키는 것이 일반적인 구조입니다. */}
       <BottomTab.Screen
         name="Home"
         component={HomeScreen}
         options={{
-          tabBarIcon: ({ color, size }) => (
-            <Ionicons name="home-outline" color={color} size={size} />
+          tabBarIcon: ({ focused }) => (
+            <HomeIcon fill={focused ? '#597AFF' : '#888888'} />
           ),
           title: '홈',
         }}
@@ -83,9 +83,8 @@ function MainTabNavigator() {
         name="MedicationLog"
         component={HomeScreen}
         options={{
-          tabBarIcon: ({ color, size }) => (
-            // <Ionicons name="calendar-outline" color={color} size={size} />
-            <HomeIcon />
+          tabBarIcon: ({ focused }) => (
+            <LogIcon fill={focused ? '#597AFF' : '#888888'} />
           ),
           title: '복약 현황',
         }}
@@ -94,8 +93,8 @@ function MainTabNavigator() {
         name="Support"
         component={HomeScreen}
         options={{
-          tabBarIcon: ({ color, size }) => (
-            <Ionicons name="chatbubbles-outline" color={color} size={size} />
+          tabBarIcon: ({ focused }) => (
+            <SupportIcon fill={focused ? '#597AFF' : '#888888'} />
           ),
           title: '고객 센터',
         }}
@@ -104,8 +103,8 @@ function MainTabNavigator() {
         name="MyPage"
         component={HomeScreen}
         options={{
-          tabBarIcon: ({ color, size }) => (
-            <Ionicons name="person-outline" color={color} size={size} />
+          tabBarIcon: ({ focused }) => (
+            <MyPageIcon fill={focused ? '#597AFF' : '#888888'} />
           ),
           title: '마이페이지',
         }}
@@ -155,10 +154,6 @@ export default function App() {
             fontWeight: '600',
           },
           headerBackButtonDisplayMode: 'minimal',
-          // SVG가 에러나면 headerBackImage로 PNG 사용 권장
-          // headerBackImage: () => (
-          //   <Image source={require('./assets/icons/icon_back.png')} style={{ width: 24, height: 24 }} />
-          // ),
         }}
       >
         <Stack.Screen
