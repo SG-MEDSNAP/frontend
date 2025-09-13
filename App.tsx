@@ -32,9 +32,9 @@ export type RootStackParamList = {
 
 export type BottomTabParamList = {
   Home: undefined;
-  VerifyIntakeResult:
-    | { result?: 'success' | 'not_taken' | 'error'; delayMs?: number }
-    | undefined;
+  MedicationLog: undefined;
+  Support: undefined;
+  MyPage: undefined;
 };
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
@@ -46,9 +46,21 @@ function MainTabNavigator() {
     <BottomTab.Navigator
       screenOptions={{
         headerShown: false,
-        tabBarActiveTintColor: '#007AFF',
-        tabBarInactiveTintColor: '#8E8E93',
-        tabBarStyle: { backgroundColor: '#FFFFFF' },
+        tabBarActiveTintColor: '#597AFF',
+        tabBarInactiveTintColor: '#888888',
+        tabBarStyle: {
+          backgroundColor: '#FFFFFF',
+          height: 78,
+          paddingBottom: 20,
+        },
+        // tabBarItemStyle: { marginTop: 10 },
+        tabBarIconStyle: { width: 42, height: 42 },
+        tabBarLabelStyle: {
+          fontSize: 15,
+          fontWeight: '600',
+          lineHeight: 18,
+          marginTop: 2,
+        },
       }}
     >
       {/* BottomTab에 있던 화면들을 이곳으로 옮깁니다. */}
@@ -64,17 +76,33 @@ function MainTabNavigator() {
         }}
       />
       <BottomTab.Screen
-        name="VerifyIntakeResult"
-        component={VerifyIntakeResultScreen}
+        name="MedicationLog"
+        component={HomeScreen}
         options={{
           tabBarIcon: ({ color, size }) => (
-            <Ionicons
-              name="checkmark-circle-outline"
-              color={color}
-              size={size}
-            />
+            <Ionicons name="calendar-outline" color={color} size={size} />
           ),
-          title: '복약 인증',
+          title: '복약 현황',
+        }}
+      />
+      <BottomTab.Screen
+        name="Support"
+        component={HomeScreen}
+        options={{
+          tabBarIcon: ({ color, size }) => (
+            <Ionicons name="chatbubbles-outline" color={color} size={size} />
+          ),
+          title: '고객 센터',
+        }}
+      />
+      <BottomTab.Screen
+        name="MyPage"
+        component={HomeScreen}
+        options={{
+          tabBarIcon: ({ color, size }) => (
+            <Ionicons name="person-outline" color={color} size={size} />
+          ),
+          title: '마이페이지',
         }}
       />
     </BottomTab.Navigator>

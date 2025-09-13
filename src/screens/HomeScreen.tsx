@@ -5,10 +5,8 @@ import { RootStackParamList } from '../../App';
 import Button from '../components/Button';
 import TodayTimeLine from '../components/TodayTimeLine';
 
-type HomeScreenNavigationProp = NativeStackNavigationProp<
-  RootStackParamList,
-  'Home'
->;
+type HomeScreenNavigationProp = NativeStackNavigationProp<RootStackParamList>;
+// 'Home'
 
 interface Props {
   navigation: HomeScreenNavigationProp;
