@@ -1,14 +1,58 @@
 import React, { useState } from 'react';
-import { View, Text, Image, ScrollView, SafeAreaView } from 'react-native';
+import {
+  View,
+  Text,
+  Image,
+  ScrollView,
+  SafeAreaView,
+  Alert,
+} from 'react-native';
 import { RootStackParamList } from '../../App';
 import Button from '../components/Button';
 // 카메라 접근
-import { launchCameraAsync } from 'expo-image-picker';
+import {
+  launchCameraAsync,
+  useCameraPermissions,
+  PermissionStatus,
+} from 'expo-image-picker';
 
 export default function PhotoScreen() {
+  const [cameraPermissionInformation, requestPermission] =
+    useCameraPermissions(); // iOS용
+
+  async function verifyPermissions() {
+    // 카메라 사용할 권한이 있는지 확인하는 함수
+    // 이렇게만하면 Prettier는 null일수도잇다고 ?붙이라고함
+    if (cameraPermissionInformation.status === PermissionStatus.UNDETERMINED) {
+      const permissionResponse = await requestPermission(); // 권한 요청
+      // 다이얼로그를 열고 사용자 응답을 기다린 다음, 프로미스를 반환하느 비동기함수이기에 await를 붙인다.
+      // 권한을 부여하거나 거부
+
+      return permissionResponse.granted; // 권한이 부여되었는지 여부 반환 (true/false인 프로미스 반환)
+    }
+
+    if (cameraPermissionInformation.status === PermissionStatus.DENIED) {
+      // 권한이 거부된 상태
+      Alert.alert(
+        // react-native의 Alert API
+        '카메라 접근 권한이 없습니다.',
+        '이 앱을 사용하려면, 앱 설정에서 카메라 접근 권한을 허용해주세요.',
+      );
+      return false;
+    }
+
+    return true; // 권한이 이미 허용된 상태
+  }
+
   const [capturedImage, setCapturedImage] = useState<string | null>(null);
 
   async function takeImageHandler() {
+    const hasPermission = await verifyPermissions(); // 권한 확인
+
+    if (!hasPermission) {
+      return; // 권한이 없으면 함수 종료
+    }
+
     const image = await launchCameraAsync({
       allowsEditing: true, // 사용자가 사진을 사용하기 전에 편집할 수 있게 허용
       aspect: [16, 9],
