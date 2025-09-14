@@ -19,7 +19,7 @@ import {
   ImagePickerResult,
 } from 'expo-image-picker';
 
-type Props = NativeStackScreenProps<RootStackParamList, 'PhotoRegister'>;
+type Props = NativeStackScreenProps<RootStackParamList>;
 
 export default function PhotoScreen({ navigation }: Props) {
   const [pickedImage, setPickedImage] = useState<ImagePickerResult>();
@@ -65,6 +65,8 @@ export default function PhotoScreen({ navigation }: Props) {
         quality: 0.5, // 이미지 품질 설정 (0 ~ 1)
       });
 
+      // 사진을 찍고 나서 취소하지 않았을 때만 상태 업데이트
+      // 카메라까지는 갔는데 찍지않고 뒤로가기 하면 image를 업데이트하지 않는다.
       if (!image.canceled) {
         setPickedImage(image);
         console.log(image.assets[0].uri);
@@ -85,6 +87,10 @@ export default function PhotoScreen({ navigation }: Props) {
       />
     );
   }
+
+  const handleNextPress = () => {
+    navigation.navigate('MedicationRegister');
+  };
 
   return (
     <SafeAreaView className="flex-1 bg-[#FFF]">
@@ -128,14 +134,18 @@ export default function PhotoScreen({ navigation }: Props) {
         {!pickedImage ? (
           <Button title="촬영하기" onPress={takeImageHandler} />
         ) : (
-          <View className="flex-row m-4 gap-4 justyfy-between">
+          <View className="flex-row gap-4">
             <Button
-              className=""
+              className="flex-grow basis-0 flex-[8]"
               type="secondary"
               title="다시 촬영하기"
               onPress={takeImageHandler}
             />
-            <Button className="" title="다음" onPress={() => {}} />
+            <Button
+              className="flex-grow basis-0 flex-[5]"
+              title="다음"
+              onPress={handleNextPress}
+            />
           </View>
         )}
       </View>
