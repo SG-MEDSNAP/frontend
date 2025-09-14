@@ -1,22 +1,21 @@
 import React, { useState } from 'react';
 import { View, Text, Image, ScrollView, SafeAreaView } from 'react-native';
-import { launchCamera } from 'react-native-image-picker';
 import { RootStackParamList } from '../../App';
 import Button from '../components/Button';
+// 카메라 접근
+import { launchCameraAsync } from 'expo-image-picker';
 
 export default function PhotoScreen() {
   const [capturedImage, setCapturedImage] = useState<string | null>(null);
 
-  const handleCapture = async () => {
-    const result = await launchCamera({
-      mediaType: 'photo',
-      quality: 1,
+  async function takeImageHandler() {
+    const image = await launchCameraAsync({
+      allowsEditing: true, // 사용자가 사진을 사용하기 전에 편집할 수 있게 허용
+      aspect: [16, 9],
+      quality: 0.5, // 이미지 품질 설정 (0 ~ 1)
     });
-
-    if (result.assets && result.assets[0]?.uri) {
-      setCapturedImage(result.assets[0].uri);
-    }
-  };
+    console.log(image);
+  }
 
   return (
     <SafeAreaView className="flex-1 bg-[#FFF]">
@@ -63,8 +62,11 @@ export default function PhotoScreen() {
         </View>
       </ScrollView>
       <View className="m-4">
-        <Button title="촬영하기" onPress={handleCapture} />
+        <Button title="촬영하기" onPress={takeImageHandler} />
       </View>
     </SafeAreaView>
   );
+}
+function laumchCameraAsync() {
+  throw new Error('Function not implemented.');
 }
