@@ -7,23 +7,30 @@ import {
   SafeAreaView,
   Alert,
 } from 'react-native';
+import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../../App';
 import Button from '../components/Button';
+
 // 카메라 접근
 import {
   launchCameraAsync,
   useCameraPermissions,
   PermissionStatus,
+  ImagePickerResult,
 } from 'expo-image-picker';
 
-export default function PhotoScreen() {
+type Props = NativeStackScreenProps<RootStackParamList, 'PhotoRegister'>;
+
+export default function PhotoScreen({ navigation }: Props) {
+  const [pickedImage, setPickedImage] = useState<ImagePickerResult>();
+
   const [cameraPermissionInformation, requestPermission] =
     useCameraPermissions(); // iOS용
 
   async function verifyPermissions() {
     // 카메라 사용할 권한이 있는지 확인하는 함수
-    // 이렇게만하면 Prettier는 null일수도잇다고 ?붙이라고함
-    if (cameraPermissionInformation.status === PermissionStatus.UNDETERMINED) {
+    // Prettier는 null일수도잇다고 ?붙이라고함
+    if (cameraPermissionInformation?.status === PermissionStatus.UNDETERMINED) {
       const permissionResponse = await requestPermission(); // 권한 요청
       // 다이얼로그를 열고 사용자 응답을 기다린 다음, 프로미스를 반환하느 비동기함수이기에 await를 붙인다.
       // 권한을 부여하거나 거부
@@ -31,7 +38,7 @@ export default function PhotoScreen() {
       return permissionResponse.granted; // 권한이 부여되었는지 여부 반환 (true/false인 프로미스 반환)
     }
 
-    if (cameraPermissionInformation.status === PermissionStatus.DENIED) {
+    if (cameraPermissionInformation?.status === PermissionStatus.DENIED) {
       // 권한이 거부된 상태
       Alert.alert(
         // react-native의 Alert API
@@ -44,8 +51,6 @@ export default function PhotoScreen() {
     return true; // 권한이 이미 허용된 상태
   }
 
-  const [capturedImage, setCapturedImage] = useState<string | null>(null);
-
   async function takeImageHandler() {
     const hasPermission = await verifyPermissions(); // 권한 확인
 
@@ -53,12 +58,32 @@ export default function PhotoScreen() {
       return; // 권한이 없으면 함수 종료
     }
 
-    const image = await launchCameraAsync({
-      allowsEditing: true, // 사용자가 사진을 사용하기 전에 편집할 수 있게 허용
-      aspect: [16, 9],
-      quality: 0.5, // 이미지 품질 설정 (0 ~ 1)
-    });
-    console.log(image);
+    try {
+      const image = await launchCameraAsync({
+        allowsEditing: true, // 사용자가 사진을 사용하기 전에 편집할 수 있게 허용
+        aspect: [16, 9],
+        quality: 0.5, // 이미지 품질 설정 (0 ~ 1)
+      });
+
+      if (!image.canceled) {
+        setPickedImage(image);
+        console.log(image.assets[0].uri);
+      }
+    } catch (error) {
+      console.log('Error taking image:', error);
+      Alert.alert('오류', '사진 촬영 중 문제가 발생했습니다.');
+    }
+  }
+  // 이미지가 없을 때를 위한 fallback 텍스트. 상수(const)로 선언하면 안됨
+  let imagePreview = <Text>아직 사진이 촬영되지 않았습니다.</Text>;
+
+  if (pickedImage) {
+    imagePreview = (
+      <Image
+        className="w-full h-full rounded-2xl"
+        source={{ uri: pickedImage.assets[0].uri }}
+      />
+    );
   }
 
   return (
@@ -77,7 +102,7 @@ export default function PhotoScreen() {
           </View>
 
           <View className="mt-[44px]">
-            <Text className="mb-2 font-bold text-[#597AFF] text-[16px]/[24px]">
+            <Text className="mb-[10px] font-bold text-[#597AFF] text-[16px]/[24px]">
               예시) 약통이 잘리지 않은 정면 사진
             </Text>
             <View className="w-full aspect-[328/230]">
@@ -89,28 +114,31 @@ export default function PhotoScreen() {
             </View>
           </View>
 
-          {capturedImage && (
+          {pickedImage && (
             <View className="mt-[44px]">
-              <Text className="mb-2 font-bold text-[#597AFF] text-[16px]/[24px]">
+              <Text className="mb-[10px] font-bold text-black text-[18px]/[24px]">
                 촬영된 사진
               </Text>
-              <View className="w-full aspect-[328/230]">
-                <Image
-                  className="w-full h-full"
-                  source={{ uri: capturedImage }}
-                  resizeMode="contain"
-                />
-              </View>
+              <View className="w-full aspect-[328/230]">{imagePreview}</View>
             </View>
           )}
         </View>
       </ScrollView>
       <View className="m-4">
-        <Button title="촬영하기" onPress={takeImageHandler} />
+        {!pickedImage ? (
+          <Button title="촬영하기" onPress={takeImageHandler} />
+        ) : (
+          <View className="flex-row m-4 gap-4 justyfy-between">
+            <Button
+              className=""
+              type="secondary"
+              title="다시 촬영하기"
+              onPress={takeImageHandler}
+            />
+            <Button className="" title="다음" onPress={() => {}} />
+          </View>
+        )}
       </View>
     </SafeAreaView>
   );
-}
-function laumchCameraAsync() {
-  throw new Error('Function not implemented.');
 }
