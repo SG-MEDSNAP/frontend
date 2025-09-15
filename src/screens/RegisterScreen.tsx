@@ -14,6 +14,8 @@ import { TimePickField } from '../components/field/TimePickField';
 import { PhoneField } from '../components/field/PhoneField';
 import ToggleSwitch from '../components/ToggleSwitch';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import * as Notifications from 'expo-notifications';
+import { scheduleWeeklyNotifications } from '../lib/notifications';
 
 type RegisterScreenNavigationProp = NativeStackNavigationProp<
   RootStackParamList,
@@ -82,8 +84,7 @@ export default function RegisterScreen({ navigation }: Props) {
   //  버튼 활성 조건: Zod + 추가 유효성
   const canSubmit = isValid && isDayValid && isPhoneValid;
 
-  // 제출: RHF 데이터 + 로컬 상태(요일/토글) 취합
-  const onSubmit = (form: MedicationForm) => {
+  const onSubmit = async (form: MedicationForm) => {
     if (!isDayValid) {
       Alert.alert('입력 확인', '요일을 최소 1개 이상 선택해주세요.');
       return;
@@ -92,21 +93,49 @@ export default function RegisterScreen({ navigation }: Props) {
       Alert.alert('입력 확인', '보호자 문자 수신이 켜져있으면 전화번호가 필요해요.');
       return;
     }
-
-    const payload = {
-      name: form.name,
-      times: form.times, // ['09:00','21:30']
-      caregiverPhone: guardianSms ? form.caregiverPhone : undefined,
-      selectedDays,
-      everyDay,
-      tenMinuteReminder,
-    };
-    console.log('등록 payload:', payload);
-
-    //  검증 통과 후 이동
-    navigation.replace('RegisterDoneScreen');
+  
+    const daysToUse = everyDay ? days : selectedDays; // '매일' ON이면 7일 전체
+  
+    try {
+      // 1) 권한 보장 (iOS/Android 공통)
+      const perm = await Notifications.getPermissionsAsync();
+      if (perm.status !== 'granted') {
+        const req = await Notifications.requestPermissionsAsync();
+        if (req.status !== 'granted') {
+          Alert.alert('알림 권한 필요', '알림 권한을 허용해야 예약이 가능합니다.');
+          return;
+        }
+      }
+  
+      // 2) 예약 실행
+      const ids = await scheduleWeeklyNotifications({
+        selectedDays: daysToUse,
+        times: form.times,               // 예: ['09:00','21:30']
+        tenMinutesBefore: tenMinuteReminder,
+        drugName: form.name,
+      });
+  
+      console.log('예약된 알림 IDs:', ids);
+  
+      // 3) payload 로그 (필요하다면)
+      const payload = {
+        name: form.name,
+        times: form.times,
+        caregiverPhone: guardianSms ? form.caregiverPhone : undefined,
+        selectedDays: daysToUse,
+        everyDay,
+        tenMinuteReminder,
+      };
+      console.log('등록 payload:', payload);
+  
+      // 4) 완료 화면으로 이동
+      navigation.replace('RegisterDoneScreen');
+    } catch (e: any) {
+      console.error(e);
+      Alert.alert('알림 예약 실패', e?.message ?? '다시 시도해주세요.');
+    }
   };
-
+  
   const onInvalid = () => {
     const firstError = Object.values(errors)[0] as any;
     if (firstError?.message) {

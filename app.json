@@ -13,7 +13,12 @@
       "backgroundColor": "#ffffff"
     },
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.qkrb8019.medsnap",
+      "infoPlist": {
+        "ITSAppUsesNonExemptEncryption": false,
+        "NSUserNotificationUsageDescription": "복약 시간을 알려드리기 위해 알림을 사용합니다."
+      }
     },
     "android": {
       "adaptiveIcon": {
@@ -25,6 +30,26 @@
     "web": {
       "favicon": "./assets/favicon.png",
       "bundler": "metro"
+    },
+    "notification": {
+      "icon": "./assets/splash.png",
+      "channel": "default"
+    },
+
+    "plugins": [
+      [
+        "expo-notifications",
+        {
+          "icon": "./assets/splash.png",
+          "color": "#597AFF",
+          "sounds": []
+        }
+      ]
+    ],
+    "extra": {
+      "eas": {
+        "projectId": "3a4a7be3-b851-4bbb-b09d-a35226da2075"
+      }
     }
   }
 }
