@@ -135,6 +135,7 @@ export default function RegisterScreen({ navigation, route }: Props) {
       const image = route.params.imageUri;
 
       await registerMedication(requestData, image);
+      console.log('약 등록 성공:', requestData, image);
       navigation.replace('RegisterDoneScreen');
     } catch (error) {
       Alert.alert(
