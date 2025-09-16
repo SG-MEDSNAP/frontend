@@ -69,7 +69,7 @@ export const registerMedication = async (
 
   try {
     const response = await axios.post<ApiResponse>(
-      `${BASE_URL}/v1/medications`,
+      `${API_BASE_URL}/v1/medications`,
       formData,
       {
         headers: {
