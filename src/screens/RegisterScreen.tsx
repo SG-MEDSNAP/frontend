@@ -4,6 +4,7 @@ import { View, Text, ScrollView, Pressable, Alert } from 'react-native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../../App';
 import Button from '../components/Button';
+import { registerMedication, type DoseDay } from '../api/medication';
 
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -14,19 +15,22 @@ import { TimePickField } from '../components/field/TimePickField';
 import { PhoneField } from '../components/field/PhoneField';
 import ToggleSwitch from '../components/ToggleSwitch';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { NativeStackScreenProps } from '@react-navigation/native-stack';
 
 type RegisterScreenNavigationProp = NativeStackNavigationProp<
   RootStackParamList,
   'MedicationRegister'
 >;
-interface Props {
-  navigation: RegisterScreenNavigationProp;
-}
+type Props = NativeStackScreenProps<RootStackParamList, 'MedicationRegister'>;
 
-export default function RegisterScreen({ navigation }: Props) {
+export default function RegisterScreen({ navigation, route }: Props) {
   const days = ['월', '화', '수', '목', '금', '토', '일'];
   const [selectedDays, setSelectedDays] = useState<string[]>([
-    '월', '화', '수', '목', '금',
+    '월',
+    '화',
+    '수',
+    '목',
+    '금',
   ]);
   const [everyDay, setEveryDay] = useState(false);
   const [guardianSms, setGuardianSms] = useState(false);
@@ -44,7 +48,7 @@ export default function RegisterScreen({ navigation }: Props) {
       if (next) {
         setSelectedDays(days); // 켤 때: 모든 요일 선택
       } else {
-        setSelectedDays([]);   // 끌 때: 모두 해제
+        setSelectedDays([]); // 끌 때: 모두 해제
       }
       return next;
     });
@@ -83,28 +87,63 @@ export default function RegisterScreen({ navigation }: Props) {
   const canSubmit = isValid && isDayValid && isPhoneValid;
 
   // 제출: RHF 데이터 + 로컬 상태(요일/토글) 취합
-  const onSubmit = (form: MedicationForm) => {
+  const onSubmit = async (form: MedicationForm) => {
     if (!isDayValid) {
       Alert.alert('입력 확인', '요일을 최소 1개 이상 선택해주세요.');
       return;
     }
     if (!isPhoneValid) {
-      Alert.alert('입력 확인', '보호자 문자 수신이 켜져있으면 전화번호가 필요해요.');
+      Alert.alert(
+        '입력 확인',
+        '보호자 문자 수신이 켜져있으면 전화번호가 필요해요.',
+      );
       return;
     }
 
-    const payload = {
-      name: form.name,
-      times: form.times, // ['09:00','21:30']
-      caregiverPhone: guardianSms ? form.caregiverPhone : undefined,
-      selectedDays,
-      everyDay,
-      tenMinuteReminder,
-    };
-    console.log('등록 payload:', payload);
+    // route.params가 없는 경우 체크
+    if (!route.params?.imageUri) {
+      Alert.alert('오류', '약 이미지가 없습니다. 사진 등록부터 진행해주세요.');
+      navigation.navigate('PhotoRegister');
+      return;
+    }
 
-    //  검증 통과 후 이동
-    navigation.replace('RegisterDoneScreen');
+    try {
+      const doseDays: DoseDay[] = everyDay
+        ? ['DAILY']
+        : selectedDays.map((day) => {
+            const dayMap: Record<string, DoseDay> = {
+              월: 'MON',
+              화: 'TUE',
+              수: 'WED',
+              목: 'THU',
+              금: 'FRI',
+              토: 'SAT',
+              일: 'SUN',
+            };
+            return dayMap[day];
+          });
+
+      const requestData = {
+        name: form.name,
+        notifyCaregiver: guardianSms,
+        preNotify: tenMinuteReminder,
+        doseTimes: form.times,
+        doseDays,
+        caregiverPhone: guardianSms ? form.caregiverPhone : '', // 보호자 알림이 켜져있을 때만 전화번호 전송
+      };
+
+      const image = route.params.imageUri;
+
+      await registerMedication(requestData, image);
+      console.log('약 등록 성공:', requestData, image);
+      navigation.replace('RegisterDoneScreen');
+    } catch (error) {
+      Alert.alert(
+        '등록 실패',
+        '약 정보 등록 중 오류가 발생했습니다. 다시 시도해주세요.',
+      );
+      console.error('약 등록 에러:', error);
+    }
   };
 
   const onInvalid = () => {
@@ -114,7 +153,10 @@ export default function RegisterScreen({ navigation }: Props) {
     } else if (!isDayValid) {
       Alert.alert('입력 확인', '요일을 최소 1개 이상 선택해주세요.');
     } else if (!isPhoneValid) {
-      Alert.alert('입력 확인', '보호자 문자 수신이 켜져있으면 전화번호가 필요해요.');
+      Alert.alert(
+        '입력 확인',
+        '보호자 문자 수신이 켜져있으면 전화번호가 필요해요.',
+      );
     } else {
       Alert.alert('입력 확인', '필수 항목을 확인해 주세요.');
     }
@@ -150,7 +192,10 @@ export default function RegisterScreen({ navigation }: Props) {
                   <Text className="text-[16px] text-[#404040] font-semibold mr-2">
                     매일
                   </Text>
-                  <ToggleSwitch value={everyDay} onValueChange={toggleEveryDay} />
+                  <ToggleSwitch
+                    value={everyDay}
+                    onValueChange={toggleEveryDay}
+                  />
                 </View>
               </View>
 
@@ -234,8 +279,8 @@ export default function RegisterScreen({ navigation }: Props) {
               type="primary"
               size="lg"
               className="mt-2"
-              onPress={handleSubmit(onSubmit, onInvalid)} 
-              disabled={!canSubmit}                       //  유효할 때만 활성화
+              onPress={handleSubmit(onSubmit, onInvalid)}
+              disabled={!canSubmit} //  유효할 때만 활성화
             />
           </View>
         </View>
