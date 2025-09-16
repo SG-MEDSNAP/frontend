@@ -1,3 +1,4 @@
+import { API_BASE_URL } from '@env';
 import axios from 'axios';
 
 // 복용 요일 타입
