@@ -89,7 +89,13 @@ export default function PhotoScreen({ navigation }: Props) {
   }
 
   const handleNextPress = () => {
-    navigation.navigate('MedicationRegister');
+    if (pickedImage && pickedImage.assets?.[0]) {
+      navigation.navigate('MedicationRegister', {
+        imageUri: pickedImage.assets[0].uri,
+      });
+    } else {
+      Alert.alert('오류', '촬영된 이미지가 없습니다.');
+    }
   };
 
   return (

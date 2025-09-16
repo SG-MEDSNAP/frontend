@@ -25,7 +25,9 @@ import MyPageIcon from './assets/icons/MyPageIcon.svg';
 export type RootStackParamList = {
   PhotoRegister: undefined;
   // Home: undefined;
-  MedicationRegister: undefined;
+  MedicationRegister: {
+    imageUri: string;
+  };
   // ✅ 추가
   RegisterDoneScreen: undefined;
   VerifyIntakeResult:
