@@ -18,6 +18,7 @@ import {
   useCameraPermissions,
   PermissionStatus,
   type ImagePickerAsset,
+  CameraType,
 } from 'expo-image-picker';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'PhotoRegister'>;
@@ -58,8 +59,8 @@ export default function PhotoRegisterScreen({ navigation }: Props) {
       const result = await launchCameraAsync({
         allowsEditing: true,
         aspect: [16, 9],
-        quality: 0.8,
-        cameraType: 'back',
+        cameraType: CameraType.back,
+        
       });
 
       if (!result.canceled && result.assets && result.assets.length > 0) {
