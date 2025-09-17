@@ -1,12 +1,20 @@
 // App.tsx
 import * as React from 'react';
 import { useFonts } from 'expo-font';
-import { TextInput, ActivityIndicator, Text, View, Image } from 'react-native';
+import {
+  TextInput,
+  ActivityIndicator,
+  Text,
+  View,
+  Image,
+  Platform,
+  Alert,
+} from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { StatusBar } from 'expo-status-bar';
-import Ionicons from '@expo/vector-icons/Ionicons';
+
 import './global.css';
 
 import HomeScreen from './src/screens/HomeScreen';
@@ -14,12 +22,14 @@ import RegisterScreen from './src/screens/RegisterScreen';
 import PhotoRegisterScreen from './src/screens/PhotoRegisterScreen';
 import RegisterDoneScreen from './src/screens/RegisterDoneScreen';
 import VerifyIntakeResultScreen from './src/screens/VerifyResultScreen';
-import { size } from 'zod';
+
+import * as Notifications from 'expo-notifications';
+import { useEffect } from 'react';
 
 // icons
 import HomeIcon from './assets/icons/HomeIcon.svg';
-import LogIcon from './assets//icons/LogIcon.svg';
-import SupportIcon from './assets/icons//SupportIcon.svg';
+import LogIcon from './assets/icons/LogIcon.svg';
+import SupportIcon from './assets/icons/SupportIcon.svg';
 import MyPageIcon from './assets/icons/MyPageIcon.svg';
 
 export type RootStackParamList = {
@@ -28,9 +38,9 @@ export type RootStackParamList = {
   MedicationRegister: {
     imageUri: string;
   };
-  // ✅ 추가
+  RegisterScreen: undefined;
   RegisterDoneScreen: undefined;
-  VerifyIntakeResult:
+  VerifyIntakeResult?:
     | { result?: 'success' | 'not_taken' | 'error'; delayMs?: number }
     | undefined;
   MainTabs: undefined;
@@ -44,9 +54,20 @@ export type BottomTabParamList = {
 };
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
-
 const BottomTab = createBottomTabNavigator<BottomTabParamList>();
 
+// ✅ 글로벌 알림 핸들러 (앱 전체에서 한 번만 설정)
+Notifications.setNotificationHandler({
+  handleNotification: async () => ({
+    shouldShowAlert: true,
+    shouldPlaySound: true,
+    shouldSetBadge: false,
+    shouldShowBanner: true,
+    shouldShowList: true,
+  }),
+});
+
+// ✅ 메인 탭 네비게이터
 function MainTabNavigator() {
   return (
     <BottomTab.Navigator
@@ -120,15 +141,32 @@ export default function App() {
     Pretendard: require('./assets/fonts/PretendardVariable.ttf'),
   });
 
-  if (!loaded) {
-    return (
-      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-        <ActivityIndicator size="large" color="#007AFF" />
-      </View>
-    );
-  }
+  // ✅ 알림 권한/채널 설정
+  useEffect(() => {
+    if (!loaded) return;
 
-  // 전역 기본 Text/TextInput 폰트 설정
+    (async () => {
+      const ios = await Notifications.getPermissionsAsync();
+      if (ios.status !== 'granted') {
+        const req = await Notifications.requestPermissionsAsync();
+        if (req.status !== 'granted') {
+          Alert.alert(
+            '알림 권한 필요',
+            '알림 기능을 사용하려면 권한을 허용해주세요.',
+          );
+        }
+      }
+
+      if (Platform.OS === 'android') {
+        await Notifications.setNotificationChannelAsync('default', {
+          name: '약 알림',
+          importance: Notifications.AndroidImportance.HIGH,
+        });
+      }
+    })();
+  }, [loaded]);
+
+  // ✅ 전역 폰트 적용
   const RnText: any = Text as any;
   const RnTextInput: any = TextInput as any;
   RnText.defaultProps = RnText.defaultProps || {};
@@ -142,6 +180,14 @@ export default function App() {
     fontFamily: 'Pretendard',
   };
 
+  if (!loaded) {
+    return (
+      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+        <ActivityIndicator size="large" color="#007AFF" />
+      </View>
+    );
+  }
+
   return (
     <NavigationContainer>
       <Stack.Navigator
@@ -152,7 +198,6 @@ export default function App() {
           headerTitleStyle: {
             fontFamily: 'Pretendard',
             fontSize: 22,
-            // RN은 'semibold' 대신 숫자 사용 권장(600)
             fontWeight: '600',
           },
           headerBackButtonDisplayMode: 'minimal',
@@ -161,34 +206,23 @@ export default function App() {
         <Stack.Screen
           name="PhotoRegister"
           component={PhotoRegisterScreen}
-          options={{
-            title: '약 등록',
-          }}
+          options={{ title: '약 등록' }}
         />
-        {/* <Stack.Screen
-          name="Home"
-          component={HomeScreen}
-          options={{ title: '홈 화면', headerShown: false }}
-        /> */}
         <Stack.Screen
           name="MedicationRegister"
           component={RegisterScreen}
           options={{ title: '약 등록' }}
         />
-
-        {/* ✅ 약 등록 완료 */}
         <Stack.Screen
           name="RegisterDoneScreen"
           component={RegisterDoneScreen}
           options={{ title: '약 등록' }}
         />
-
-        {/* ✅ 복약 인증 결과(분석중 → 성공/실패를 한 화면에서 처리) */}
-        {/* <Stack.Screen
+        <Stack.Screen
           name="VerifyIntakeResult"
           component={VerifyIntakeResultScreen}
           options={{ title: '복약 인증' }}
-        /> */}
+        />
         <Stack.Screen
           name="MainTabs"
           component={MainTabNavigator}

@@ -1,39 +1,76 @@
 {
   "expo": {
-    "name": "frontend",
-    "slug": "frontend",
+    "name": "medsnap",
+    "slug": "medsnap",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
-    "newArchEnabled": true,
+    "newArchEnabled": false,
+
     "splash": {
-      "image": "./assets/splash-icon.png",
+      "image": "./assets/splash.png",
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
+
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.qkrb8019.medsnap",
+      "infoPlist": {
+        "ITSAppUsesNonExemptEncryption": false,
+        "NSUserNotificationUsageDescription": "복약 시간을 알려드리기 위해 알림을 사용합니다."
+      }
     },
+
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/adaptive-icon.png",
+        "foregroundImage": "./assets/icon.png",
         "backgroundColor": "#ffffff"
       },
       "edgeToEdgeEnabled": true
     },
+
     "web": {
       "favicon": "./assets/favicon.png",
       "bundler": "metro"
     },
+
+    "notification": {
+      "icon": "./assets/icon.png"
+    },
+
     "plugins": [
+      [
+        "expo-notifications",
+        {
+          "icon": "./assets/icon.png",
+          "color": "#597AFF",
+          "sounds": []
+        }
+      ],
       [
         "expo-image-picker",
         {
-          "photosPermission": "The app accesses your photos to let you share them...",
-          "microphonePermission": "Allow $(PRODUCT_NAME) to access your microphone"
+          "photosPermission": "사진을 선택하거나 업로드하기 위해 사진 보관함에 접근합니다.",
+          "microphonePermission": "동영상 녹화를 위해 마이크 접근을 허용해 주세요."
+        }
+      ],
+      [
+        "expo-build-properties",
+        {
+          "ios": {
+            "flipper": false,
+            "deploymentTarget": "15.1"
+          }
         }
       ]
-    ]
+    ],
+
+    "extra": {
+      "eas": {
+        "projectId": "3a4a7be3-b851-4bbb-b09d-a35226da2075"
+      }
+    }
   }
 }
