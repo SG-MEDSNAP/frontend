@@ -1,5 +1,5 @@
 import React from 'react';
-import { Pressable, Text, ViewStyle, TextStyle } from 'react-native';
+import { TouchableOpacity, Text, ViewStyle, TextStyle } from 'react-native';
 
 export type ButtonType = 'primary' | 'secondary' | 'third';
 export type ButtonSize = 'sm' | 'md' | 'lg';
@@ -64,7 +64,7 @@ export default function Button({
     .join(' ');
 
   return (
-    <Pressable
+    <TouchableOpacity
       className={containerClass}
       onPress={onPress}
       disabled={disabled}
@@ -73,6 +73,6 @@ export default function Button({
       <Text className={labelClass} style={textStyle}>
         {title}
       </Text>
-    </Pressable>
+    </TouchableOpacity>
   );
 }

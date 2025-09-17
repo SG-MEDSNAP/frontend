@@ -1,6 +1,6 @@
 // src/screens/RegisterScreen.tsx
 import React, { useEffect, useMemo, useState } from 'react';
-import { View, Text, ScrollView, Pressable, Alert } from 'react-native';
+import { View, Text, ScrollView, TouchableOpacity, Alert } from 'react-native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../../App';
 import Button from '../components/Button';
@@ -15,6 +15,8 @@ import { TimePickField } from '../components/field/TimePickField';
 import { PhoneField } from '../components/field/PhoneField';
 import ToggleSwitch from '../components/ToggleSwitch';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import * as Notifications from 'expo-notifications';
+import { scheduleWeeklyNotifications } from '../lib/notifications';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 
 type RegisterScreenNavigationProp = NativeStackNavigationProp<
@@ -26,6 +28,11 @@ type Props = NativeStackScreenProps<RootStackParamList, 'MedicationRegister'>;
 export default function RegisterScreen({ navigation, route }: Props) {
   const days = ['월', '화', '수', '목', '금', '토', '일'];
   const [selectedDays, setSelectedDays] = useState<string[]>([
+    '월',
+    '화',
+    '수',
+    '목',
+    '금',
     '월',
     '화',
     '수',
@@ -86,7 +93,6 @@ export default function RegisterScreen({ navigation, route }: Props) {
   //  버튼 활성 조건: Zod + 추가 유효성
   const canSubmit = isValid && isDayValid && isPhoneValid;
 
-  // 제출: RHF 데이터 + 로컬 상태(요일/토글) 취합
   const onSubmit = async (form: MedicationForm) => {
     if (!isDayValid) {
       Alert.alert('입력 확인', '요일을 최소 1개 이상 선택해주세요.');
@@ -107,42 +113,48 @@ export default function RegisterScreen({ navigation, route }: Props) {
       return;
     }
 
+    const daysToUse = everyDay ? days : selectedDays; // '매일' ON이면 7일 전체
+
     try {
-      const doseDays: DoseDay[] = everyDay
-        ? ['DAILY']
-        : selectedDays.map((day) => {
-            const dayMap: Record<string, DoseDay> = {
-              월: 'MON',
-              화: 'TUE',
-              수: 'WED',
-              목: 'THU',
-              금: 'FRI',
-              토: 'SAT',
-              일: 'SUN',
-            };
-            return dayMap[day];
-          });
+      // 1) 권한 보장 (iOS/Android 공통)
+      const perm = await Notifications.getPermissionsAsync();
+      if (perm.status !== 'granted') {
+        const req = await Notifications.requestPermissionsAsync();
+        if (req.status !== 'granted') {
+          Alert.alert(
+            '알림 권한 필요',
+            '알림 권한을 허용해야 예약이 가능합니다.',
+          );
+          return;
+        }
+      }
 
-      const requestData = {
+      // 2) 예약 실행
+      const ids = await scheduleWeeklyNotifications({
+        selectedDays: daysToUse,
+        times: form.times, // 예: ['09:00','21:30']
+        tenMinutesBefore: tenMinuteReminder,
+        drugName: form.name,
+      });
+
+      console.log('예약된 알림 IDs:', ids);
+
+      // 3) payload 로그 (필요하다면)
+      const payload = {
         name: form.name,
-        notifyCaregiver: guardianSms,
-        preNotify: tenMinuteReminder,
-        doseTimes: form.times,
-        doseDays,
-        caregiverPhone: guardianSms ? form.caregiverPhone : '', // 보호자 알림이 켜져있을 때만 전화번호 전송
+        times: form.times,
+        caregiverPhone: guardianSms ? form.caregiverPhone : undefined,
+        selectedDays: daysToUse,
+        everyDay,
+        tenMinuteReminder,
       };
+      console.log('등록 payload:', payload);
 
-      const image = route.params.imageUri;
-
-      await registerMedication(requestData, image);
-      console.log('약 등록 성공:', requestData, image);
+      // 4) 완료 화면으로 이동
       navigation.replace('RegisterDoneScreen');
-    } catch (error) {
-      Alert.alert(
-        '등록 실패',
-        '약 정보 등록 중 오류가 발생했습니다. 다시 시도해주세요.',
-      );
-      console.error('약 등록 에러:', error);
+    } catch (e: any) {
+      console.error(e);
+      Alert.alert('알림 예약 실패', e?.message ?? '다시 시도해주세요.');
     }
   };
 
@@ -203,7 +215,7 @@ export default function RegisterScreen({ navigation, route }: Props) {
                 {days.map((day) => {
                   const selected = selectedDays.includes(day);
                   return (
-                    <Pressable
+                    <TouchableOpacity
                       key={day}
                       onPress={() => toggleDay(day)}
                       className={[
@@ -219,7 +231,7 @@ export default function RegisterScreen({ navigation, route }: Props) {
                       >
                         {day}
                       </Text>
-                    </Pressable>
+                    </TouchableOpacity>
                   );
                 })}
               </View>
