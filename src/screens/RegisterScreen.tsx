@@ -1,6 +1,6 @@
 // src/screens/RegisterScreen.tsx
 import React, { useEffect, useMemo, useState } from 'react';
-import { View, Text, ScrollView, Pressable, Alert } from 'react-native';
+import { View, Text, ScrollView, TouchableOpacity, Alert } from 'react-native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../../App';
 import Button from '../components/Button';
@@ -28,7 +28,11 @@ interface Props {
 export default function RegisterScreen({ navigation }: Props) {
   const days = ['월', '화', '수', '목', '금', '토', '일'];
   const [selectedDays, setSelectedDays] = useState<string[]>([
-    '월', '화', '수', '목', '금',
+    '월',
+    '화',
+    '수',
+    '목',
+    '금',
   ]);
   const [everyDay, setEveryDay] = useState(false);
   const [guardianSms, setGuardianSms] = useState(false);
@@ -46,7 +50,7 @@ export default function RegisterScreen({ navigation }: Props) {
       if (next) {
         setSelectedDays(days); // 켤 때: 모든 요일 선택
       } else {
-        setSelectedDays([]);   // 끌 때: 모두 해제
+        setSelectedDays([]); // 끌 때: 모두 해제
       }
       return next;
     });
@@ -90,33 +94,39 @@ export default function RegisterScreen({ navigation }: Props) {
       return;
     }
     if (!isPhoneValid) {
-      Alert.alert('입력 확인', '보호자 문자 수신이 켜져있으면 전화번호가 필요해요.');
+      Alert.alert(
+        '입력 확인',
+        '보호자 문자 수신이 켜져있으면 전화번호가 필요해요.',
+      );
       return;
     }
-  
+
     const daysToUse = everyDay ? days : selectedDays; // '매일' ON이면 7일 전체
-  
+
     try {
       // 1) 권한 보장 (iOS/Android 공통)
       const perm = await Notifications.getPermissionsAsync();
       if (perm.status !== 'granted') {
         const req = await Notifications.requestPermissionsAsync();
         if (req.status !== 'granted') {
-          Alert.alert('알림 권한 필요', '알림 권한을 허용해야 예약이 가능합니다.');
+          Alert.alert(
+            '알림 권한 필요',
+            '알림 권한을 허용해야 예약이 가능합니다.',
+          );
           return;
         }
       }
-  
+
       // 2) 예약 실행
       const ids = await scheduleWeeklyNotifications({
         selectedDays: daysToUse,
-        times: form.times,               // 예: ['09:00','21:30']
+        times: form.times, // 예: ['09:00','21:30']
         tenMinutesBefore: tenMinuteReminder,
         drugName: form.name,
       });
-  
+
       console.log('예약된 알림 IDs:', ids);
-  
+
       // 3) payload 로그 (필요하다면)
       const payload = {
         name: form.name,
@@ -127,7 +137,7 @@ export default function RegisterScreen({ navigation }: Props) {
         tenMinuteReminder,
       };
       console.log('등록 payload:', payload);
-  
+
       // 4) 완료 화면으로 이동
       navigation.replace('RegisterDoneScreen');
     } catch (e: any) {
@@ -135,7 +145,7 @@ export default function RegisterScreen({ navigation }: Props) {
       Alert.alert('알림 예약 실패', e?.message ?? '다시 시도해주세요.');
     }
   };
-  
+
   const onInvalid = () => {
     const firstError = Object.values(errors)[0] as any;
     if (firstError?.message) {
@@ -143,7 +153,10 @@ export default function RegisterScreen({ navigation }: Props) {
     } else if (!isDayValid) {
       Alert.alert('입력 확인', '요일을 최소 1개 이상 선택해주세요.');
     } else if (!isPhoneValid) {
-      Alert.alert('입력 확인', '보호자 문자 수신이 켜져있으면 전화번호가 필요해요.');
+      Alert.alert(
+        '입력 확인',
+        '보호자 문자 수신이 켜져있으면 전화번호가 필요해요.',
+      );
     } else {
       Alert.alert('입력 확인', '필수 항목을 확인해 주세요.');
     }
@@ -179,7 +192,10 @@ export default function RegisterScreen({ navigation }: Props) {
                   <Text className="text-[16px] text-[#404040] font-semibold mr-2">
                     매일
                   </Text>
-                  <ToggleSwitch value={everyDay} onValueChange={toggleEveryDay} />
+                  <ToggleSwitch
+                    value={everyDay}
+                    onValueChange={toggleEveryDay}
+                  />
                 </View>
               </View>
 
@@ -187,7 +203,7 @@ export default function RegisterScreen({ navigation }: Props) {
                 {days.map((day) => {
                   const selected = selectedDays.includes(day);
                   return (
-                    <Pressable
+                    <TouchableOpacity
                       key={day}
                       onPress={() => toggleDay(day)}
                       className={[
@@ -203,7 +219,7 @@ export default function RegisterScreen({ navigation }: Props) {
                       >
                         {day}
                       </Text>
-                    </Pressable>
+                    </TouchableOpacity>
                   );
                 })}
               </View>
@@ -263,8 +279,8 @@ export default function RegisterScreen({ navigation }: Props) {
               type="primary"
               size="lg"
               className="mt-2"
-              onPress={handleSubmit(onSubmit, onInvalid)} 
-              disabled={!canSubmit}                       //  유효할 때만 활성화
+              onPress={handleSubmit(onSubmit, onInvalid)}
+              disabled={!canSubmit} //  유효할 때만 활성화
             />
           </View>
         </View>
