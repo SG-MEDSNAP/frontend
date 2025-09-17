@@ -14,7 +14,7 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { StatusBar } from 'expo-status-bar';
-import Ionicons from '@expo/vector-icons/Ionicons';
+
 import './global.css';
 
 import HomeScreen from './src/screens/HomeScreen';
@@ -34,7 +34,10 @@ import MyPageIcon from './assets/icons/MyPageIcon.svg';
 
 export type RootStackParamList = {
   PhotoRegister: undefined;
-  MedicationRegister: undefined;
+  // Home: undefined;
+  MedicationRegister: {
+    imageUri: string;
+  };
   RegisterScreen: undefined;
   RegisterDoneScreen: undefined;
   VerifyIntakeResult?:
@@ -207,11 +210,6 @@ export default function App() {
         />
         <Stack.Screen
           name="MedicationRegister"
-          component={RegisterScreen}
-          options={{ title: '약 등록' }}
-        />
-        <Stack.Screen
-          name="RegisterScreen"
           component={RegisterScreen}
           options={{ title: '약 등록' }}
         />

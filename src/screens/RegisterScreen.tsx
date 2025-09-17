@@ -4,6 +4,7 @@ import { View, Text, ScrollView, TouchableOpacity, Alert } from 'react-native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../../App';
 import Button from '../components/Button';
+import { registerMedication, type DoseDay } from '../api/medication';
 
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -16,18 +17,22 @@ import ToggleSwitch from '../components/ToggleSwitch';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import * as Notifications from 'expo-notifications';
 import { scheduleWeeklyNotifications } from '../lib/notifications';
+import { NativeStackScreenProps } from '@react-navigation/native-stack';
 
 type RegisterScreenNavigationProp = NativeStackNavigationProp<
   RootStackParamList,
   'MedicationRegister'
 >;
-interface Props {
-  navigation: RegisterScreenNavigationProp;
-}
+type Props = NativeStackScreenProps<RootStackParamList, 'MedicationRegister'>;
 
-export default function RegisterScreen({ navigation }: Props) {
+export default function RegisterScreen({ navigation, route }: Props) {
   const days = ['월', '화', '수', '목', '금', '토', '일'];
   const [selectedDays, setSelectedDays] = useState<string[]>([
+    '월',
+    '화',
+    '수',
+    '목',
+    '금',
     '월',
     '화',
     '수',
@@ -98,6 +103,13 @@ export default function RegisterScreen({ navigation }: Props) {
         '입력 확인',
         '보호자 문자 수신이 켜져있으면 전화번호가 필요해요.',
       );
+      return;
+    }
+
+    // route.params가 없는 경우 체크
+    if (!route.params?.imageUri) {
+      Alert.alert('오류', '약 이미지가 없습니다. 사진 등록부터 진행해주세요.');
+      navigation.navigate('PhotoRegister');
       return;
     }
 

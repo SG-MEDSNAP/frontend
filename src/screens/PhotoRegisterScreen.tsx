@@ -76,7 +76,13 @@ export default function PhotoRegisterScreen({ navigation }: Props) {
 
   // 다음 단계(약 등록 폼)로 이동
   const handleNextPress = () => {
-    navigation.navigate('MedicationRegister'); // 스택에 정의된 화면 이름과 일치해야 해요
+    if (pickedImage && pickedImage.assets?.[0]) {
+      navigation.navigate('MedicationRegister', {
+        imageUri: pickedImage.assets[0].uri,
+      });
+    } else {
+      Alert.alert('오류', '촬영된 이미지가 없습니다.');
+    }
   };
 
   // 프리뷰 JSX
