@@ -4,9 +4,9 @@
     "slug": "medsnap",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/splash.png",
+    "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
-    "newArchEnabled": false,
+    "newArchEnabled": true,
 
     "splash": {
       "image": "./assets/splash.png",
@@ -37,15 +37,14 @@
     },
 
     "notification": {
-      "icon": "./assets/splash.png",
-      "channel": "default"
+      "icon": "./assets/icon.png"
     },
 
     "plugins": [
       [
         "expo-notifications",
         {
-          "icon": "./assets/splash.png",
+          "icon": "./assets/icon.png",
           "color": "#597AFF",
           "sounds": []
         }
@@ -59,13 +58,12 @@
       ],
       [
         "expo-build-properties",
-  {
-    "ios": {
-      "useFrameworks": "static",
-      "flipper": false,
-      "cppStandard": "c++17"
-    }
-  }
+        {
+          "ios": {
+            "flipper": false,
+            "deploymentTarget": "15.1"
+          }
+        }
       ]
     ],
 
