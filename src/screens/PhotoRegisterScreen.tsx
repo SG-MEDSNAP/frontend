@@ -32,9 +32,7 @@ export default function PhotoRegisterScreen({ navigation }: Props) {
 
   // 카메라 권한 확인/요청
   async function verifyPermissions() {
-    if (
-      cameraPermissionInformation?.status === PermissionStatus.UNDETERMINED
-    ) {
+    if (cameraPermissionInformation?.status === PermissionStatus.UNDETERMINED) {
       const permissionResponse = await requestPermission();
       return permissionResponse.granted;
     }
@@ -42,7 +40,7 @@ export default function PhotoRegisterScreen({ navigation }: Props) {
     if (cameraPermissionInformation?.status === PermissionStatus.DENIED) {
       Alert.alert(
         '카메라 접근 권한이 없습니다.',
-        '이 앱을 사용하려면 설정 > 개인정보 보호 > 카메라에서 접근을 허용해주세요.'
+        '이 앱을 사용하려면 설정 > 개인정보 보호 > 카메라에서 접근을 허용해주세요.',
       );
       return false;
     }
@@ -60,7 +58,6 @@ export default function PhotoRegisterScreen({ navigation }: Props) {
         allowsEditing: true,
         aspect: [16, 9],
         cameraType: CameraType.back,
-        
       });
 
       if (!result.canceled && result.assets && result.assets.length > 0) {
@@ -76,9 +73,9 @@ export default function PhotoRegisterScreen({ navigation }: Props) {
 
   // 다음 단계(약 등록 폼)로 이동
   const handleNextPress = () => {
-    if (pickedImage && pickedImage.assets?.[0]) {
+    if (pickedImage) {
       navigation.navigate('MedicationRegister', {
-        imageUri: pickedImage.assets[0].uri,
+        imageUri: pickedImage.uri,
       });
     } else {
       Alert.alert('오류', '촬영된 이미지가 없습니다.');
