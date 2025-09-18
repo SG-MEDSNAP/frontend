@@ -11,6 +11,8 @@ import {
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../../App';
 import Button from '../components/Button';
+import { isDevBypassEnabled } from '../utils/dev/devModeConfig';
+import { getDevBypassPhoto } from '../utils/dev/devBypass';
 
 // Expo 이미지 피커 (카메라)
 import {
@@ -50,6 +52,13 @@ export default function PhotoRegisterScreen({ navigation }: Props) {
 
   // 카메라 촬영
   async function takeImageHandler() {
+    // 개발 모드 우회 처리
+    if (isDevBypassEnabled('BYPASS_CAMERA')) {
+      const devPhoto = getDevBypassPhoto();
+      setPickedImage(devPhoto as ImagePickerAsset);
+      return;
+    }
+
     const hasPermission = await verifyPermissions();
     if (!hasPermission) return;
 
