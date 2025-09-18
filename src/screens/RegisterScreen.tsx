@@ -5,6 +5,8 @@ import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../../App';
 import Button from '../components/Button';
 import { registerMedication, type DoseDay } from '../api/medication';
+import { isDevBypassEnabled } from '../utils/dev/devModeConfig';
+import { getDevBypassMedicationResponse } from '../utils/dev/devBypass';
 
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -116,6 +118,14 @@ export default function RegisterScreen({ navigation, route }: Props) {
     const daysToUse = everyDay ? days : selectedDays; // '매일' ON이면 7일 전체
 
     try {
+      // 개발 모드 우회 처리
+      if (isDevBypassEnabled('BYPASS_MEDICATION_REGISTER')) {
+        const mockResponse = getDevBypassMedicationResponse();
+        console.log('개발 모드: API 응답 우회', mockResponse);
+        navigation.replace('RegisterDoneScreen');
+        return;
+      }
+
       // 1) 권한 보장 (iOS/Android 공통)
       const perm = await Notifications.getPermissionsAsync();
       if (perm.status !== 'granted') {
