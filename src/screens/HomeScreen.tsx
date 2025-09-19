@@ -102,9 +102,9 @@ export default function HomeScreen({ navigation }: Props) {
                 onPress={handleRegisterPress}
               />
               <Image
-                className="w-[140px] h-[140px]"
-                source={require('../../assets/images/PillBackgroundIcon4x.png')}
-                // resizeMethod="scale"
+                className="w-[150px] h-[140px]"
+                source={require('../../assets/images/medication.png')}
+                resizeMode="contain"
               />
             </View>
           </View>
