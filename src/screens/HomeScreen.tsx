@@ -53,8 +53,7 @@ export default function HomeScreen({ navigation }: Props) {
   // };
 
   const handleRegisterPress = () => {
-    // navigation.navigate('PhotoRegister');
-    navigation.navigate('MedicationRegister');
+    navigation.navigate('PhotoRegister');
   };
 
   function LogoTitle() {
