@@ -16,9 +16,11 @@ export function InputField({
 }) {
   const border = error ? 'border-[#FF5B6B]' : 'border-[#D7E0FF]';
   const hasHeader = !!label || !!right;
-  const hasBottom = !!error || !!helpText;
+  // const hasBottom = !!error || !!helpText;
 
   return (
+    // CLS에 영향을 줘서 임시로 조건 제거
+    // <View className={hasBottom ? 'gap-2' : ''}>
     <View>
       {/* 헤더가 있을 때만 렌더, 라벨↔인풋 8px = mb-2 */}
       {hasHeader && (
