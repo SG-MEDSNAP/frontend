@@ -182,11 +182,8 @@ export default function RegisterScreen({ navigation, route }: Props) {
       >
         <View>
           <View className="mb-[80px] mt-[26px] gap-[10px]">
-            <Text className="text-[30px] font-bold text-[#333] text-start ">
-              처방 받은 약 정보를
-            </Text>
-            <Text className="text-[30px] font-bold text-[#333] text-start ">
-              입력해주세요
+            <Text className="text-[30px]/[40px] font-bold text-[#333] text-start ">
+              처방 받은 약 정보를{'\n'}입력해주세요
             </Text>
           </View>
 
@@ -211,7 +208,7 @@ export default function RegisterScreen({ navigation, route }: Props) {
                 </View>
               </View>
 
-              <View className="flex-row w-full gap-[6px]">
+              <View className="flex-row w-full gap-[5.67px]">
                 {days.map((day) => {
                   const selected = selectedDays.includes(day);
                   return (
@@ -219,7 +216,7 @@ export default function RegisterScreen({ navigation, route }: Props) {
                       key={day}
                       onPress={() => toggleDay(day)}
                       className={[
-                        ' py-3 rounded-lg items-center h-[42px] flex-1',
+                        'flex-1 justify-center items-center rounded-xl px-3 py-3',
                         selected ? 'bg-[#F1F4FF]' : 'bg-[#F5F5F5]',
                       ].join(' ')}
                     >
