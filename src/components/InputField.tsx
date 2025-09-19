@@ -37,7 +37,7 @@ export function InputField({
       )}
 
       <View
-        className={`py-[20px] px-[16px] rounded-[16px] min-h-[60px] border ${border} justify-center android:py-1`}
+        className={`py-1 px-4 rounded-[16px] min-h-[60px] border ${border} justify-center`}
       >
         {children}
       </View>
