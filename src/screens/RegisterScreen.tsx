@@ -208,7 +208,7 @@ export default function RegisterScreen({ navigation, route }: Props) {
                 </View>
               </View>
 
-              <View className="flex-row w-full gap-[6px]">
+              <View className="flex-row w-full gap-[5.67px]">
                 {days.map((day) => {
                   const selected = selectedDays.includes(day);
                   return (
@@ -216,7 +216,7 @@ export default function RegisterScreen({ navigation, route }: Props) {
                       key={day}
                       onPress={() => toggleDay(day)}
                       className={[
-                        ' py-3 rounded-lg items-center h-[42px] flex-1',
+                        'flex-1 justify-center items-center rounded-xl px-3 py-3',
                         selected ? 'bg-[#F1F4FF]' : 'bg-[#F5F5F5]',
                       ].join(' ')}
                     >
