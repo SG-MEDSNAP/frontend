@@ -1,5 +1,5 @@
 import { Controller, Control } from 'react-hook-form';
-import { TextInput } from 'react-native';
+import { TextInput, StyleSheet } from 'react-native';
 import { InputField } from '../InputField';
 import type { MedicationForm } from '../../schemas/medication';
 
@@ -21,7 +21,7 @@ export function NameField({ control }: { control: Control<MedicationForm> }) {
             }}
             onBlur={onBlur}
             placeholder="혈압약"
-            className="text-[#232323] text-[20px]/[30px] font-semibold p-0" // RN 기본 패딩 제거
+            className="text-[#232323] text-[20px] font-semibold"
             placeholderTextColor="#99979C"
             maxLength={15}
             autoCapitalize="none"
