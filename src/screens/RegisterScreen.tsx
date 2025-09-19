@@ -182,11 +182,8 @@ export default function RegisterScreen({ navigation, route }: Props) {
       >
         <View>
           <View className="mb-[80px] mt-[26px] gap-[10px]">
-            <Text className="text-[30px] font-bold text-[#333] text-start ">
-              처방 받은 약 정보를
-            </Text>
-            <Text className="text-[30px] font-bold text-[#333] text-start ">
-              입력해주세요
+            <Text className="text-[30px]/[40px] font-bold text-[#333] text-start ">
+              처방 받은 약 정보를{'\n'}입력해주세요
             </Text>
           </View>
 
