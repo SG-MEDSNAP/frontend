@@ -24,15 +24,19 @@ export function InputField({
       {hasHeader && (
         <View className="flex-row justify-between items-center mb-2">
           {label ? (
-            <Text className="text-[18px] font-semibold text-[#404040]">
+            <Text className="text-[18px]/[26px] font-semibold text-[#232323]">
               {label}
             </Text>
-          ) : <View/>}
+          ) : (
+            <View />
+          )}
           {right}
         </View>
       )}
 
-      <View className={`py-[20px] px-[16px] rounded-[16px] min-h-[60px] border ${border} justify-center`}>
+      <View
+        className={`text-[#232323] py-[20px] px-[16px] rounded-[16px] min-h-[60px] border ${border} justify-center android:py-1`}
+      >
         {children}
       </View>
 

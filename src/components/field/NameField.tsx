@@ -21,9 +21,8 @@ export function NameField({ control }: { control: Control<MedicationForm> }) {
             }}
             onBlur={onBlur}
             placeholder="혈압약"
-            className="text-[20px] text-[#000000] font-semibold"
-            placeholderTextColor="#99979C" 
-           
+            className="text-[#232323] text-[20px]/[30px] font-semibold p-0" // RN 기본 패딩 제거
+            placeholderTextColor="#99979C"
             maxLength={15}
             autoCapitalize="none"
             autoCorrect={false}
