@@ -28,9 +28,6 @@ import { useEffect } from 'react';
 
 // icons
 import HomeIcon from './assets/icons/HomeIcon.svg';
-import LogIcon from './assets/icons/LogIcon.svg';
-import SupportIcon from './assets/icons/SupportIcon.svg';
-import MyPageIcon from './assets/icons/MyPageIcon.svg';
 
 export type RootStackParamList = {
   PhotoRegister: undefined;
@@ -48,9 +45,6 @@ export type RootStackParamList = {
 
 export type BottomTabParamList = {
   Home: undefined;
-  MedicationLog: undefined;
-  Support: undefined;
-  MyPage: undefined;
 };
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
@@ -100,36 +94,6 @@ function MainTabNavigator() {
             <HomeIcon fill={focused ? '#597AFF' : '#888888'} />
           ),
           title: '홈',
-        }}
-      />
-      <BottomTab.Screen
-        name="MedicationLog"
-        component={HomeScreen}
-        options={{
-          tabBarIcon: ({ focused }) => (
-            <LogIcon fill={focused ? '#597AFF' : '#888888'} />
-          ),
-          title: '복약 현황',
-        }}
-      />
-      <BottomTab.Screen
-        name="Support"
-        component={HomeScreen}
-        options={{
-          tabBarIcon: ({ focused }) => (
-            <SupportIcon fill={focused ? '#597AFF' : '#888888'} />
-          ),
-          title: '고객 센터',
-        }}
-      />
-      <BottomTab.Screen
-        name="MyPage"
-        component={HomeScreen}
-        options={{
-          tabBarIcon: ({ focused }) => (
-            <MyPageIcon fill={focused ? '#597AFF' : '#888888'} />
-          ),
-          title: '마이페이지',
         }}
       />
     </BottomTab.Navigator>

@@ -7,13 +7,14 @@
     "development": {
       "developmentClient": true,
       "distribution": "internal",
-      "ios": { "image": "latest" }  
+      "ios": { "image": "latest" }
     },
     "preview": {
       "distribution": "internal"
     },
     "production": {
-      "autoIncrement": true
+      "autoIncrement": true,
+      "ios": { "resourceClass": "default", "credentialsSource": "local" }
     }
   },
   "submit": {

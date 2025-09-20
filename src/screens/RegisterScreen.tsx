@@ -5,6 +5,7 @@ import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../../App';
 import Button from '../components/Button';
 import { registerMedication, type DoseDay } from '../api/medication';
+import { useMedicationStore } from '../store/medicationStore';
 
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -26,6 +27,7 @@ type RegisterScreenNavigationProp = NativeStackNavigationProp<
 type Props = NativeStackScreenProps<RootStackParamList, 'MedicationRegister'>;
 
 export default function RegisterScreen({ navigation, route }: Props) {
+  const { addMedication } = useMedicationStore();
   const days = ['월', '화', '수', '목', '금', '토', '일'];
   const [selectedDays, setSelectedDays] = useState<string[]>([
     '월',
@@ -33,14 +35,9 @@ export default function RegisterScreen({ navigation, route }: Props) {
     '수',
     '목',
     '금',
-    '월',
-    '화',
-    '수',
-    '목',
-    '금',
   ]);
   const [everyDay, setEveryDay] = useState(false);
-  const [guardianSms, setGuardianSms] = useState(false);
+  // const [guardianSms, setGuardianSms] = useState(false); // 심사용 주석
   const [tenMinuteReminder, setTenMinuteReminder] = useState(false);
 
   const toggleDay = (day: string) => {
@@ -76,33 +73,21 @@ export default function RegisterScreen({ navigation, route }: Props) {
     shouldFocusError: true,
   });
 
-  // 보호자 스위치 끄면 폰 입력 비우기
-  const caregiverPhone = watch('caregiverPhone');
-  useEffect(() => {
-    if (!guardianSms && caregiverPhone) setValue('caregiverPhone', '');
-  }, [guardianSms]);
+  // 보호자 스위치 끄면 폰 입력 비우기 - 심사용 주석
+  // const caregiverPhone = watch('caregiverPhone');
+  // useEffect(() => {
+  //   if (!guardianSms && caregiverPhone) setValue('caregiverPhone', '');
+  // }, [guardianSms]);
 
-  // 🔹 추가 유효성: 요일/보호자번호(ON이면 필수)
+  // 🔹 추가 유효성: 요일만 체크 (보호자 기능 제거)
   const isDayValid = useMemo(() => selectedDays.length > 0, [selectedDays]);
-  const isPhoneValid = useMemo(() => {
-    if (!guardianSms) return true;
-    const digits = (caregiverPhone ?? '').replace(/\D/g, '');
-    return /^01[016789]\d{7,8}$/.test(digits);
-  }, [guardianSms, caregiverPhone]);
 
-  //  버튼 활성 조건: Zod + 추가 유효성
-  const canSubmit = isValid && isDayValid && isPhoneValid;
+  //  버튼 활성 조건: Zod + 요일 유효성
+  const canSubmit = isValid && isDayValid;
 
   const onSubmit = async (form: MedicationForm) => {
     if (!isDayValid) {
       Alert.alert('입력 확인', '요일을 최소 1개 이상 선택해주세요.');
-      return;
-    }
-    if (!isPhoneValid) {
-      Alert.alert(
-        '입력 확인',
-        '보호자 문자 수신이 켜져있으면 전화번호가 필요해요.',
-      );
       return;
     }
 
@@ -143,14 +128,70 @@ export default function RegisterScreen({ navigation, route }: Props) {
       const payload = {
         name: form.name,
         times: form.times,
-        caregiverPhone: guardianSms ? form.caregiverPhone : undefined,
+        // caregiverPhone: guardianSms ? form.caregiverPhone : undefined, // 심사용 주석
         selectedDays: daysToUse,
         everyDay,
         tenMinuteReminder,
       };
       console.log('등록 payload:', payload);
 
-      // 4) 완료 화면으로 이동
+      // 4) API 호출해서 약물 등록
+      try {
+        const apiResponse = await registerMedication(
+          {
+            name: form.name,
+            notifyCaregiver: false, // 심사용 비활성화
+            preNotify: tenMinuteReminder,
+            doseTimes: form.times,
+            doseDays: daysToUse.map((day) => {
+              const dayMap: Record<string, DoseDay> = {
+                월: 'MON',
+                화: 'TUE',
+                수: 'WED',
+                목: 'THU',
+                금: 'FRI',
+                토: 'SAT',
+                일: 'SUN',
+              };
+              return dayMap[day];
+            }),
+          },
+          route.params.imageUri,
+        );
+
+        // 5) 성공 시 store에 저장
+        addMedication(apiResponse.data);
+        console.log('약물 등록 성공:', apiResponse.data);
+      } catch (apiError) {
+        console.log('API 호출 실패, 로컬 저장:', apiError);
+        // API 실패 시 로컬 데이터로 저장
+        const mockData = {
+          id: Date.now(),
+          name: form.name,
+          imageUrl: route.params.imageUri,
+          notifyCaregiver: false,
+          preNotify: tenMinuteReminder,
+          doseTimes: form.times,
+          doseDays: daysToUse.map((day) => {
+            const dayMap: Record<string, DoseDay> = {
+              월: 'MON',
+              화: 'TUE',
+              수: 'WED',
+              목: 'THU',
+              금: 'FRI',
+              토: 'SAT',
+              일: 'SUN',
+            };
+            return dayMap[day];
+          }),
+          caregiverPhone: '',
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString(),
+        };
+        addMedication(mockData);
+      }
+
+      // 6) 완료 화면으로 이동
       navigation.replace('RegisterDoneScreen');
     } catch (e: any) {
       console.error(e);
@@ -164,11 +205,6 @@ export default function RegisterScreen({ navigation, route }: Props) {
       Alert.alert('입력 확인', String(firstError.message));
     } else if (!isDayValid) {
       Alert.alert('입력 확인', '요일을 최소 1개 이상 선택해주세요.');
-    } else if (!isPhoneValid) {
-      Alert.alert(
-        '입력 확인',
-        '보호자 문자 수신이 켜져있으면 전화번호가 필요해요.',
-      );
     } else {
       Alert.alert('입력 확인', '필수 항목을 확인해 주세요.');
     }
@@ -251,8 +287,8 @@ export default function RegisterScreen({ navigation, route }: Props) {
               <TimePickField control={control} />
             </View>
 
-            {/* 보호자 문자 수신 영역 */}
-            <View className="flex-col gap-[8px]">
+            {/* 보호자 문자 수신 영역 - 심사용으로 주석 처리 */}
+            {/* <View className="flex-col gap-[8px]">
               <View className="flex-row items-center justify-between ">
                 <Text className="text-[18px] font-semibold text-[#404040]">
                   보호자 문자 수신(결과 전송)
@@ -264,13 +300,12 @@ export default function RegisterScreen({ navigation, route }: Props) {
               </View>
 
               <PhoneField control={control} />
-              {/* (선택) 번호 에러 안내 */}
               {!isPhoneValid && guardianSms && (
                 <Text className="mt-1 text-[#EF4444] text-[14px]">
                   올바른 전화번호를 입력해주세요.
                 </Text>
               )}
-            </View>
+            </View> */}
 
             {/* 10분 전 알림 */}
             <ToggleSwitch
