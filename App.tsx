@@ -17,6 +17,7 @@ import { StatusBar } from 'expo-status-bar';
 
 import './global.css';
 
+import { Providers } from './src/components/Providers';
 import HomeScreen from './src/screens/HomeScreen';
 import RegisterScreen from './src/screens/RegisterScreen';
 import PhotoRegisterScreen from './src/screens/PhotoRegisterScreen';
@@ -189,47 +190,49 @@ export default function App() {
   }
 
   return (
-    <NavigationContainer>
-      <Stack.Navigator
-        initialRouteName="MainTabs"
-        screenOptions={{
-          headerShown: true,
-          headerStyle: { backgroundColor: '#FFFFFF' },
-          headerTitleStyle: {
-            fontFamily: 'Pretendard',
-            fontSize: 22,
-            fontWeight: '600',
-          },
-          headerBackButtonDisplayMode: 'minimal',
-        }}
-      >
-        <Stack.Screen
-          name="PhotoRegister"
-          component={PhotoRegisterScreen}
-          options={{ title: '약 등록' }}
-        />
-        <Stack.Screen
-          name="MedicationRegister"
-          component={RegisterScreen}
-          options={{ title: '약 등록' }}
-        />
-        <Stack.Screen
-          name="RegisterDoneScreen"
-          component={RegisterDoneScreen}
-          options={{ title: '약 등록' }}
-        />
-        <Stack.Screen
-          name="VerifyIntakeResult"
-          component={VerifyIntakeResultScreen}
-          options={{ title: '복약 인증' }}
-        />
-        <Stack.Screen
-          name="MainTabs"
-          component={MainTabNavigator}
-          options={{ headerShown: false }}
-        />
-      </Stack.Navigator>
-      <StatusBar style="auto" />
-    </NavigationContainer>
+    <Providers>
+      <NavigationContainer>
+        <Stack.Navigator
+          initialRouteName="MainTabs"
+          screenOptions={{
+            headerShown: true,
+            headerStyle: { backgroundColor: '#FFFFFF' },
+            headerTitleStyle: {
+              fontFamily: 'Pretendard',
+              fontSize: 22,
+              fontWeight: '600',
+            },
+            headerBackButtonDisplayMode: 'minimal',
+          }}
+        >
+          <Stack.Screen
+            name="PhotoRegister"
+            component={PhotoRegisterScreen}
+            options={{ title: '약 등록' }}
+          />
+          <Stack.Screen
+            name="MedicationRegister"
+            component={RegisterScreen}
+            options={{ title: '약 등록' }}
+          />
+          <Stack.Screen
+            name="RegisterDoneScreen"
+            component={RegisterDoneScreen}
+            options={{ title: '약 등록' }}
+          />
+          <Stack.Screen
+            name="VerifyIntakeResult"
+            component={VerifyIntakeResultScreen}
+            options={{ title: '복약 인증' }}
+          />
+          <Stack.Screen
+            name="MainTabs"
+            component={MainTabNavigator}
+            options={{ headerShown: false }}
+          />
+        </Stack.Navigator>
+        <StatusBar style="auto" />
+      </NavigationContainer>
+    </Providers>
   );
 }

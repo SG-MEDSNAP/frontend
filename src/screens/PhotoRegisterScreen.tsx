@@ -7,6 +7,7 @@ import {
   ScrollView,
   SafeAreaView,
   Alert,
+  Platform,
 } from 'react-native';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../../App';
@@ -25,6 +26,10 @@ type Props = NativeStackScreenProps<RootStackParamList, 'PhotoRegister'>;
 
 export default function PhotoRegisterScreen({ navigation }: Props) {
   const [pickedImage, setPickedImage] = useState<ImagePickerAsset | null>(null);
+
+  // 시뮬레이터 감지
+  const isSimulator =
+    __DEV__ && (Platform.OS === 'ios' || Platform.OS === 'android');
 
   // iOS/Android 공통 카메라 권한 훅
   const [cameraPermissionInformation, requestPermission] =
@@ -48,8 +53,25 @@ export default function PhotoRegisterScreen({ navigation }: Props) {
     return true; // 이미 허용됨
   }
 
-  // 카메라 촬영
+  // 카메라 촬영 또는 시뮬레이터에서 바로 넘어가기
   async function takeImageHandler() {
+    if (isSimulator) {
+      // 시뮬레이터에서는 바로 RegisterScreen으로 이동
+      Alert.alert(
+        '시뮬레이터 모드',
+        '시뮬레이터에서는 바로 약 등록 화면으로 이동합니다.',
+        [
+          { text: '취소', style: 'cancel' },
+          {
+            text: '확인',
+            onPress: () =>
+              navigation.navigate('MedicationRegister', { imageUri: '' }),
+          },
+        ],
+      );
+      return;
+    }
+
     const hasPermission = await verifyPermissions();
     if (!hasPermission) return;
 
@@ -132,7 +154,10 @@ export default function PhotoRegisterScreen({ navigation }: Props) {
 
       <View className="m-4">
         {!pickedImage ? (
-          <Button title="촬영하기" onPress={takeImageHandler} />
+          <Button
+            title={isSimulator ? '바로 등록하기' : '촬영하기'}
+            onPress={takeImageHandler}
+          />
         ) : (
           <View className="flex-row gap-4">
             <Button

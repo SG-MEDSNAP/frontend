@@ -12,7 +12,11 @@ export function NameField({ control }: { control: Control<MedicationForm> }) {
         field: { onChange, value, onBlur },
         fieldState: { error },
       }) => (
-        <InputField label="어떤 약을 드시나요?" error={error?.message}>
+        <InputField
+          type="default"
+          label="어떤 약을 드시나요?"
+          error={error?.message}
+        >
           <TextInput
             value={value ?? ''} // 안전장치: undefined 방지
             onChangeText={(t) => {
