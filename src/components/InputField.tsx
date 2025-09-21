@@ -1,5 +1,8 @@
 // InputField.tsx
-import { View, Text } from 'react-native';
+import { View, Text, TouchableOpacity } from 'react-native';
+import { Icon } from './Icon';
+
+export type InputFieldType = 'default' | 'search' | 'calendar' | 'add';
 
 export function InputField({
   label,
@@ -7,12 +10,16 @@ export function InputField({
   error,
   right,
   children,
+  type = 'default',
+  onPress,
 }: {
   label?: string;
   helpText?: string;
   error?: string;
   right?: React.ReactNode;
   children: React.ReactNode;
+  type?: InputFieldType;
+  onPress?: () => void;
 }) {
   const border = error ? 'border-[#FF5B6B]' : 'border-[#D7E0FF]';
   const hasHeader = !!label || !!right;
@@ -36,11 +43,24 @@ export function InputField({
         </View>
       )}
 
-      <View
-        className={`py-1 px-4 rounded-[16px] min-h-[60px] border ${border} justify-center`}
-      >
-        {children}
-      </View>
+      {/* 타입별 아이콘과 렌더링 */}
+      {type === 'add' && onPress ? (
+        <TouchableOpacity
+          onPress={onPress}
+          className={`py-1 px-4 rounded-[16px] min-h-[60px] border ${border} justify-center flex-row items-center`}
+        >
+          <View className="flex-1">{children}</View>
+          <Icon name="plus" size={24} color="#597AFF" />
+        </TouchableOpacity>
+      ) : (
+        <View
+          className={`py-1 px-4 rounded-[16px] min-h-[60px] border ${border} justify-center flex-row items-center`}
+        >
+          <View className="flex-1">{children}</View>
+          {type === 'search' && <Icon name="search" size={24} />}
+          {type === 'calendar' && <Icon name="calendar" size={24} />}
+        </View>
+      )}
 
       {/* 오류 메시지를 위한 고정 높이 영역 */}
       <View className="h-[20px] mt-2">
