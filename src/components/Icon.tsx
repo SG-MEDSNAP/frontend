@@ -13,7 +13,10 @@ type IconName =
   | 'minus'
   | 'kakao'
   | 'naver'
-  | 'google';
+  | 'google'
+  | 'up'
+  | 'down'
+  | 'check';
 
 interface IconProps {
   name: IconName;
@@ -98,6 +101,21 @@ const ICONS: Record<IconName, React.ReactNode> = {
   minus: (
     <G strokeLinecap="round" fill="none">
       <Path d="M8.10034 18C8.10034 18 20.1674 18 27.8994 18" />
+    </G>
+  ),
+  up: (
+    <G strokeLinecap="round" strokeLinejoin="round" fill="none">
+      <Path d="M9.5625 21.9375L17.4375 14.0626L25.3125 21.9375" />
+    </G>
+  ),
+  down: (
+    <G strokeLinecap="round" strokeLinejoin="round" fill="none">
+      <Path d="M25.3125 14.0626L17.4375 21.9375L9.5625 14.0626" />
+    </G>
+  ),
+  check: (
+    <G strokeLinecap="round" strokeLinejoin="round" fill="none">
+      <Path d="M1 4.42L6.7 10.5L13.92 1" />
     </G>
   ),
 };
