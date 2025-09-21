@@ -12,58 +12,154 @@ module.exports = {
   ],
   theme: {
     extend: {
+      fontFamily: {
+        pretendard: ['Pretendard'],
+      },
       colors: {
         // GrayScale Color
         gray: {
           50: '#ffffff',
-          100: '#f2f2f2',
-          200: '#d0d0d0',
-          300: '#c2c2c2',
-          400: '#a4a4a4',
+          100: '#F2F2F2',
+          200: '#D9D9D9',
+          300: '#C2C2C2',
+          400: '#A4A4A4',
           500: '#888888',
           600: '#707070',
-          700: '#5c5c5c',
-          800: '#303030',
+          700: '#5C5C5C',
+          800: '#3D3D3D',
           900: '#232323',
           950: '#000000',
         },
+
         // Primary Color (Blue)
         primary: {
-          50: '#f4f7f4',
-          100: '#9ae1ff',
-          200: '#6fcbff',
-          300: '#50a8ff',
-          400: '#597aff',
-          500: '#3546ff',
-          600: '#354fc',
-          700: '#1f2df1',
-          800: '#1b19b4',
-          900: '#1a1b5e',
-          950: '#181556',
+          50: '#F4F7FF',
+          100: '#DAE1FF',
+          200: '#BDC1FF',
+          300: '#90A8FF',
+          400: '#597AFF',
+          500: '#354FFC',
+          600: '#354FFC', // 디자인 시트도 500/600이 동일 톤
+          700: '#1F2DFF',
+          800: '#1B19B4',
+          900: '#1A1B8E',
+          950: '#161556',
         },
+
         // Secondary Color (Orange/Yellow)
         secondary: {
-          50: '#fff6ea',
-          100: '#fff3c5',
-          200: '#ffe885',
-          300: '#ffd546',
-          400: '#ffc01b',
-          500: '#f89900',
-          600: '#e27500',
-          700: '#bb5002',
-          800: '#983d08',
-          900: '#7a330b',
+          50: '#FFFCEA',
+          100: '#FFF3C5',
+          200: '#FFE885',
+          300: '#FFD546',
+          400: '#FFC01B',
+          500: '#F89900',
+          600: '#E27500',
+          700: '#BB5002',
+          800: '#983D08',
+          900: '#7C330B',
           950: '#481800',
         },
+
         // Semantic Colors
         semantic: {
-          blue: '#3780ff',
-          green: '#33d488',
-          yellow: '#ffc730',
-          red: '#ff4141',
+          blue: '#3798FF',
+          green: '#33D486',
+          yellow: '#FFC73C',
+          red: '#FF4141',
         },
       },
     },
   },
-  plugins: [],
+  plugins: [
+    function ({ addUtilities }) {
+      const newUtilities = {
+        '.h1': {
+          fontFamily: 'Pretendard',
+          fontWeight: '700',
+          fontSize: '34px',
+          lineHeight: '46px',
+        },
+        '.h2': {
+          fontFamily: 'Pretendard',
+          fontWeight: '700',
+          fontSize: '30px',
+          lineHeight: '40px',
+        },
+        '.h3': {
+          fontFamily: 'Pretendard',
+          fontWeight: '700',
+          fontSize: '28px',
+          lineHeight: '36px',
+        },
+        '.h4': {
+          fontFamily: 'Pretendard',
+          fontWeight: '700',
+          fontSize: '24px',
+          lineHeight: '34px',
+        },
+        '.h5': {
+          fontFamily: 'Pretendard',
+          fontWeight: '600',
+          fontSize: '22px',
+          lineHeight: '24px',
+        },
+        '.h6': {
+          fontFamily: 'Pretendard',
+          fontWeight: '700',
+          fontSize: '20px',
+          lineHeight: '30px',
+        },
+        '.h7': {
+          fontFamily: 'Pretendard',
+          fontWeight: '600',
+          fontSize: '18px',
+          lineHeight: '26px',
+        },
+        '.h8': {
+          fontFamily: 'Pretendard',
+          fontWeight: '600',
+          fontSize: '16px',
+          lineHeight: '20px',
+        },
+        '.label1': {
+          fontFamily: 'Pretendard',
+          fontWeight: '700',
+          fontSize: '20px',
+          lineHeight: '20px',
+        },
+        '.label2': {
+          fontFamily: 'Pretendard',
+          fontWeight: '700',
+          fontSize: '18px',
+          lineHeight: '18px',
+        },
+        '.label3': {
+          fontFamily: 'Pretendard',
+          fontWeight: '700',
+          fontSize: '16px',
+          lineHeight: '16px',
+        },
+        '.body-lg': {
+          fontFamily: 'Pretendard',
+          fontWeight: '600',
+          fontSize: '20px',
+          lineHeight: '30px',
+        },
+        '.body-md': {
+          fontFamily: 'Pretendard',
+          fontWeight: '500',
+          fontSize: '18px',
+          lineHeight: '26px',
+        },
+        '.body-sm': {
+          fontFamily: 'Pretendard',
+          fontWeight: '400',
+          fontSize: '16px',
+          lineHeight: '24px',
+        },
+      };
+      addUtilities(newUtilities);
+    },
+  ],
 };
