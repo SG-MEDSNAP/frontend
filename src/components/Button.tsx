@@ -44,7 +44,7 @@ export default function Button({
     primary: 'text-white', // 흰색 텍스트
     secondary: 'text-primary-500', // primary-500 텍스트
     tertiary: 'text-primary-500', // primary-500 텍스트
-    quaternary: 'text-gray-700', // 진한 회색 텍스트
+    quaternary: 'text-white', // 진한 회색 텍스트
   };
 
   const containerClass = [

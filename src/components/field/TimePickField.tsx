@@ -73,18 +73,16 @@ export function TimePickField({
 
             {/* 추가된 시간 리스트 */}
             {value.map((t) => (
-              <View key={t} className="mb-3">
-                <InputField>
-                  <View className="flex-row items-center">
-                    <Text className="flex-1 text-[20px] font-bold text-[#111111]">
-                      {toKoreanTimeLabelFromHHMM(t)}
-                    </Text>
-                    <TouchableOpacity onPress={() => remove(t)} hitSlop={8}>
-                      <Icon name="minus" size={24} color="#597AFF" />
-                    </TouchableOpacity>
-                  </View>
-                </InputField>
-              </View>
+              <InputField key={t}>
+                <View className="flex-row items-center">
+                  <Text className="flex-1 text-[20px] font-bold text-[#111111]">
+                    {toKoreanTimeLabelFromHHMM(t)}
+                  </Text>
+                  <TouchableOpacity onPress={() => remove(t)} hitSlop={8}>
+                    <Icon name="minus" size={24} color="#597AFF" />
+                  </TouchableOpacity>
+                </View>
+              </InputField>
             ))}
 
             {/* zod 에러 */}
