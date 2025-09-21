@@ -1,7 +1,7 @@
 import React from 'react';
 import { TouchableOpacity, Text, ViewStyle, TextStyle } from 'react-native';
 
-export type ButtonType = 'primary' | 'secondary' | 'third';
+export type ButtonType = 'primary' | 'secondary' | 'tertiary' | 'quaternary';
 export type ButtonSize = 'sm' | 'md' | 'lg';
 
 interface ButtonProps {
@@ -34,15 +34,17 @@ export default function Button({
   };
 
   const typeClassMap: Record<ButtonType, string> = {
-    primary: 'bg-[#597AFF]',
-    secondary: 'bg-transparent border border-[#597AFF]',
-    third: 'bg-white',
+    primary: 'bg-primary-500', // 1. primary-500 (진한 파랑)
+    secondary: 'bg-gray-50 border border-primary-500', // 2. 흰배경 + primary-500 테두리
+    tertiary: 'bg-primary-100', // 3. primary-100 (연한 파랑)
+    quaternary: 'bg-gray-200', // 4. gray-200 (회색)
   };
 
   const textColorMap: Record<ButtonType, string> = {
-    primary: 'text-white',
-    secondary: 'text-[#597AFF]',
-    third: 'text-[#333333]',
+    primary: 'text-white', // 흰색 텍스트
+    secondary: 'text-primary-500', // primary-500 텍스트
+    tertiary: 'text-primary-500', // primary-500 텍스트
+    quaternary: 'text-gray-700', // 진한 회색 텍스트
   };
 
   const containerClass = [
