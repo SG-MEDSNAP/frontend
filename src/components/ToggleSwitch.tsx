@@ -1,6 +1,6 @@
 // components/ToggleSwitch.tsx
 import React from 'react';
-import { View, Text, Switch } from 'react-native';
+import { View, Text, TouchableOpacity, Animated } from 'react-native';
 
 interface ToggleSwitchProps {
   label?: string;
@@ -22,12 +22,33 @@ export default function ToggleSwitch({
   containerClassName = '',
 }: ToggleSwitchProps) {
   const SwitchOnly = (
-    <Switch
-      value={value}
-      onValueChange={onValueChange}
-      trackColor={{ false: '#CACACA', true: '#007AFF' }}
-      thumbColor="#fff"
-    />
+    <TouchableOpacity
+      onPress={() => onValueChange(!value)}
+      style={{
+        width: 48,
+        height: 24,
+        borderRadius: 12,
+        backgroundColor: value ? '#597AFF' : '#c2c2c2',
+        justifyContent: 'center',
+        paddingHorizontal: 2,
+      }}
+      activeOpacity={0.8}
+    >
+      <View
+        style={{
+          width: 20,
+          height: 20,
+          borderRadius: 10,
+          backgroundColor: 'white',
+          marginLeft: value ? 24 : 2,
+          shadowColor: '#000',
+          shadowOffset: { width: 0, height: 1 },
+          shadowOpacity: 0.2,
+          shadowRadius: 2,
+          elevation: 2,
+        }}
+      />
+    </TouchableOpacity>
   );
 
   if (!label) return SwitchOnly;
@@ -38,7 +59,9 @@ export default function ToggleSwitch({
         <Text className={labelClassName}>{label}</Text>
         {SwitchOnly}
       </View>
-      {description ? <Text className={descriptionClassName}>{description}</Text> : null}
+      {description ? (
+        <Text className={descriptionClassName}>{description}</Text>
+      ) : null}
     </View>
   );
 }

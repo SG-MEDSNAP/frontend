@@ -33,7 +33,7 @@ export default function MedicationCard({
       </View>
       {!taken && (
         <View className="mt-5">
-          <Button title="촬영하기" />
+          <Button title="촬영하기" type="primary" />
         </View>
       )}
     </View>
