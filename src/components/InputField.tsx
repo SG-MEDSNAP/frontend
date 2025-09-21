@@ -47,14 +47,14 @@ export function InputField({
       {type === 'add' && onPress ? (
         <TouchableOpacity
           onPress={onPress}
-          className={`py-1 px-4 rounded-[16px] min-h-[60px] border ${border} justify-center flex-row items-center`}
+          className={`py-3 px-4 rounded-[16px] min-h-[48px] border ${border} justify-center flex-row items-center`}
         >
           <View className="flex-1">{children}</View>
           <Icon name="plus" size={24} color="#597AFF" />
         </TouchableOpacity>
       ) : (
         <View
-          className={`py-1 px-4 rounded-[16px] min-h-[60px] border ${border} justify-center flex-row items-center`}
+          className={`py-3 px-4 rounded-[16px] min-h-[48px] border ${border} justify-center flex-row items-center`}
         >
           <View className="flex-1">{children}</View>
           {type === 'search' && <Icon name="search" size={24} />}

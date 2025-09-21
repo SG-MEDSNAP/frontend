@@ -98,6 +98,7 @@ export default function HomeScreen({ navigation }: Props) {
               <Button
                 className="w-[136px]"
                 title="약 등록하기"
+                type="primary"
                 size="sm"
                 onPress={handleRegisterPress}
               />

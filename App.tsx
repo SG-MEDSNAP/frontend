@@ -9,6 +9,7 @@ import {
   Image,
   Platform,
   Alert,
+  TouchableOpacity,
 } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
@@ -18,6 +19,7 @@ import { StatusBar } from 'expo-status-bar';
 import './global.css';
 
 import { Providers } from './src/components/Providers';
+import { Icon } from './src/components/Icon';
 import HomeScreen from './src/screens/HomeScreen';
 import RegisterScreen from './src/screens/RegisterScreen';
 import PhotoRegisterScreen from './src/screens/PhotoRegisterScreen';
@@ -194,7 +196,7 @@ export default function App() {
       <NavigationContainer>
         <Stack.Navigator
           initialRouteName="MainTabs"
-          screenOptions={{
+          screenOptions={({ navigation, route }) => ({
             headerShown: true,
             headerStyle: { backgroundColor: '#FFFFFF' },
             headerTitleStyle: {
@@ -203,7 +205,25 @@ export default function App() {
               fontWeight: '600',
             },
             headerBackButtonDisplayMode: 'minimal',
-          }}
+            headerLeft:
+              route.name !== 'MainTabs'
+                ? () => (
+                    <TouchableOpacity onPress={() => navigation?.goBack()}>
+                      <Icon name="back" size={24} color="#232323" />
+                    </TouchableOpacity>
+                  )
+                : undefined,
+            headerRight:
+              route.name !== 'MainTabs'
+                ? () => (
+                    <TouchableOpacity
+                      onPress={() => navigation?.navigate('MainTabs')}
+                    >
+                      <Icon name="close" size={24} color="#232323" />
+                    </TouchableOpacity>
+                  )
+                : undefined,
+          })}
         >
           <Stack.Screen
             name="PhotoRegister"
