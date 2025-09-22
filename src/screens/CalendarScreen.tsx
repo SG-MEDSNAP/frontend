@@ -2,11 +2,17 @@
 
 import { useState } from 'react';
 import { View, Text, Image, ScrollView, Alert, Platform } from 'react-native';
-import { Calendar, CalendarList, Agenda } from 'react-native-calendars';
+import {
+  Calendar,
+  LocaleConfig,
+  CalendarList,
+  Agenda,
+} from 'react-native-calendars';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 // images
 import HeaderLogo from '../../assets/images/header_logo.svg';
+import { colors } from '@/styles/designSystem';
 
 export default function CalendarScreen() {
   const [selected, setSelected] = useState('');
@@ -25,8 +31,19 @@ export default function CalendarScreen() {
             [selected]: {
               selected: true,
               disableTouchEvent: true,
-              // selectedDotColor: 'orange',
+              selectedColor: colors.primary[400],
             },
+          }}
+          theme={{
+            selectedDayBackgroundColor: '#111111',
+            todayTextColor: '#597AFF',
+            arrowColor: '#000000',
+            textDayFontWeight: 400,
+            // monthTextColor: '#000000',
+            // textDayFontFamily: Platform.OS === 'ios' ? 'System' : 'Roboto',
+            // textMonthFontFamily: Platform.OS === 'ios' ? 'System' : 'Roboto',
+            // textDayHeaderFontFamily:
+            // Platform.OS === 'ios' ? 'System' : 'Roboto',
           }}
         />
       </ScrollView>
