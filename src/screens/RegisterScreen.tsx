@@ -11,7 +11,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 
 import { medicationSchema, type MedicationForm } from '../schemas/medication'; // name/times/caregiverPhone 스키마
 import { NameField } from '../components/field/NameField';
-import { TimePickField } from '../components/field/TimePickField';
+import { TimePickField } from 'src/components/field/TimePickField'; // declarations.d.ts에 경로 추가 했으므로 import 가능. 단 절대경로로, 확장자 없이.
 import { PhoneField } from '../components/field/PhoneField';
 import ToggleSwitch from '../components/ToggleSwitch';
 import { SafeAreaView } from 'react-native-safe-area-context';
