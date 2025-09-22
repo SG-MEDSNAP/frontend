@@ -25,6 +25,7 @@ import RegisterScreen from './src/screens/RegisterScreen';
 import PhotoRegisterScreen from './src/screens/PhotoRegisterScreen';
 import RegisterDoneScreen from './src/screens/RegisterDoneScreen';
 import VerifyIntakeResultScreen from './src/screens/VerifyResultScreen';
+import CalendarScreen from '@/screens/CalendarScreen';
 
 import * as Notifications from 'expo-notifications';
 import { useEffect } from 'react';
@@ -47,6 +48,7 @@ export type RootStackParamList = {
     | { result?: 'success' | 'not_taken' | 'error'; delayMs?: number }
     | undefined;
   MainTabs: undefined;
+  Calendar: undefined;
 };
 
 export type BottomTabParamList = {
@@ -107,7 +109,7 @@ function MainTabNavigator() {
       />
       <BottomTab.Screen
         name="MedicationLog"
-        component={HomeScreen}
+        component={CalendarScreen}
         options={{
           tabBarIcon: ({ focused }) => (
             <LogIcon fill={focused ? '#597AFF' : '#888888'} />
