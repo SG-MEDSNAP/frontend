@@ -7,6 +7,7 @@ import {
   ScrollView,
   SafeAreaView,
   Alert,
+  Platform,
 } from 'react-native';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../../App';
@@ -25,6 +26,12 @@ type Props = NativeStackScreenProps<RootStackParamList, 'PhotoRegister'>;
 
 export default function PhotoRegisterScreen({ navigation }: Props) {
   const [pickedImage, setPickedImage] = useState<ImagePickerAsset | null>(null);
+
+  // 시뮬레이터 감지
+  const isSimulator =
+    __DEV__ &&
+    Platform.OS === 'ios' &&
+    Platform.constants.systemName?.includes('Simulator');
 
   // iOS/Android 공통 카메라 권한 훅
   const [cameraPermissionInformation, requestPermission] =
@@ -48,8 +55,14 @@ export default function PhotoRegisterScreen({ navigation }: Props) {
     return true; // 이미 허용됨
   }
 
-  // 카메라 촬영
+  // 카메라 촬영 또는 시뮬레이터에서 바로 넘어가기
   async function takeImageHandler() {
+    // 시뮬레이터나 카메라가 없는 환경에서 바로 이동
+    if (isSimulator) {
+      navigation.navigate('MedicationRegister', { imageUri: '' });
+      return;
+    }
+
     const hasPermission = await verifyPermissions();
     if (!hasPermission) return;
 
@@ -67,7 +80,26 @@ export default function PhotoRegisterScreen({ navigation }: Props) {
       }
     } catch (error) {
       console.log('Error taking image:', error);
-      Alert.alert('오류', '사진 촬영 중 문제가 발생했습니다.');
+      // 카메라 오류 시 바로 등록 화면으로 이동
+      if (
+        error instanceof Error &&
+        error.message?.includes('Camera not available')
+      ) {
+        Alert.alert(
+          '시뮬레이터 모드',
+          '카메라를 사용할 수 없어 바로 약 등록 화면으로 이동합니다.',
+          [
+            { text: '취소', style: 'cancel' },
+            {
+              text: '확인',
+              onPress: () =>
+                navigation.navigate('MedicationRegister', { imageUri: '' }),
+            },
+          ],
+        );
+      } else {
+        Alert.alert('오류', '사진 촬영 중 문제가 발생했습니다.');
+      }
     }
   }
 
@@ -132,7 +164,11 @@ export default function PhotoRegisterScreen({ navigation }: Props) {
 
       <View className="m-4">
         {!pickedImage ? (
-          <Button title="촬영하기" onPress={takeImageHandler} />
+          <Button
+            title={isSimulator ? '바로 등록하기' : '촬영하기'}
+            type="primary"
+            onPress={takeImageHandler}
+          />
         ) : (
           <View className="flex-row gap-4">
             <Button
@@ -144,6 +180,7 @@ export default function PhotoRegisterScreen({ navigation }: Props) {
             <Button
               className="flex-grow basis-0 flex-[5]"
               title="다음"
+              type="primary"
               onPress={handleNextPress}
             />
           </View>

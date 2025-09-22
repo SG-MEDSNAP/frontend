@@ -285,7 +285,7 @@ export default function RegisterScreen({ navigation, route }: Props) {
             {/* 등록 버튼 */}
             <Button
               title="등록하기"
-              type="primary"
+              type={canSubmit ? 'primary' : 'quaternary'}
               size="lg"
               className="mt-2"
               onPress={handleSubmit(onSubmit, onInvalid)}
