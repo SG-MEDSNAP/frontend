@@ -1,5 +1,5 @@
 // src/components/field/TimePickField.android.tsx
-import { useState, useMemo, useCallback } from 'react';
+import { useState, useMemo, useCallback, useEffect } from 'react';
 import {
   View,
   Text,
@@ -39,6 +39,15 @@ export function TimePickField({
     [],
   );
 
+  useEffect(() => {
+    // 모달이 닫힐 때마다(visible이 false가 될 때) 피커의 인덱스를 리셋
+    if (!visible) {
+      setPeriodIndex(0); // 오전
+      setHourIndex(8); // 09시
+      setMinuteIndex(0); // 00분
+    }
+  }, [visible]); // visible 상태가 바뀔 때마다 이 효과를 실행
+
   const getItemLayout = useCallback(
     (data: ArrayLike<string | null> | null | undefined, index: number) => ({
       length: 50, // itemHeight와 반드시 동일해야 합니다.
@@ -70,6 +79,7 @@ export function TimePickField({
           onChange([...value, hhmm].sort());
           setDupMsg(null);
           setVisible(false);
+          setHourIndex(8);
         };
 
         const remove = (t: string) => onChange(value.filter((v) => v !== t));
@@ -149,7 +159,7 @@ export function TimePickField({
                         color: isDark ? 'white' : 'black',
                       }}
                       selectedIndicatorStyle={{
-                        backgroundColor: isDark ? '#3A3A3C' : '#F1F4FF',
+                        backgroundColor: isDark ? '#3A3A3C' : '#F8F8F8',
                         borderWidth: 0,
                         borderRadius: 12,
                       }}
@@ -166,7 +176,7 @@ export function TimePickField({
                         color: isDark ? 'white' : 'black',
                       }}
                       selectedIndicatorStyle={{
-                        backgroundColor: isDark ? '#3A3A3C' : '#F1F4FF',
+                        backgroundColor: isDark ? '#3A3A3C' : '#F8F8F8',
                         borderWidth: 0,
                         borderRadius: 12,
                       }}
@@ -183,9 +193,9 @@ export function TimePickField({
                         color: isDark ? 'white' : 'black',
                       }}
                       selectedIndicatorStyle={{
-                        backgroundColor: isDark ? '#3A3A3C' : '#F1F4FF',
+                        backgroundColor: isDark ? '#3A3A3C' : '#F8F8F8',
                         borderWidth: 0,
-                        borderRadius: 12,
+                        borderRadius: 0,
                       }}
                       flatListProps={{ getItemLayout }}
                     />
@@ -199,10 +209,10 @@ export function TimePickField({
 
                   <TouchableOpacity
                     onPress={addTime}
-                    className="my-4 mx-2 h-[56px] rounded-2xl bg-[#3D3D3D] items-center justify-center"
+                    className="my-4 mx-2 h-[56px] rounded-2xl bg-[#597AFF] items-center justify-center"
                   >
                     <Text className="text-white text-[16px] font-semibold">
-                      확인
+                      추가하기
                     </Text>
                   </TouchableOpacity>
                 </View>
