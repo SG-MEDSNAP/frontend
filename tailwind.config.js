@@ -34,12 +34,12 @@ module.exports = {
         // Primary Color (Blue)
         primary: {
           50: '#F4F7FF',
-          100: '#DAE1FF',
-          200: '#BDC1FF',
-          300: '#90A8FF',
-          400: '#597AFF',
-          500: '#354FFC',
-          600: '#354FFC', // 디자인 시트도 500/600이 동일 톤
+          100: '#EEF2FF',
+          200: '#DAE1FF',
+          300: '#BDC1FF',
+          400: '#90A8FF',
+          500: '#597AFF',
+          600: '#354FFC',
           700: '#1F2DFF',
           800: '#1B19B4',
           900: '#1A1B8E',
