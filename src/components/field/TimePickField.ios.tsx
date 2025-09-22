@@ -11,6 +11,8 @@ import { Controller, Control } from 'react-hook-form';
 import type { MedicationForm } from '../../schemas/medication';
 import { Picker } from '@react-native-picker/picker';
 import { to24h, toKoreanTimeLabelFromHHMM, pad2 } from '../../lib/date';
+import { InputField } from '../InputField';
+import { Icon } from '../Icon';
 
 export function TimePickField({
   control,
@@ -33,7 +35,7 @@ export function TimePickField({
 
   const periods: Array<'오전' | '오후'> = ['오전', '오후'];
   const hours12 = Array.from({ length: 12 }, (_, i) => i + 1);
-  const mins = [0, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55];
+  const mins = Array.from({ length: 60 }, (_, i) => i);
 
   return (
     <Controller
@@ -57,36 +59,30 @@ export function TimePickField({
         return (
           <>
             {/* 추가용 플레이스홀더 행 */}
-            <TouchableOpacity
+            <InputField
+              type="add"
               onPress={() => {
                 setDupMsg(null);
                 setVisible(true);
               }}
-              className="rounded-[16px] border border-[#D7E0FF] px-[16px] h-[60px] justify-center mb-3 flex-row items-center"
             >
-              <Text className="flex-1 text-[20px] font-semibold text-[#999999]">
+              <Text className="text-[20px] font-semibold text-[#999999]">
                 오전 00:00
               </Text>
-              <Text className="text-[28px] leading-[28px] text-[#597AFF]">
-                +
-              </Text>
-            </TouchableOpacity>
+            </InputField>
 
             {/* 추가된 시간 리스트 */}
             {value.map((t) => (
-              <View
-                key={t}
-                className="rounded-[16px] border border-[#D7E0FF] px-[16px] h-[60px] justify-center mb-3 flex-row items-center"
-              >
-                <Text className="flex-1 text-[20px] font-bold text-[#111111]">
-                  {toKoreanTimeLabelFromHHMM(t)}
-                </Text>
-                <TouchableOpacity onPress={() => remove(t)} hitSlop={8}>
-                  <Text className="text-[28px] leading-[28px] text-[#597AFF]">
-                    −
+              <InputField key={t}>
+                <View className="flex-row items-center">
+                  <Text className="flex-1 text-[20px] font-bold text-[#111111]">
+                    {toKoreanTimeLabelFromHHMM(t)}
                   </Text>
-                </TouchableOpacity>
-              </View>
+                  <TouchableOpacity onPress={() => remove(t)} hitSlop={8}>
+                    <Icon name="minus" size={24} color="#597AFF" />
+                  </TouchableOpacity>
+                </View>
+              </InputField>
             ))}
 
             {/* zod 에러 */}
