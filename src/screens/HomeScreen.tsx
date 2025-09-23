@@ -65,16 +65,16 @@ export default function HomeScreen({ navigation }: Props) {
 
   return (
     <SafeAreaView className="flex-1 bg-[#F8F9FA]">
-      <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
-        {/* 헤더 */}
-        <View className="flex-row items-center px-4 bg-white h-[60px]">
-          <HeaderLogo />
-        </View>
+      {/* 헤더 */}
+      <View className="flex-row items-center px-4 bg-white h-[60px]">
+        <HeaderLogo />
+      </View>
 
-        {/* 메인  영역 */}
-        <View className="flex-col bg-[#F2F4FF]">
-          {/* 안내 */}
-          {/* 360*937 기준  h-[337px] */}
+      {/* 메인  영역 */}
+      <View className="flex-col bg-[#F2F4FF]">
+        {/* 안내 */}
+        {/* 360*937 기준  h-[337px] */}
+        <ScrollView showsVerticalScrollIndicator={false}>
           <View className="grow mx-4">
             <View className="mt-12">
               <Text className="text-[34px]/[46px] font-bold text-[#404040]">
@@ -113,9 +113,9 @@ export default function HomeScreen({ navigation }: Props) {
           </View>
 
           {/* 하단 여백 */}
-          <View className="h-6" />
-        </View>
-      </ScrollView>
+          {/* <View className="h-6" /> */}
+        </ScrollView>
+      </View>
     </SafeAreaView>
   );
 }
