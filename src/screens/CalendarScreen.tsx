@@ -83,32 +83,43 @@ export default function CalendarScreen() {
           hideExtraDays={true} // 이전달, 다음달 날짜 표시 여부.
           enableSwipeMonths={true} // 달력 스와이프 가능 여부
           firstDay={0} // 0: 일요일, 1: 월요일
+          markingType={'custom'}
           markedDates={{
-            [selected]: {
-              selected: true,
-              disableTouchEvent: true,
-              selectedColor: colors.primary[500],
-              selectedTextColor: 'white',
-            },
+            // 2. selected 값이 있을 때만 markedDates 객체를 적용
+            ...(selected && {
+              [selected]: {
+                disableTouchEvent: true,
+                // 3. customStyles를 사용하여 컨테이너와 텍스트 스타일을 직접 지정
+                customStyles: {
+                  container: {
+                    backgroundColor: colors.primary[500], // 원의 배경색
+                    width: 36, // 원의 너비
+                    height: 36, // 원의 높이
+                    borderRadius: 18, // 원으로 만들기 (width/height의 절반)
+                    justifyContent: 'center', // 내부 텍스트 세로 중앙 정렬
+                    alignItems: 'center', // 내부 텍스트 가로 중앙 정렬
+                  },
+                  text: {
+                    color: 'white', // 글자색
+                    fontWeight: '600',
+                  },
+                },
+              },
+            }),
+            // 다른 marked 날짜가 있다면 여기에 추가 가능
           }}
           theme={{
             stylesheet: {
               calendar: {
                 main: {
-                  // marginTop: 10,
-                  // marginBottom: 10,
-                  // flexDirection: 'row',
-                  // justifyContent: 'space-around',
+                  width: 32,
+                  height: 32,
+                  alignItems: 'center',
+                  justifyContent: 'center',
                 },
                 header: {
                   gap: 16,
                 },
-              },
-              dot: {
-                width: 6,
-                height: 6,
-                marginTop: 2,
-                borderRadius: 3,
               },
             },
             arrowColor: colors.gray[900],
@@ -119,16 +130,18 @@ export default function CalendarScreen() {
             textDayHeaderFontWeight: '400',
             textDayHeaderFontSize: 18,
             // textDayFontFamily: 'Pretendard', // 이걸 안해야 굵기가 적용됨
-            textDayFontWeight: '500',
+            textDayFontWeight: '600',
             textDayFontSize: 20,
             selectedDayBackgroundColor: '#111111',
             todayTextColor: '#597AFF',
-            // customTextStyle: { fontWeight: '800' },
-            // monthTextColor: '#000000',
-            // textDayFontFamily: Platform.OS === 'ios' ? 'System' : 'Roboto',
-            // textMonthFontFamily: Platform.OS === 'ios' ? 'System' : 'Roboto',
-            // textDayHeaderFontFamily:
-            // Platform.OS === 'ios' ? 'System' : 'Roboto',
+            'stylesheet.day.basic': {
+              base: {
+                width: 36,
+                height: 36,
+                alignItems: 'center',
+                justifyContent: 'center',
+              },
+            },
           }}
         />
       </ScrollView>
