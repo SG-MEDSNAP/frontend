@@ -1,21 +1,8 @@
 // src/screens/CalendarScreen.tsx
 
 import { useState } from 'react';
-import {
-  View,
-  Text,
-  Image,
-  ScrollView,
-  Alert,
-  Platform,
-  StyleSheet,
-} from 'react-native';
-import {
-  Calendar,
-  LocaleConfig,
-  CalendarList,
-  Agenda,
-} from 'react-native-calendars';
+import { View, ScrollView, StyleSheet } from 'react-native';
+import { Calendar, LocaleConfig } from 'react-native-calendars';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 // images
@@ -121,6 +108,16 @@ export default function CalendarScreen() {
                   gap: 16,
                 },
               },
+              // day: {
+              //   basic: {
+              //     base: {
+              //       width: 36,
+              //       height: 44,
+              //       alignItems: 'center',
+              //       justifyContent: 'center',
+              //     },
+              //   },
+              // },
             },
             arrowColor: colors.gray[900],
             monthTextColor: colors.gray[900],
@@ -137,7 +134,7 @@ export default function CalendarScreen() {
             'stylesheet.day.basic': {
               base: {
                 width: 36,
-                height: 36,
+                height: 44,
                 alignItems: 'center',
                 justifyContent: 'center',
               },
