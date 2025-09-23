@@ -1,14 +1,7 @@
 // src/screens/PhotoRegisterScreen.tsx
 import React, { useState } from 'react';
-import {
-  View,
-  Text,
-  Image,
-  ScrollView,
-  SafeAreaView,
-  Alert,
-  Platform,
-} from 'react-native';
+import { View, Text, Image, ScrollView, Alert, Platform } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../../App';
 import Button from '../components/Button';
