@@ -42,6 +42,7 @@ import MyPageIcon from './assets/icons/MyPageIcon.svg';
 import MyPageScreen from './src/screens/MyPageScreen';
 import SettingScreen from './src/screens/SettingScreen';
 import EditInfoScreen from './src/screens/EditInfoScreen';
+import EditMedication from './src/screens/EditMedication';
 
 export type RootStackParamList = {
   Login: undefined;
@@ -61,6 +62,7 @@ export type RootStackParamList = {
   Calendar: undefined;
   Settings: undefined;
   EditInfo: undefined;
+  EditMedication: undefined;
 };
 
 export type BottomTabParamList = {
@@ -289,6 +291,11 @@ export default function App() {
             name="EditInfo"
             component={EditInfoScreen}
             options={{ title: '내 정보 수정' }}
+          />
+          <Stack.Screen
+            name="EditMedication"
+            component={EditMedication}
+            options={{ title: '약 정보 수정' }}
           />
         </Stack.Navigator>
         {/* Settings screen outside tabs */}

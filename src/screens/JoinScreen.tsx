@@ -36,7 +36,7 @@ export default function JoinScreen({ navigation }: any) {
   const canSubmit = formState.isValid && Boolean(name && birth && phone);
 
   return (
-    <SafeAreaView style={{ flex: 1 }} className="bg-white">
+    <SafeAreaView style={{ flex: 1 }} className="bg-white" edges={['bottom']}>
       <ScrollView
         className="flex-1 "
         contentInsetAdjustmentBehavior="never"

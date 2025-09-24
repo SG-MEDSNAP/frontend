@@ -1,12 +1,13 @@
 import React from 'react';
 import { View, Text, TouchableOpacity } from 'react-native';
+import { useNavigation } from '@react-navigation/native';
 
 type Props = {
   name: string;
-  times: string; 
-  caregiver: string; 
-  days: string; 
-  alarm: string; 
+  times: string;
+  caregiver: string;
+  days: string;
+  alarm: string;
   onEdit?: () => void;
   onDelete?: () => void;
 };
@@ -20,6 +21,7 @@ export default function MyMedicationCard({
   onEdit,
   onDelete,
 }: Props) {
+  const navigation: any = useNavigation();
   return (
     <View className="mb-4">
       <View className="flex-row items-center justify-between px-4 mb-2">
@@ -28,7 +30,9 @@ export default function MyMedicationCard({
           <Text className="h5 text-[#1F2937]">{name}</Text>
         </View>
         <View className="flex-row items-center gap-2">
-          <TouchableOpacity onPress={onEdit}>
+          <TouchableOpacity
+            onPress={() => navigation.navigate('EditMedication')}
+          >
             <Text className="h8 text-gray-500">수정</Text>
           </TouchableOpacity>
           <Text className="h8 text-gray-500">|</Text>
