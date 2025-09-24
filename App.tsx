@@ -40,6 +40,8 @@ import LogIcon from './assets/icons/LogIcon.svg';
 import SupportIcon from './assets/icons/SupportIcon.svg';
 import MyPageIcon from './assets/icons/MyPageIcon.svg';
 import MyPageScreen from './src/screens/MyPageScreen';
+import SettingScreen from './src/screens/SettingScreen';
+import EditInfoScreen from './src/screens/EditInfoScreen';
 
 export type RootStackParamList = {
   Login: undefined;
@@ -57,6 +59,8 @@ export type RootStackParamList = {
     | undefined;
   MainTabs: undefined;
   Calendar: undefined;
+  Settings: undefined;
+  EditInfo: undefined;
 };
 
 export type BottomTabParamList = {
@@ -80,7 +84,6 @@ Notifications.setNotificationHandler({
   }),
 });
 
-// ✅ 메인 탭 네비게이터
 function MainTabNavigator() {
   return (
     <BottomTab.Navigator
@@ -221,7 +224,7 @@ export default function App() {
               route.name !== 'MainTabs'
                 ? () => (
                     <TouchableOpacity onPress={() => navigation?.goBack()}>
-                      <Icon name="back" size={24} color="#232323" />
+                      <Icon name="back" size={36} color="#232323" />
                     </TouchableOpacity>
                   )
                 : undefined,
@@ -231,7 +234,7 @@ export default function App() {
                     <TouchableOpacity
                       onPress={() => navigation?.navigate('MainTabs')}
                     >
-                      <Icon name="close" size={24} color="#232323" />
+                      <Icon name="close" size={36} color="#232323" />
                     </TouchableOpacity>
                   )
                 : undefined,
@@ -277,7 +280,19 @@ export default function App() {
             component={MainTabNavigator}
             options={{ headerShown: false }}
           />
+          <Stack.Screen
+            name="Settings"
+            component={SettingScreen}
+            options={{ title: '설정' }}
+          />
+          <Stack.Screen
+            name="EditInfo"
+            component={EditInfoScreen}
+            options={{ title: '내 정보 수정' }}
+          />
         </Stack.Navigator>
+        {/* Settings screen outside tabs */}
+
         <StatusBar style="auto" />
       </NavigationContainer>
     </Providers>

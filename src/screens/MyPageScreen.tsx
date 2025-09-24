@@ -1,13 +1,20 @@
 import React from 'react';
-import { View, Text, ScrollView } from 'react-native';
+import { View, Text, ScrollView, Image } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Icon } from '../components/Icon';
+import { useNavigation } from '@react-navigation/native';
 import MyMedicationCard from '../components/MyMedicationCard';
+import HeaderLogo from '../../assets/images/header_logo.svg';
 
 export default function MyPageScreen() {
+  const navigation: any = useNavigation();
   return (
     <SafeAreaView className="flex-1 bg-primary-50" edges={['top']}>
       <ScrollView className="flex-1" contentContainerClassName="pb-6">
+        <View className="flex-row items-center px-4 bg-white h-[60px]">
+          <HeaderLogo />
+        </View>
+
         {/* Header Card */}
         <View className="bg-primary-950 w-full">
           <View className="px-4 py-7 flex-row items-center justify-between">
@@ -15,7 +22,13 @@ export default function MyPageScreen() {
               <Text className="h8 text-primary-500">카카오 로그인</Text>
               <Text className="h3 text-white mt-2">홍길동님</Text>
             </View>
-            <Icon name="settings" size={28} color="#FFFFFF" strokeWidth={2} />
+            <Icon
+              name="settings"
+              size={28}
+              color="#FFFFFF"
+              strokeWidth={2}
+              onPress={() => navigation.navigate('Settings')}
+            />
           </View>
         </View>
 
@@ -27,6 +40,7 @@ export default function MyPageScreen() {
             caregiver="010-0000-0000"
             days="매일"
             alarm="지정 시간 | 10분전"
+            onEdit={() => navigation.navigate('Settings')}
           />
         </View>
       </ScrollView>
