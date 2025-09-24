@@ -1,9 +1,8 @@
 import { Controller, Control } from 'react-hook-form';
 import { TextInput, StyleSheet } from 'react-native';
 import { InputField } from '../InputField';
-import type { MedicationForm } from '../../schemas/medication';
 
-export function NameField({ control }: { control: Control<MedicationForm> }) {
+export function NameField({ control }: { control: Control<any> }) {
   return (
     <Controller
       control={control}
