@@ -146,7 +146,7 @@ function MainTabNavigator() {
 
 export default function App() {
   const [loaded] = useFonts({
-    Pretendard: require('./assets/fonts/PretendardVariable.ttf'),
+    PretendardVariable: require('./assets/fonts/PretendardVariable.ttf'),
   });
 
   // ✅ 알림 권한/채널 설정
@@ -180,12 +180,12 @@ export default function App() {
   RnText.defaultProps = RnText.defaultProps || {};
   RnText.defaultProps.style = {
     ...(RnText.defaultProps.style || {}),
-    fontFamily: 'Pretendard',
+    fontFamily: 'PretendardVariable',
   };
   RnTextInput.defaultProps = RnTextInput.defaultProps || {};
   RnTextInput.defaultProps.style = {
     ...(RnTextInput.defaultProps.style || {}),
-    fontFamily: 'Pretendard',
+    fontFamily: 'PretendardVariable',
   };
 
   if (!loaded) {
@@ -205,7 +205,7 @@ export default function App() {
             headerShown: true,
             headerStyle: { backgroundColor: '#FFFFFF' },
             headerTitleStyle: {
-              fontFamily: 'Pretendard',
+              fontFamily: 'PretendardVariable',
               fontSize: 22,
               fontWeight: '600',
             },
