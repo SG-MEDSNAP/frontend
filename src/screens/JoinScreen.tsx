@@ -36,8 +36,8 @@ export default function JoinScreen({ navigation }: any) {
   const canSubmit = Boolean(name && birth && phone);
 
   return (
-    <SafeAreaView style={{ flex: 1 }}>
-      <ScrollView className="flex-1" contentContainerClassName="px-4 pb-6">
+    <SafeAreaView style={{ flex: 1 }} className="bg-white">
+      <ScrollView className="flex-1 " contentContainerClassName="px-4 pb-6">
         <View className="px-4 pt-6">
           <Text className="h2 text-[#232323]">
             개인정보를{'\n'}입력해주세요
