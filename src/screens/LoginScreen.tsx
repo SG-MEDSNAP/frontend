@@ -27,7 +27,9 @@ export default function LoginScreen({ navigation }: Props) {
 
           <View className="mt-12 w-full flex-row items-center">
             <View className="flex-1 h-[1px] bg-gray-200" />
-            <Text className="mx-3 h7  text-gray-600">SNS 간편 로그인</Text>
+            <Text className="mx-3 h7 font-bold text-gray-600">
+              SNS 간편 로그인
+            </Text>
             <View className="flex-1 h-[1px] bg-gray-200" />
           </View>
 
