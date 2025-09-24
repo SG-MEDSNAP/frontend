@@ -4,7 +4,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useForm } from 'react-hook-form';
 import Button from '../components/Button';
 import ToggleSwitch from '../components/ToggleSwitch';
-import { NameField } from '../components/field/NameField';
+import { PersonNameField } from '../components/field/PersonNameField';
 import { PhoneField } from '../components/field/PhoneField';
 import { CalendarField } from '../components/field/CalendarField';
 
@@ -12,12 +12,12 @@ type JoinForm = {
   name: string;
   birth: string;
   phone: string;
-  caregiverPhone?: string;
+  caregiverPhone: string;
   pushAgree: boolean;
 };
 
 export default function JoinScreen({ navigation }: any) {
-  const { control, watch, setValue } = useForm<JoinForm>({
+  const { control, watch, setValue, formState } = useForm<JoinForm>({
     defaultValues: {
       name: '',
       birth: '',
@@ -33,46 +33,47 @@ export default function JoinScreen({ navigation }: any) {
   const phone = watch('phone');
   const pushAgree = watch('pushAgree');
 
-  const canSubmit = Boolean(name && birth && phone);
+  const canSubmit = formState.isValid && Boolean(name && birth && phone);
 
   return (
     <SafeAreaView style={{ flex: 1 }} className="bg-white">
-      <ScrollView className="flex-1 " contentContainerClassName="px-4 pb-6">
-        <View className="px-4 pt-6">
+      <ScrollView
+        className="flex-1 "
+        contentInsetAdjustmentBehavior="never"
+        contentContainerClassName="px-[16px] pb-[32px]"
+      >
+        <View className="pt-[32px]">
           <Text className="h2 text-[#232323]">
             개인정보를{'\n'}입력해주세요
           </Text>
         </View>
 
-        <View className="mt-6">
-          <Text className="text-[14px] font-semibold text-[#8B8B8B] mb-2">
-            이름
-          </Text>
-          <NameField control={control as any} />
+        <View className="mt-8">
+          <PersonNameField control={control as any} />
         </View>
 
-        <View className="mt-6">
-          <Text className="text-[14px] font-semibold text-[#8B8B8B] mb-2">
-            생년월일
-          </Text>
-          <CalendarField control={control as any} />
+        <View className="mt-8">
+          <CalendarField control={control as any} label="생년월일" />
         </View>
 
-        <View className="mt-6">
-          <Text className="text-[14px] font-semibold text-[#8B8B8B] mb-2">
-            핸드폰 번호
-          </Text>
-          <PhoneField control={control as any} withInnerLabel={false} />
+        <View className="mt-8">
+          <PhoneField
+            control={control as any}
+            name="phone"
+            label="핸드폰 번호"
+          />
         </View>
 
-        <View className="mt-6">
-          <Text className="text-[14px] font-semibold text-[#8B8B8B] mb-2">
-            보호자 핸드폰 번호(결과 전송)
-          </Text>
-          <PhoneField control={control as any} withInnerLabel={false} />
+        <View className="mt-8">
+          <PhoneField
+            control={control as any}
+            name="caregiverPhone"
+            label="보호자 핸드폰 번호(결과 전송)"
+            requiredField={false}
+          />
         </View>
 
-        <View className="mt-6">
+        <View className="mt-8">
           <ToggleSwitch
             label="앱 알림 동의"
             value={pushAgree}

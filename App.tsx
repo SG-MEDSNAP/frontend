@@ -39,6 +39,7 @@ import HomeIcon from './assets/icons/HomeIcon.svg';
 import LogIcon from './assets/icons/LogIcon.svg';
 import SupportIcon from './assets/icons/SupportIcon.svg';
 import MyPageIcon from './assets/icons/MyPageIcon.svg';
+import MyPageScreen from './src/screens/MyPageScreen';
 
 export type RootStackParamList = {
   Login: undefined;
@@ -136,7 +137,7 @@ function MainTabNavigator() {
       />
       <BottomTab.Screen
         name="MyPage"
-        component={HomeScreen}
+        component={MyPageScreen}
         options={{
           tabBarIcon: ({ focused }) => (
             <MyPageIcon fill={focused ? '#597AFF' : '#888888'} />
