@@ -118,7 +118,7 @@ export default function PhotoRegisterScreen({ navigation }: Props) {
   );
 
   return (
-    <SafeAreaView className="flex-1 bg-[#FFF]">
+    <SafeAreaView style={{ flex: 1 }} className="bg-white" edges={['bottom']}>
       <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
         <View className="mx-4">
           <View className="mt-[42px]">
