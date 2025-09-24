@@ -25,6 +25,8 @@ import RegisterScreen from './src/screens/RegisterScreen';
 import PhotoRegisterScreen from './src/screens/PhotoRegisterScreen';
 import RegisterDoneScreen from './src/screens/RegisterDoneScreen';
 import VerifyIntakeResultScreen from './src/screens/VerifyResultScreen';
+import JoinScreen from './src/screens/JoinScreen';
+import LoginScreen from './src/screens/LoginScreen';
 
 import * as Notifications from 'expo-notifications';
 import { useEffect } from 'react';
@@ -36,11 +38,14 @@ import SupportIcon from './assets/icons/SupportIcon.svg';
 import MyPageIcon from './assets/icons/MyPageIcon.svg';
 
 export type RootStackParamList = {
+  Login: undefined;
   PhotoRegister: undefined;
   // Home: undefined;
   MedicationRegister: {
     imageUri: string;
   };
+  Join: undefined;
+  JoinDone: undefined;
   RegisterScreen: undefined;
   RegisterDoneScreen: undefined;
   VerifyIntakeResult?:
@@ -195,7 +200,7 @@ export default function App() {
     <Providers>
       <NavigationContainer>
         <Stack.Navigator
-          initialRouteName="MainTabs"
+          initialRouteName="Login"
           screenOptions={({ navigation, route }) => ({
             headerShown: true,
             headerStyle: { backgroundColor: '#FFFFFF' },
@@ -225,6 +230,21 @@ export default function App() {
                 : undefined,
           })}
         >
+          <Stack.Screen
+            name="Login"
+            component={LoginScreen}
+            options={{ headerShown: false }}
+          />
+          <Stack.Screen
+            name="Join"
+            component={JoinScreen}
+            options={{ title: '회원가입' }}
+          />
+          <Stack.Screen
+            name="JoinDone"
+            component={require('./src/screens/JoinDoneScreen').default}
+            options={{ title: '회원가입' }}
+          />
           <Stack.Screen
             name="PhotoRegister"
             component={PhotoRegisterScreen}

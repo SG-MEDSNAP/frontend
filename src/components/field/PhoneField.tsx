@@ -1,13 +1,12 @@
 import { Controller, Control } from 'react-hook-form';
 import { TextInput } from 'react-native';
 import { InputField } from '../InputField';
-import type { MedicationForm } from '../../schemas/medication';
 
 export function PhoneField({
   control,
   withInnerLabel = false, // 헤더에서 라벨/토글을 쓰므로 기본 false
 }: {
-  control: Control<MedicationForm>;
+  control: Control<any>;
   withInnerLabel?: boolean;
 }) {
   return (

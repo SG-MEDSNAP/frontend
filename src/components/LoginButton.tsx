@@ -44,7 +44,7 @@ export default function LoginButton({
   const style = typeStyleMap[type];
 
   const containerClass = [
-    'w-[328px] h-[60px] rounded-[16px] flex-row items-center px-4',
+    'w-full h-[60px] rounded-[16px] flex-row items-center px-4',
     style.container,
     disabled ? 'opacity-60' : 'pressed:opacity-80',
     className || '',
