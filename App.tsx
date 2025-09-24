@@ -31,7 +31,6 @@ import LoginScreen from './src/screens/LoginScreen';
 
 import CalendarScreen from '@/screens/CalendarScreen';
 
-
 import * as Notifications from 'expo-notifications';
 import { useEffect } from 'react';
 
@@ -151,7 +150,10 @@ function MainTabNavigator() {
 
 export default function App() {
   const [loaded] = useFonts({
-    PretendardVariable: require('./assets/fonts/PretendardVariable.ttf'),
+    'Pretendard-Regular': require('./assets/fonts/Pretendard-Regular.ttf'),
+    'Pretendard-Medium': require('./assets/fonts/Pretendard-Medium.ttf'),
+    'Pretendard-SemiBold': require('./assets/fonts/Pretendard-SemiBold.ttf'),
+    'Pretendard-Bold': require('./assets/fonts/Pretendard-Bold.ttf'),
   });
 
   // ✅ 알림 권한/채널 설정
@@ -179,18 +181,17 @@ export default function App() {
     })();
   }, [loaded]);
 
-  // ✅ 전역 폰트 적용
   const RnText: any = Text as any;
   const RnTextInput: any = TextInput as any;
   RnText.defaultProps = RnText.defaultProps || {};
   RnText.defaultProps.style = {
     ...(RnText.defaultProps.style || {}),
-    fontFamily: 'PretendardVariable',
+    fontFamily: 'Pretendard-Regular',
   };
   RnTextInput.defaultProps = RnTextInput.defaultProps || {};
   RnTextInput.defaultProps.style = {
     ...(RnTextInput.defaultProps.style || {}),
-    fontFamily: 'PretendardVariable',
+    fontFamily: 'Pretendard-Regular',
   };
 
   if (!loaded) {
@@ -210,7 +211,7 @@ export default function App() {
             headerShown: true,
             headerStyle: { backgroundColor: '#FFFFFF' },
             headerTitleStyle: {
-              fontFamily: 'PretendardVariable',
+              fontFamily: 'Pretendard-SemiBold',
               fontSize: 22,
               fontWeight: '600',
             },

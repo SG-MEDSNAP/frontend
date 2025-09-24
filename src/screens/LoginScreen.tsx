@@ -9,7 +9,7 @@ type Props = NativeStackScreenProps<RootStackParamList, any>;
 
 export default function LoginScreen({ navigation }: Props) {
   return (
-    <SafeAreaView edges={['top', 'bottom']} className="flex-1 bg-white">
+    <SafeAreaView style={{ flex: 1 }} className="bg-white">
       <ScrollView
         className="w-full"
         contentContainerStyle={{ flexGrow: 1 }}
