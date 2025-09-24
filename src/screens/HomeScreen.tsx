@@ -1,9 +1,16 @@
 import React, { useState } from 'react';
-import { View, Text, Image, ScrollView, SafeAreaView } from 'react-native';
+import { View, Text, Image, ScrollView } from 'react-native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { SafeAreaView } from 'react-native-safe-area-context';
+
 import { RootStackParamList } from '../../App';
+
+// Components
 import Button from '../components/Button';
 import TodayTimeLine from '../components/TodayTimeLine';
+
+// images
+import HeaderLogo from '../../assets/images/header_logo.svg';
 
 type HomeScreenNavigationProp = NativeStackNavigationProp<RootStackParamList>;
 // 'Home'
@@ -56,32 +63,18 @@ export default function HomeScreen({ navigation }: Props) {
     navigation.navigate('PhotoRegister');
   };
 
-  function LogoTitle() {
-    return (
-      <Image
-        className="w-[44px] h-[34px]"
-        source={require('../../assets/icons/Logo.png')}
-        // resizeMode="contain"
-      />
-    );
-  }
-
   return (
     <SafeAreaView className="flex-1 bg-[#F8F9FA]">
-      <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
-        {/* 헤더 */}
-        <View className="flex-row items-center bg-white px-5 h-[60px]">
-          <LogoTitle />
-          <View className="flex-row items-center ml-2.5">
-            <Text className="text-[26px] font-extrabold">MED</Text>
-            <Text className="text-[26px] font-light text-[#5B5B5B]">SNAP</Text>
-          </View>
-        </View>
+      {/* 헤더 */}
+      <View className="flex-row items-center px-4 bg-white h-[60px]">
+        <HeaderLogo />
+      </View>
 
-        {/* 메인  영역 */}
-        <View className="flex-col bg-[#F2F4FF]">
-          {/* 안내 */}
-          {/* 360*937 기준  h-[337px] */}
+      {/* 메인  영역 */}
+      <View className="flex-col bg-[#F2F4FF]">
+        {/* 안내 */}
+        {/* 360*937 기준  h-[337px] */}
+        <ScrollView showsVerticalScrollIndicator={false}>
           <View className="grow mx-4">
             <View className="mt-12">
               <Text className="text-[34px]/[46px] font-bold text-[#404040]">
@@ -120,9 +113,9 @@ export default function HomeScreen({ navigation }: Props) {
           </View>
 
           {/* 하단 여백 */}
-          <View className="h-6" />
-        </View>
-      </ScrollView>
+          {/* <View className="h-6" /> */}
+        </ScrollView>
+      </View>
     </SafeAreaView>
   );
 }
