@@ -31,9 +31,9 @@ export function InputField({
     <View>
       {/* 헤더가 있을 때만 렌더, 라벨↔인풋 8px = mb-2 */}
       {hasHeader && (
-        <View className="flex-row justify-between items-center mb-2">
+        <View className="flex-row justify-between items-center mb-2 ">
           {label ? (
-            <Text className="text-[18px]/[26px] font-semibold text-[#232323]">
+            <Text className="text-[18px]/[26px] font-semibold text-[#232323] ">
               {label}
             </Text>
           ) : (
@@ -47,14 +47,14 @@ export function InputField({
       {type === 'add' && onPress ? (
         <TouchableOpacity
           onPress={onPress}
-          className={`py-3 px-4 rounded-[16px] min-h-[48px] border ${border} justify-center flex-row items-center`}
+          className={`py-4 px-4 rounded-[16px] min-h-[48px] border ${border} justify-center flex-row items-center`}
         >
           <View className="flex-1">{children}</View>
           <Icon name="plus" size={24} color="#597AFF" />
         </TouchableOpacity>
       ) : (
         <View
-          className={`py-3 px-4 rounded-[16px] min-h-[48px] border ${border} justify-center flex-row items-center`}
+          className={`py-4 px-4 rounded-[16px] min-h-[48px] border ${border} justify-center flex-row items-center`}
         >
           <View className="flex-1">{children}</View>
           {type === 'search' && <Icon name="search" size={24} />}
