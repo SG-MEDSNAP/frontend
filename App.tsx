@@ -25,7 +25,12 @@ import RegisterScreen from './src/screens/RegisterScreen';
 import PhotoRegisterScreen from './src/screens/PhotoRegisterScreen';
 import RegisterDoneScreen from './src/screens/RegisterDoneScreen';
 import VerifyIntakeResultScreen from './src/screens/VerifyResultScreen';
+
+import JoinScreen from './src/screens/JoinScreen';
+import LoginScreen from './src/screens/LoginScreen';
+
 import CalendarScreen from '@/screens/CalendarScreen';
+
 
 import * as Notifications from 'expo-notifications';
 import { useEffect } from 'react';
@@ -37,11 +42,14 @@ import SupportIcon from './assets/icons/SupportIcon.svg';
 import MyPageIcon from './assets/icons/MyPageIcon.svg';
 
 export type RootStackParamList = {
+  Login: undefined;
   PhotoRegister: undefined;
   // Home: undefined;
   MedicationRegister: {
     imageUri: string;
   };
+  Join: undefined;
+  JoinDone: undefined;
   RegisterScreen: undefined;
   RegisterDoneScreen: undefined;
   VerifyIntakeResult?:
@@ -143,7 +151,7 @@ function MainTabNavigator() {
 
 export default function App() {
   const [loaded] = useFonts({
-    Pretendard: require('./assets/fonts/PretendardVariable.ttf'),
+    PretendardVariable: require('./assets/fonts/PretendardVariable.ttf'),
   });
 
   // ✅ 알림 권한/채널 설정
@@ -177,12 +185,12 @@ export default function App() {
   RnText.defaultProps = RnText.defaultProps || {};
   RnText.defaultProps.style = {
     ...(RnText.defaultProps.style || {}),
-    fontFamily: 'Pretendard',
+    fontFamily: 'PretendardVariable',
   };
   RnTextInput.defaultProps = RnTextInput.defaultProps || {};
   RnTextInput.defaultProps.style = {
     ...(RnTextInput.defaultProps.style || {}),
-    fontFamily: 'Pretendard',
+    fontFamily: 'PretendardVariable',
   };
 
   if (!loaded) {
@@ -197,12 +205,12 @@ export default function App() {
     <Providers>
       <NavigationContainer>
         <Stack.Navigator
-          initialRouteName="MainTabs"
+          initialRouteName="Login"
           screenOptions={({ navigation, route }) => ({
             headerShown: true,
             headerStyle: { backgroundColor: '#FFFFFF' },
             headerTitleStyle: {
-              fontFamily: 'Pretendard',
+              fontFamily: 'PretendardVariable',
               fontSize: 22,
               fontWeight: '600',
             },
@@ -227,6 +235,21 @@ export default function App() {
                 : undefined,
           })}
         >
+          <Stack.Screen
+            name="Login"
+            component={LoginScreen}
+            options={{ headerShown: false }}
+          />
+          <Stack.Screen
+            name="Join"
+            component={JoinScreen}
+            options={{ title: '회원가입' }}
+          />
+          <Stack.Screen
+            name="JoinDone"
+            component={require('./src/screens/JoinDoneScreen').default}
+            options={{ title: '회원가입' }}
+          />
           <Stack.Screen
             name="PhotoRegister"
             component={PhotoRegisterScreen}
