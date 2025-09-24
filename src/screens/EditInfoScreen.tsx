@@ -8,7 +8,7 @@ import { PersonNameField } from '../components/field/PersonNameField';
 import { PhoneField } from '../components/field/PhoneField';
 import { CalendarField } from '../components/field/CalendarField';
 
-type JoinForm = {
+type EditForm = {
   name: string;
   birth: string;
   phone: string;
@@ -16,14 +16,14 @@ type JoinForm = {
   pushAgree: boolean;
 };
 
-export default function JoinScreen({ navigation }: any) {
-  const { control, watch, setValue, formState } = useForm<JoinForm>({
+export default function EditInfoScreen() {
+  const { control, watch, setValue, formState } = useForm<EditForm>({
     defaultValues: {
       name: '',
       birth: '',
       phone: '',
       caregiverPhone: '',
-      pushAgree: false,
+      pushAgree: true,
     },
     mode: 'onChange',
   });
@@ -39,15 +39,9 @@ export default function JoinScreen({ navigation }: any) {
     <SafeAreaView style={{ flex: 1 }} className="bg-white" edges={['bottom']}>
       <ScrollView
         className="flex-1 "
-        contentInsetAdjustmentBehavior="never"
+        contentInsetAdjustmentBehavior="automatic"
         contentContainerClassName="px-[16px] pb-[32px]"
       >
-        <View className="pt-[32px]">
-          <Text className="h2 text-[#232323]">
-            개인정보를{'\n'}입력해주세요
-          </Text>
-        </View>
-
         <View className="mt-8">
           <PersonNameField control={control as any} />
         </View>
@@ -90,10 +84,10 @@ export default function JoinScreen({ navigation }: any) {
 
       <View className="px-4 pb-4">
         <Button
-          title="다음"
+          title="수정완료"
           type={canSubmit ? 'primary' : 'quaternary'}
           disabled={!canSubmit}
-          onPress={() => canSubmit && navigation.navigate('JoinDone')}
+          onPress={() => {}}
         />
       </View>
     </SafeAreaView>
