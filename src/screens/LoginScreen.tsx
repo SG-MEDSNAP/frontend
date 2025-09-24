@@ -12,13 +12,11 @@ export default function LoginScreen({ navigation }: Props) {
     <SafeAreaView edges={['top', 'bottom']} className="flex-1 bg-white">
       <ScrollView
         className="w-full"
-        contentContainerStyle={{ flexGrow: 1 }} // 스크롤이 없어도 꽉 차게
+        contentContainerStyle={{ flexGrow: 1 }}
         keyboardShouldPersistTaps="handled"
         showsVerticalScrollIndicator={false}
       >
-        {/* 내용 덩어리를 세로 중앙 정렬 */}
         <View className="flex-1 justify-center px-4">
-          {/* 1) 로고 */}
           <View className="items-center">
             <Image
               source={require('../../assets/images/medsnap.png')}
@@ -27,16 +25,12 @@ export default function LoginScreen({ navigation }: Props) {
             />
           </View>
 
-          {/* 2) SNS 간편 로그인 구분선 (로고와 48px 간격) */}
           <View className="mt-12 w-full flex-row items-center">
             <View className="flex-1 h-[1px] bg-gray-200" />
-            <Text className="mx-3 text-[14px] text-gray-600">
-              SNS 간편 로그인
-            </Text>
+            <Text className="mx-3 h7  text-gray-600">SNS 간편 로그인</Text>
             <View className="flex-1 h-[1px] bg-gray-200" />
           </View>
 
-          {/* 3) 버튼들 (구분선과 28px 간격) */}
           <View className="mt-7 gap-4">
             <LoginButton
               type="kakao"
