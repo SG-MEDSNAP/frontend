@@ -13,7 +13,7 @@ module.exports = {
   theme: {
     extend: {
       fontFamily: {
-        pretendard: ['PretendardVariable'],
+        pretendard: ['Pretendard-Regular'],
       },
       colors: {
         // GrayScale Color
@@ -76,86 +76,84 @@ module.exports = {
       const newUtilities = {
         '.no-font-padding': { includeFontPadding: false },
         '.h1': {
-          fontFamily: 'PretendardVariable',
+          fontFamily: 'Pretendard-Bold',
           fontWeight: '700',
           fontSize: 34,
+
           includeFontPadding: false,
         },
         '.h2': {
-          fontFamily: 'PretendardVariable',
+          fontFamily: 'Pretendard-Bold',
           fontWeight: '700',
           fontSize: 30,
           includeFontPadding: false,
         },
         '.h3': {
-          fontFamily: 'PretendardVariable',
+          fontFamily: 'Pretendard-Bold',
           fontWeight: '700',
           fontSize: 28,
           includeFontPadding: false,
         },
         '.h4': {
-          fontFamily: 'PretendardVariable',
+          fontFamily: 'Pretendard-Bold',
           fontWeight: '700',
           fontSize: 24,
           includeFontPadding: false,
         },
         '.h5': {
-          fontFamily: 'PretendardVariable',
-          fontWeight: '600',
+          fontFamily: 'Pretendard-SemiBold',
           fontSize: 22,
           includeFontPadding: false,
         },
         '.h6': {
-          fontFamily: 'PretendardVariable',
+          fontFamily: 'Pretendard-Bold',
           fontWeight: '700',
           fontSize: 20,
           includeFontPadding: false,
         },
         '.h7': {
-          fontFamily: 'PretendardVariable',
-          fontWeight: '600',
+          fontFamily: 'Pretendard-SemiBold',
           fontSize: 18,
-
           includeFontPadding: false,
         },
         '.h8': {
-          fontFamily: 'PretendardVariable',
+          fontFamily: 'Pretendard-Medium',
           fontWeight: '500',
           fontSize: 16,
           includeFontPadding: false,
         },
         '.label1': {
-          fontFamily: 'PretendardVariable',
+          fontFamily: 'Pretendard-Bold',
           fontWeight: '700',
           fontSize: 20,
           includeFontPadding: false,
         },
         '.label2': {
-          fontFamily: 'PretendardVariable',
+          fontFamily: 'Pretendard-SemiBold',
           fontWeight: '600',
           fontSize: 18,
           includeFontPadding: false,
         },
         '.label3': {
-          fontFamily: 'PretendardVariable',
+          fontFamily: 'Pretendard-SemiBold',
           fontWeight: '600',
           fontSize: 16,
           includeFontPadding: false,
         },
         '.body-lg': {
-          fontFamily: 'PretendardVariable',
+          fontFamily: 'Pretendard-Medium',
           fontWeight: '500',
           fontSize: 20,
           includeFontPadding: false,
         },
         '.body-md': {
-          fontFamily: 'PretendardVariable',
+          fontFamily: 'Pretendard-Medium',
           fontWeight: '500',
           fontSize: 18,
           includeFontPadding: false,
         },
         '.body-sm': {
-          fontFamily: 'PretendardVariable',
+          fontFamily: 'Pretendard-Regular',
           fontWeight: '400',
           fontSize: 16,
           includeFontPadding: false,
