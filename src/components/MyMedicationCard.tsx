@@ -1,6 +1,7 @@
 import React from 'react';
-import { View, Text, TouchableOpacity } from 'react-native';
+import { View, Text, TouchableOpacity, Alert } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
+import { deleteMedication } from '../api/medication/medication';
 
 type Props = {
   name: string;
@@ -8,6 +9,7 @@ type Props = {
   caregiver: string;
   days: string;
   alarm: string;
+  id?: number;
   onEdit?: () => void;
   onDelete?: () => void;
 };
@@ -20,8 +22,23 @@ export default function MyMedicationCard({
   alarm,
   onEdit,
   onDelete,
+  id,
 }: Props) {
   const navigation: any = useNavigation();
+
+  const handleDelete = async () => {
+    try {
+      if (!id) {
+        Alert.alert('삭제 실패', '삭제할 약 ID가 없습니다.');
+        return;
+      }
+      await deleteMedication(id);
+      Alert.alert('삭제 완료', '약 정보가 삭제되었습니다.');
+      if (onDelete) onDelete();
+    } catch (e: any) {
+      Alert.alert('삭제 실패', e?.message ?? '다시 시도해주세요.');
+    }
+  };
   return (
     <View className="mb-4">
       <View className="flex-row items-center justify-between px-4 mb-2">
@@ -36,7 +53,14 @@ export default function MyMedicationCard({
             <Text className="h8 text-gray-500">수정</Text>
           </TouchableOpacity>
           <Text className="h8 text-gray-500">|</Text>
-          <TouchableOpacity onPress={onDelete}>
+          <TouchableOpacity
+            onPress={() =>
+              Alert.alert('삭제 확인', '약 정보를 삭제하시겠어요?', [
+                { text: '취소', style: 'cancel' },
+                { text: '삭제', style: 'destructive', onPress: handleDelete },
+              ])
+            }
+          >
             <Text className="h8 text-gray-500">삭제</Text>
           </TouchableOpacity>
         </View>
