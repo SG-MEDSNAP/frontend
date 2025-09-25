@@ -4,6 +4,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { Icon } from '../components/Icon';
 import { useNavigation } from '@react-navigation/native';
 import MyMedicationCard from '../components/MyMedicationCard';
+import { deleteMedication } from '../api/medication/medication';
 import HeaderLogo from '../../assets/images/header_logo.svg';
 
 export default function MyPageScreen() {
