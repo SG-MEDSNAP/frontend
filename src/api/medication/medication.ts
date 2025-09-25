@@ -1,49 +1,10 @@
 import { API_BASE_URL } from '@env';
 import axios from 'axios';
-
-// 복용 요일 타입
-export type DoseDay =
-  | 'MON'
-  | 'TUE'
-  | 'WED'
-  | 'THU'
-  | 'FRI'
-  | 'SAT'
-  | 'SUN'
-  | 'DAILY';
-
-// 요청 타입
-export interface MedicationRegisterRequest {
-  name: string;
-  notifyCaregiver: boolean;
-  preNotify: boolean;
-  doseTimes: string[]; // "HH:mm" 형식
-  doseDays: DoseDay[];
-  caregiverPhone?: string;
-}
-
-// 응답 데이터 타입
-export interface MedicationData {
-  id: number;
-  name: string;
-  imageUrl: string;
-  notifyCaregiver: boolean;
-  preNotify: boolean;
-  doseTimes: string[];
-  doseDays: DoseDay[];
-  caregiverPhone: string;
-  createdAt: string;
-  updatedAt: string;
-}
-
-// API 응답 타입
-export interface ApiResponse {
-  code: string;
-  httpStatus: number;
-  message: string;
-  data: MedicationData;
-  error: null | any;
-}
+import {
+  ApiResponse,
+  MedicationData,
+  MedicationRegisterRequest,
+} from './types';
 
 export const registerMedication = async (
   data: MedicationRegisterRequest,
@@ -78,6 +39,15 @@ export const registerMedication = async (
       },
     );
     return response.data;
+  } catch (error) {
+    throw error;
+  }
+};
+
+// 약 삭제 API
+export const deleteMedication = async (medicationId: number): Promise<void> => {
+  try {
+    await axios.delete(`${API_BASE_URL}/v1/medications/${medicationId}`);
   } catch (error) {
     throw error;
   }
