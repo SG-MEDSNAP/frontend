@@ -22,14 +22,12 @@ export function FaqItem({ item, isOpen, onPress }: FaqItemProps) {
         onPress={onPress}
         className="flex-row items-center justify-between px-4 py-5"
       >
-        <View className="flex-1 pr-4">
-          <Text className="text-[20px]/[30px] font-semibold text-[#232323]">
-            <Text className="text-[#597AFF]">Q.</Text>
-            <View className="w-[10px]"></View>
-
-            <Text className="text-[#232323]">
-              [{item.category}] {item.question}
-            </Text>
+        <View className="flex-row flex-1 pr-4">
+          <Text className="text-[20px]/[30px] font-semibold text-[#597AFF] mr-2">
+            Q.
+          </Text>
+          <Text className="text-[20px]/[30px] font-semibold text-[#232323] flex-1">
+            [{item.category}] {item.question}
           </Text>
         </View>
         {/* <Icon name={isOpen ? 'chevron-up' : 'chevron-down'} size={24} color="#888888" /> */}
@@ -38,10 +36,11 @@ export function FaqItem({ item, isOpen, onPress }: FaqItemProps) {
       </TouchableOpacity>
 
       {isOpen && (
-        <View className="p-4 bg-[#F4F7FF] border-1 border-[#DAE1FF]">
-          <Text className="text-[20px]/[30px] font-semibold text-[#232323]">
-            <Text className="text-[#597AFF]">A.</Text>
-            <View className="w-[10px]"></View>
+        <View className="p-4 bg-[#F4F7FF] border-t border-t-[#DAE1FF] flex-row">
+          <Text className="text-[20px]/[30px] font-semibold text-[#597AFF] mr-2">
+            A.
+          </Text>
+          <Text className="text-[20px]/[30px] font-semibold text-[#232323] flex-1">
             {item.answer}
           </Text>
         </View>
