@@ -1,21 +1,18 @@
 import { useState } from 'react';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import {
-  Text,
-  TextInput,
-  View,
-  Alert,
-  FlatList,
-  TouchableOpacity,
-} from 'react-native';
+import { Text, TextInput, View, Alert, FlatList } from 'react-native';
 import { InputField } from '@/components/InputField';
+import { Faq, FaqItem } from '@/components/FaqItem';
+import Button from '@/components/Button';
+import { RootStackParamList } from '../../App';
+import { NativeStackScreenProps } from '@react-navigation/native-stack';
 
 // images
 import HeaderLogo from '../../assets/images/header_logo.svg';
-import { Faq, FaqItem } from '@/components/FaqItem';
-import Button from '@/components/Button';
 
-export default function SupportScreen() {
+type Props = NativeStackScreenProps<RootStackParamList, 'QnaRegister'>;
+
+export default function SupportScreen({ navigation }: Props) {
   const [faqData, setFaqData] = useState<Faq[]>([
     {
       id: 1,
@@ -47,14 +44,16 @@ export default function SupportScreen() {
       Alert.alert('알림', '검색어를 입력해주세요.'); // 테스트용
       return;
     }
-    // 여기에 실제 검색 로직을 구현합니다.
-    // 예: API 요청, 데이터 필터링 등
     Alert.alert('검색 실행', `검색어: ${searchQuery}`); // 테스트용
   };
 
   const handleToggleFaq = (id: number) => {
-    // 이미 열려있는 항목을 다시 누르면 닫고, 다른 항목을 누르면 그 항목을 엽니다.
+    // 이미 열려있는 항목을 다시 누르면 닫고, 다른 항목을 누르면 기존에 열린 항목을 닫고 다시 열기
     setOpenFaqId((prevId) => (prevId === id ? null : id));
+  };
+
+  const handleRegisterPress = () => {
+    navigation.navigate('QnaRegister');
   };
 
   return (
@@ -62,7 +61,7 @@ export default function SupportScreen() {
       <View className="flex-row items-center px-4 bg-white h-[60px]">
         <HeaderLogo />
       </View>
-      <View className="flex-col justify-between h-[14rem] bg-[#F2F4FF] ">
+      <View className="flex-col justify-between h-[14rem] bg-[#F2F4FF]">
         <Text className="mt-10 text-center text-[#232323] text-[24px]/[34px] font-bold">
           MEDSNAP에 관한 {'\n'} 궁금하신 사항을 확인하세요
         </Text>
@@ -84,24 +83,31 @@ export default function SupportScreen() {
           </InputField>
         </View>
       </View>
-      <FlatList
-        data={faqData}
-        keyExtractor={(item) => item.id.toString()}
-        renderItem={({ item }) => (
-          <FaqItem
-            item={item}
-            isOpen={item.id === openFaqId}
-            onPress={() => handleToggleFaq(item.id)}
-          />
-        )}
-        // 리스트의 맨 아래에 "Q&A 등록하기" 버튼 추가
-        ListFooterComponent={
-          <View className="m-4">
-            <Button title="Q&A 등록하기" type="primary" size="lg" />
-          </View>
-        }
-        className="flex-1 bg-white" // 남은 공간을 모두 차지하도록 flex-1 추가
-      />
+      <View className="flex-1">
+        <FlatList
+          className="flex-col bg-white" // 남은 공간을 모두 차지하도록 flex-1 추가
+          data={faqData}
+          keyExtractor={(item) => item.id.toString()}
+          renderItem={({ item }) => (
+            <FaqItem
+              item={item}
+              isOpen={item.id === openFaqId}
+              onPress={() => handleToggleFaq(item.id)}
+            />
+          )}
+          // 리스트의 맨 아래에 "Q&A 등록하기" 버튼 구현
+          ListFooterComponent={
+            <View className="m-4">
+              <Button
+                title="Q&A 등록하기"
+                type="primary"
+                size="lg"
+                onPress={handleRegisterPress}
+              />
+            </View>
+          }
+        />
+      </View>
     </SafeAreaView>
   );
 }
