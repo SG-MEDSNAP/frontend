@@ -74,7 +74,10 @@ export default function HomeScreen({ navigation }: Props) {
       <View className="flex-col bg-[#F2F4FF]">
         {/* 안내 */}
         {/* 360*937 기준  h-[337px] */}
-        <ScrollView showsVerticalScrollIndicator={false}>
+        <ScrollView
+          showsVerticalScrollIndicator={false}
+          alwaysBounceVertical={false}
+        >
           <View className="grow mx-4">
             <View className="mt-12">
               <Text className="text-[34px]/[46px] font-bold text-[#404040]">

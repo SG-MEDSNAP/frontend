@@ -26,6 +26,7 @@ import PhotoRegisterScreen from './src/screens/PhotoRegisterScreen';
 import RegisterDoneScreen from './src/screens/RegisterDoneScreen';
 import VerifyIntakeResultScreen from './src/screens/VerifyResultScreen';
 import CalendarScreen from '@/screens/CalendarScreen';
+import SupportScreen from '@/screens/SupportScreen';
 
 import * as Notifications from 'expo-notifications';
 import { useEffect } from 'react';
@@ -119,7 +120,7 @@ function MainTabNavigator() {
       />
       <BottomTab.Screen
         name="Support"
-        component={HomeScreen}
+        component={SupportScreen}
         options={{
           tabBarIcon: ({ focused }) => (
             <SupportIcon fill={focused ? '#597AFF' : '#888888'} />
