@@ -1,6 +1,9 @@
 // components/FaqItem.tsx
 import { View, Text, TouchableOpacity } from 'react-native';
-// import { Icon } from './Icon';
+
+// icons
+import DownIcon from '../../assets/icons/DownIcon.svg';
+import UpIcon from '../../assets/icons/UpIcon.svg';
 
 export interface Faq {
   id: number;
@@ -30,9 +33,9 @@ export function FaqItem({ item, isOpen, onPress }: FaqItemProps) {
             [{item.category}] {item.question}
           </Text>
         </View>
-        {/* <Icon name={isOpen ? 'chevron-up' : 'chevron-down'} size={24} color="#888888" /> */}
-        {/* Icon 컴포넌트가 없다면 아래 텍스트로 임시 대체 */}
-        <Text className="text-[20px] text-[#232323]">{isOpen ? '∧' : '∨'}</Text>
+        <Text className="text-[20px] text-[#232323]">
+          {isOpen ? <UpIcon /> : <DownIcon />}
+        </Text>
       </TouchableOpacity>
 
       {isOpen && (

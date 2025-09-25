@@ -36,6 +36,7 @@ import HomeIcon from './assets/icons/HomeIcon.svg';
 import LogIcon from './assets/icons/LogIcon.svg';
 import SupportIcon from './assets/icons/SupportIcon.svg';
 import MyPageIcon from './assets/icons/MyPageIcon.svg';
+import QnaRegisterScreen from '@/screens/QnaRegisterScreen';
 
 export type RootStackParamList = {
   PhotoRegister: undefined;
@@ -50,6 +51,7 @@ export type RootStackParamList = {
     | undefined;
   MainTabs: undefined;
   Calendar: undefined;
+  QnaRegister: undefined;
 };
 
 export type BottomTabParamList = {
@@ -252,6 +254,11 @@ export default function App() {
             name="MainTabs"
             component={MainTabNavigator}
             options={{ headerShown: false }}
+          />
+          <Stack.Screen
+            name="QnaRegister"
+            component={QnaRegisterScreen}
+            options={{ headerShown: true, title: 'Q&A 등록' }}
           />
         </Stack.Navigator>
         <StatusBar style="auto" />
