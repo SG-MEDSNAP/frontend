@@ -30,6 +30,7 @@ import JoinScreen from './src/screens/JoinScreen';
 import LoginScreen from './src/screens/LoginScreen';
 
 import CalendarScreen from '@/screens/CalendarScreen';
+import SupportScreen from '@/screens/SupportScreen';
 
 import * as Notifications from 'expo-notifications';
 import { useEffect } from 'react';
@@ -39,6 +40,7 @@ import HomeIcon from './assets/icons/HomeIcon.svg';
 import LogIcon from './assets/icons/LogIcon.svg';
 import SupportIcon from './assets/icons/SupportIcon.svg';
 import MyPageIcon from './assets/icons/MyPageIcon.svg';
+import QnaRegisterScreen from '@/screens/QnaRegisterScreen';
 import MyPageScreen from './src/screens/MyPageScreen';
 import SettingScreen from './src/screens/SettingScreen';
 import EditInfoScreen from './src/screens/EditInfoScreen';
@@ -60,6 +62,7 @@ export type RootStackParamList = {
     | undefined;
   MainTabs: undefined;
   Calendar: undefined;
+  QnaRegister: undefined;
   Settings: undefined;
   EditInfo: undefined;
   EditMedication: undefined;
@@ -132,7 +135,7 @@ function MainTabNavigator() {
       />
       <BottomTab.Screen
         name="Support"
-        component={HomeScreen}
+        component={SupportScreen}
         options={{
           tabBarIcon: ({ focused }) => (
             <SupportIcon fill={focused ? '#597AFF' : '#888888'} />
@@ -281,6 +284,11 @@ export default function App() {
             name="MainTabs"
             component={MainTabNavigator}
             options={{ headerShown: false }}
+          />
+          <Stack.Screen
+            name="QnaRegister"
+            component={QnaRegisterScreen}
+            options={{ headerShown: true, title: 'Q&A 등록' }}
           />
           <Stack.Screen
             name="Settings"
