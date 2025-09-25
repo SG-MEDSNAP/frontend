@@ -25,6 +25,10 @@ import RegisterScreen from './src/screens/RegisterScreen';
 import PhotoRegisterScreen from './src/screens/PhotoRegisterScreen';
 import RegisterDoneScreen from './src/screens/RegisterDoneScreen';
 import VerifyIntakeResultScreen from './src/screens/VerifyResultScreen';
+
+import JoinScreen from './src/screens/JoinScreen';
+import LoginScreen from './src/screens/LoginScreen';
+
 import CalendarScreen from '@/screens/CalendarScreen';
 import SupportScreen from '@/screens/SupportScreen';
 
@@ -37,13 +41,20 @@ import LogIcon from './assets/icons/LogIcon.svg';
 import SupportIcon from './assets/icons/SupportIcon.svg';
 import MyPageIcon from './assets/icons/MyPageIcon.svg';
 import QnaRegisterScreen from '@/screens/QnaRegisterScreen';
+import MyPageScreen from './src/screens/MyPageScreen';
+import SettingScreen from './src/screens/SettingScreen';
+import EditInfoScreen from './src/screens/EditInfoScreen';
+import EditMedication from './src/screens/EditMedication';
 
 export type RootStackParamList = {
+  Login: undefined;
   PhotoRegister: undefined;
   // Home: undefined;
   MedicationRegister: {
     imageUri: string;
   };
+  Join: undefined;
+  JoinDone: undefined;
   RegisterScreen: undefined;
   RegisterDoneScreen: undefined;
   VerifyIntakeResult?:
@@ -52,6 +63,9 @@ export type RootStackParamList = {
   MainTabs: undefined;
   Calendar: undefined;
   QnaRegister: undefined;
+  Settings: undefined;
+  EditInfo: undefined;
+  EditMedication: undefined;
 };
 
 export type BottomTabParamList = {
@@ -75,7 +89,6 @@ Notifications.setNotificationHandler({
   }),
 });
 
-// ✅ 메인 탭 네비게이터
 function MainTabNavigator() {
   return (
     <BottomTab.Navigator
@@ -132,7 +145,7 @@ function MainTabNavigator() {
       />
       <BottomTab.Screen
         name="MyPage"
-        component={HomeScreen}
+        component={MyPageScreen}
         options={{
           tabBarIcon: ({ focused }) => (
             <MyPageIcon fill={focused ? '#597AFF' : '#888888'} />
@@ -146,7 +159,10 @@ function MainTabNavigator() {
 
 export default function App() {
   const [loaded] = useFonts({
-    Pretendard: require('./assets/fonts/PretendardVariable.ttf'),
+    'Pretendard-Regular': require('./assets/fonts/Pretendard-Regular.ttf'),
+    'Pretendard-Medium': require('./assets/fonts/Pretendard-Medium.ttf'),
+    'Pretendard-SemiBold': require('./assets/fonts/Pretendard-SemiBold.ttf'),
+    'Pretendard-Bold': require('./assets/fonts/Pretendard-Bold.ttf'),
   });
 
   // ✅ 알림 권한/채널 설정
@@ -174,18 +190,17 @@ export default function App() {
     })();
   }, [loaded]);
 
-  // ✅ 전역 폰트 적용
   const RnText: any = Text as any;
   const RnTextInput: any = TextInput as any;
   RnText.defaultProps = RnText.defaultProps || {};
   RnText.defaultProps.style = {
     ...(RnText.defaultProps.style || {}),
-    fontFamily: 'Pretendard',
+    fontFamily: 'Pretendard-Regular',
   };
   RnTextInput.defaultProps = RnTextInput.defaultProps || {};
   RnTextInput.defaultProps.style = {
     ...(RnTextInput.defaultProps.style || {}),
-    fontFamily: 'Pretendard',
+    fontFamily: 'Pretendard-Regular',
   };
 
   if (!loaded) {
@@ -200,12 +215,12 @@ export default function App() {
     <Providers>
       <NavigationContainer>
         <Stack.Navigator
-          initialRouteName="MainTabs"
+          initialRouteName="Login"
           screenOptions={({ navigation, route }) => ({
             headerShown: true,
             headerStyle: { backgroundColor: '#FFFFFF' },
             headerTitleStyle: {
-              fontFamily: 'Pretendard',
+              fontFamily: 'Pretendard-SemiBold',
               fontSize: 22,
               fontWeight: '600',
             },
@@ -214,7 +229,7 @@ export default function App() {
               route.name !== 'MainTabs'
                 ? () => (
                     <TouchableOpacity onPress={() => navigation?.goBack()}>
-                      <Icon name="back" size={24} color="#232323" />
+                      <Icon name="back" size={36} color="#232323" />
                     </TouchableOpacity>
                   )
                 : undefined,
@@ -224,12 +239,27 @@ export default function App() {
                     <TouchableOpacity
                       onPress={() => navigation?.navigate('MainTabs')}
                     >
-                      <Icon name="close" size={24} color="#232323" />
+                      <Icon name="close" size={36} color="#232323" />
                     </TouchableOpacity>
                   )
                 : undefined,
           })}
         >
+          <Stack.Screen
+            name="Login"
+            component={LoginScreen}
+            options={{ headerShown: false }}
+          />
+          <Stack.Screen
+            name="Join"
+            component={JoinScreen}
+            options={{ title: '회원가입' }}
+          />
+          <Stack.Screen
+            name="JoinDone"
+            component={require('./src/screens/JoinDoneScreen').default}
+            options={{ title: '회원가입' }}
+          />
           <Stack.Screen
             name="PhotoRegister"
             component={PhotoRegisterScreen}
@@ -260,7 +290,24 @@ export default function App() {
             component={QnaRegisterScreen}
             options={{ headerShown: true, title: 'Q&A 등록' }}
           />
+          <Stack.Screen
+            name="Settings"
+            component={SettingScreen}
+            options={{ title: '설정' }}
+          />
+          <Stack.Screen
+            name="EditInfo"
+            component={EditInfoScreen}
+            options={{ title: '내 정보 수정' }}
+          />
+          <Stack.Screen
+            name="EditMedication"
+            component={EditMedication}
+            options={{ title: '약 정보 수정' }}
+          />
         </Stack.Navigator>
+        {/* Settings screen outside tabs */}
+
         <StatusBar style="auto" />
       </NavigationContainer>
     </Providers>
