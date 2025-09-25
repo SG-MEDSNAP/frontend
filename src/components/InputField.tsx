@@ -54,22 +54,24 @@ export function InputField({
         </TouchableOpacity>
       ) : (
         <View
-          className={`py-3 px-4 rounded-[16px] min-h-[48px] border ${border} justify-center flex-row items-center`}
+          className={`py-3 px-4 rounded-[16px] bg-white min-h-[48px] h-[64px] border ${border} justify-center flex-row items-center`}
         >
           <View className="flex-1">{children}</View>
-          {type === 'search' && <Icon name="search" size={24} />}
+          {type === 'search' && <Icon name="search" size={36} />}
           {type === 'calendar' && <Icon name="calendar" size={24} />}
         </View>
       )}
 
       {/* 오류 메시지를 위한 고정 높이 영역 */}
-      <View className="h-[20px] mt-2">
-        {error ? (
-          <Text className="text-[12px] text-[#FF5B6B]">{error}</Text>
-        ) : helpText ? (
-          <Text className="text-[18px] text-[#999999]">{helpText}</Text>
-        ) : null}
-      </View>
+      {type !== 'search' && (
+        <View className="h-[20px] mt-2">
+          {error ? (
+            <Text className="text-[12px] text-[#FF5B6B]">{error}</Text>
+          ) : helpText ? (
+            <Text className="text-[18px] text-[#999999]">{helpText}</Text>
+          ) : null}
+        </View>
+      )}
     </View>
   );
 }
