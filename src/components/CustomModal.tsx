@@ -4,8 +4,9 @@ import Button from './Button';
 
 type CustomModalProps = {
   visible: boolean;
-  title?: string; // 첫 줄 굵은 제목 (예: "정말로,")
-  description?: string; // 둘째 줄 본문 (예: "삭제 하시겠습니까?")
+  line1?: string; // 첫 줄 (예: "정말로,")
+  line2?: string; // 둘째 줄 (예: "삭제 하시겠습니까?")
+  line3?: string; // 셋째 줄
   confirmText?: string; // 기본: "확인"
   cancelText?: string; // 기본: "닫기"
   onConfirm?: () => void;
@@ -15,8 +16,9 @@ type CustomModalProps = {
 
 export default function CustomModal({
   visible,
-  title = '',
-  description = '',
+  line1 = '',
+  line2 = '',
+  line3 = '',
   confirmText = '확인',
   cancelText = '닫기',
   onConfirm,
@@ -38,39 +40,46 @@ export default function CustomModal({
           <View className="items-center py-6 bg-[#F4F7FF]">
             <HeaderLogo />
           </View>
-          <View className="h-[1px] bg-[#DAE1FF]" />
+          <View className="mx-[18px] h-[1px] bg-[#BDCBFF]" />
 
           {/* Body */}
           <View className="px-6 py-8 items-center gap-2">
-            {!!title && (
+            {!!line1 && (
               <Text className="text-[24px]/[34px] font-bold text-[#232323]">
-                {title}
+                {line1}
               </Text>
             )}
-            {!!description && (
+            {!!line2 && (
               <Text className="text-[24px]/[34px] font-bold text-[#232323]">
-                {description}
+                {line2}
+              </Text>
+            )}
+            {!!line3 && (
+              <Text className="text-[24px]/[34px] font-bold text-[#232323]">
+                {line3}
               </Text>
             )}
           </View>
 
-          {/* Footer Buttons */}
+          {/* Footer Buttons: onCancel 유무에 따라 1개 또는 2개의 버튼을 렌더링 */}
           <View className="m-4">
             <View className="flex-row gap-4">
               <Button
-                className="flex-[5]"
-                title="확인"
+                className={onCancel ? 'flex-[5]' : 'flex-1'}
+                title={confirmText}
                 type="primary"
                 size="md"
                 onPress={onConfirm}
               />
-              <Button
-                className="flex-[2]"
-                title="닫기"
-                type="quinary"
-                size="md"
-                onPress={onCancel}
-              />
+              {onCancel && (
+                <Button
+                  className="flex-[2]"
+                  title={cancelText}
+                  type="quinary"
+                  size="md"
+                  onPress={onCancel}
+                />
+              )}
             </View>
           </View>
         </View>
