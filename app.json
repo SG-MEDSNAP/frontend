@@ -19,7 +19,10 @@
       "infoPlist": {
         "ITSAppUsesNonExemptEncryption": false,
         "NSUserNotificationUsageDescription": "복약 시간을 알려드리기 위해 알림을 사용합니다.",
-        "UIUserInterfaceStyle": "Light"
+        "UIUserInterfaceStyle": "Light",
+        "CFBundleURLTypes": [
+          { "CFBundleURLSchemes": ["naverG2Dui5LZ_lzXaQWiFQtv"] }
+        ]
       }
     },
     "android": {
