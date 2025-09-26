@@ -2,6 +2,7 @@ import React from 'react';
 import { View, Text, Image, ScrollView } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import LoginButton from '../components/LoginButton';
+import { socialLoginOrSignupKickoff } from '../features/socialLogin';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../../App';
 
@@ -37,19 +38,43 @@ export default function LoginScreen({ navigation }: Props) {
             <LoginButton
               type="kakao"
               title="카카오로 로그인"
-              onPress={() => navigation.navigate('Join')}
+              onPress={async () => {
+                try {
+                  const result = await socialLoginOrSignupKickoff('KAKAO');
+                  if (result.next === 'HOME') {
+                    navigation.replace('MainTabs');
+                  } else {
+                    navigation.navigate('Join', {
+                      idToken: result.idToken,
+                      provider: 'KAKAO',
+                    });
+                  }
+                } catch (e) {
+                  console.warn('Kakao 로그인 실패:', e);
+                  // 에러 토스트 표시 (구현 필요)
+                }
+              }}
               className="w-full"
             />
             <LoginButton
               type="naver"
               title="네이버로 로그인"
-              onPress={() => navigation.navigate('Join')}
-              className="w-full"
-            />
-            <LoginButton
-              type="google"
-              title="구글로 로그인"
-              onPress={() => navigation.navigate('Join')}
+              onPress={async () => {
+                try {
+                  const result = await socialLoginOrSignupKickoff('NAVER');
+                  if (result.next === 'HOME') {
+                    navigation.replace('MainTabs');
+                  } else {
+                    navigation.navigate('Join', {
+                      idToken: result.idToken,
+                      provider: 'NAVER',
+                    });
+                  }
+                } catch (e) {
+                  console.warn('Naver 로그인 실패:', e);
+                  // 에러 토스트 표시 (구현 필요)
+                }
+              }}
               className="w-full"
             />
           </View>
