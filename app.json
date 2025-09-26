@@ -1,12 +1,13 @@
 {
   "expo": {
+    "scheme": "medsnap",
     "name": "medsnap",
     "slug": "medsnap",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
-    "newArchEnabled": false,
+    "newArchEnabled": true,
     "splash": {
       "image": "./assets/splash.png",
       "resizeMode": "cover",
@@ -54,17 +55,37 @@
         }
       ],
       [
+        "@react-native-seoul/kakao-login",
+        { "kakaoAppKey": "4d0de224c7f89c443ef4e795ca6ec88c" }
+      ],
+      [
+        "@react-native-seoul/naver-login",
+        {
+          "naverClientId": "G2Dui5LZ_lzXaQWiFQtv",
+          "naverClientSecret": "paDkQEzyNr"
+        }
+      ],
+      [
         "expo-build-properties",
         {
           "ios": {
             "flipper": false,
-            "deploymentTarget": "15.1"
+            "deploymentTarget": "15.1",
+            "infoPlist": {
+              "NSAppTransportSecurity": {
+                "NSAllowsArbitraryLoads": true
+              }
+            }
           },
           "android": {
-            "newArchEnabled": true
+            "newArchEnabled": true,
+            "extraMavenRepos": [
+              "https://devrepo.kakao.com/nexus/content/groups/public/"
+            ]
           }
         }
-      ]
+      ],
+      "expo-secure-store"
     ],
     "extra": {
       "eas": {
