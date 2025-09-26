@@ -1,5 +1,5 @@
-import React from 'react';
-import { View, Text, ScrollView } from 'react-native';
+import React, { useState } from 'react';
+import { View, Text, ScrollView, Alert } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useForm } from 'react-hook-form';
 import Button from '../components/Button';
@@ -7,6 +7,7 @@ import ToggleSwitch from '../components/ToggleSwitch';
 import { PersonNameField } from '../components/field/PersonNameField';
 import { PhoneField } from '../components/field/PhoneField';
 import { CalendarField } from '../components/field/CalendarField';
+import { signupWithIdToken, loginWithIdToken, Provider } from '../api/auth';
 
 type JoinForm = {
   name: string;
@@ -16,7 +17,19 @@ type JoinForm = {
   pushAgree: boolean;
 };
 
-export default function JoinScreen({ navigation }: any) {
+interface JoinScreenProps {
+  route: {
+    params: {
+      idToken: string;
+      provider: Provider;
+    };
+  };
+  navigation: any;
+}
+
+export default function JoinScreen({ route, navigation }: JoinScreenProps) {
+  const { idToken, provider } = route.params;
+  const [isLoading, setIsLoading] = useState(false);
   const { control, watch, setValue, formState } = useForm<JoinForm>({
     defaultValues: {
       name: '',
@@ -31,9 +44,56 @@ export default function JoinScreen({ navigation }: any) {
   const name = watch('name');
   const birth = watch('birth');
   const phone = watch('phone');
+  const caregiverPhone = watch('caregiverPhone');
   const pushAgree = watch('pushAgree');
 
   const canSubmit = formState.isValid && Boolean(name && birth && phone);
+
+  const handleSubmit = async () => {
+    if (!canSubmit) return;
+
+    setIsLoading(true);
+
+    try {
+      // birthday 포맷 정규화: 2002.08.19 -> 2002-08-19
+      const normalizedBirthday = birth.replace(/\./g, '-');
+
+      // caregiverPhone 정규화: 값 없으면 필드 자체를 생략
+      const signupData: any = {
+        idToken,
+        provider,
+        birthday: normalizedBirthday,
+        phone: phone,
+        isPushConsent: pushAgree,
+      };
+
+      if (caregiverPhone && caregiverPhone.trim()) {
+        signupData.caregiverPhone = caregiverPhone;
+      }
+
+      await signupWithIdToken(signupData);
+
+      navigation.replace('MainTabs');
+    } catch (e: any) {
+      if (e?.response?.status === 409) {
+        // 이미 가입됨 → 로그인 재시도
+        try {
+          await loginWithIdToken(idToken, provider);
+          navigation.replace('MainTabs');
+          return;
+        } catch (loginError) {
+          console.error('로그인 재시도 실패:', loginError);
+        }
+      }
+
+      // 400 등 폼 검증 오류 메시지 표시
+      const errorMessage =
+        e?.response?.data?.message || '회원가입에 실패했습니다.';
+      Alert.alert('오류', errorMessage);
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   return (
     <SafeAreaView style={{ flex: 1 }} className="bg-white" edges={['bottom']}>
@@ -64,14 +124,14 @@ export default function JoinScreen({ navigation }: any) {
           />
         </View>
 
-        <View className="mt-8">
+        {/* <View className="mt-8">
           <PhoneField
             control={control as any}
             name="caregiverPhone"
             label="보호자 핸드폰 번호(결과 전송)"
             requiredField={false}
           />
-        </View>
+        </View> */}
 
         <View className="mt-8">
           <ToggleSwitch
@@ -90,10 +150,10 @@ export default function JoinScreen({ navigation }: any) {
 
       <View className="px-4 pb-4">
         <Button
-          title="다음"
+          title={isLoading ? '처리 중...' : '완료'}
           type={canSubmit ? 'primary' : 'quaternary'}
-          disabled={!canSubmit}
-          onPress={() => canSubmit && navigation.navigate('JoinDone')}
+          disabled={!canSubmit || isLoading}
+          onPress={handleSubmit}
         />
       </View>
     </SafeAreaView>
