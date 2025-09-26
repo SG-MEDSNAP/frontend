@@ -49,7 +49,7 @@ import EditMedication from './src/screens/EditMedication';
 export type RootStackParamList = {
   Login: undefined;
   PhotoRegister: undefined;
-  // Home: undefined;
+  Home: undefined;
   MedicationRegister: {
     imageUri: string;
   };
@@ -215,7 +215,7 @@ export default function App() {
     <Providers>
       <NavigationContainer>
         <Stack.Navigator
-          initialRouteName="Login"
+          initialRouteName="MainTabs"
           screenOptions={({ navigation, route }) => ({
             headerShown: true,
             headerStyle: { backgroundColor: '#FFFFFF' },
@@ -248,6 +248,11 @@ export default function App() {
           <Stack.Screen
             name="Login"
             component={LoginScreen}
+            options={{ headerShown: false }}
+          />
+          <Stack.Screen
+            name="Home"
+            component={HomeScreen}
             options={{ headerShown: false }}
           />
           <Stack.Screen

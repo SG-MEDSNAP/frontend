@@ -165,13 +165,13 @@ export default function PhotoRegisterScreen({ navigation }: Props) {
         ) : (
           <View className="flex-row gap-4">
             <Button
-              className="flex-grow basis-0 flex-[8]"
+              className="flex-[8]"
               type="secondary"
               title="다시 촬영하기"
               onPress={takeImageHandler}
             />
             <Button
-              className="flex-grow basis-0 flex-[5]"
+              className="flex-[5]"
               title="다음"
               type="primary"
               onPress={handleNextPress}
