@@ -34,7 +34,7 @@ import SupportScreen from '@/screens/SupportScreen';
 
 import * as Notifications from 'expo-notifications';
 import { useEffect } from 'react';
-import { NaverLogin } from '@react-native-seoul/naver-login';
+
 
 // icons
 import HomeIcon from './assets/icons/HomeIcon.svg';
@@ -174,18 +174,6 @@ export default function App() {
     if (!loaded) return;
 
     (async () => {
-      // 네이버 로그인 초기화
-      try {
-        await NaverLogin.initialize({
-          kConsumerKey: 'G2Dui5LZ_lzXaQWiFQtv',
-          kConsumerSecret: 'paDkQEzyNr',
-          kServiceAppName: 'medsnap',
-        });
-        console.log('[NAVER] 네이버 로그인 초기화 완료');
-      } catch (error) {
-        console.error('[NAVER] 네이버 로그인 초기화 실패:', error);
-      }
-
       const ios = await Notifications.getPermissionsAsync();
       if (ios.status !== 'granted') {
         const req = await Notifications.requestPermissionsAsync();

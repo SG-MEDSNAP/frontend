@@ -3,18 +3,19 @@ import {
   login as kakaoLogin,
   loginWithKakaoAccount,
 } from '@react-native-seoul/kakao-login';
+import { signInWithNaver } from './naver';
 import { jwtDecode } from 'jwt-decode';
 
 export async function getIdTokenFor(provider: Provider): Promise<string> {
   switch (provider) {
     case 'KAKAO':
       return await getKakaoIdToken();
+    case 'NAVER':
+      return await signInWithNaver();
     case 'GOOGLE':
       throw new Error('Google 로그인은 아직 구현되지 않았습니다.');
     case 'APPLE':
       throw new Error('Apple 로그인은 아직 구현되지 않았습니다.');
-    case 'NAVER':
-      throw new Error('Naver 로그인은 아직 구현되지 않았습니다.');
     default:
       throw new Error(`지원하지 않는 소셜 로그인: ${provider}`);
   }
