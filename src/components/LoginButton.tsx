@@ -2,7 +2,7 @@ import React from 'react';
 import { TouchableOpacity, Text, View } from 'react-native';
 import { Icon } from './Icon';
 
-export type LoginButtonType = 'kakao' | 'naver' | 'google';
+export type LoginButtonType = 'kakao' | 'naver' | 'google' | 'apple';
 
 interface LoginButtonProps {
   type: LoginButtonType;
@@ -24,20 +24,28 @@ export default function LoginButton({
     {
       container: string;
       text: string;
-      iconColor?: string;
+      iconColor: string;
     }
   > = {
     kakao: {
       container: 'bg-[#FEE500]',
       text: 'text-black',
+      iconColor: '#381F1F',
     },
     naver: {
       container: 'bg-[#03C75A]',
       text: 'text-white',
+      iconColor: '#FFFFFF',
     },
     google: {
       container: 'bg-white border border-gray-200',
       text: 'text-black',
+      iconColor: '#4285F4',
+    },
+    apple: {
+      container: 'bg-black',
+      text: 'text-white',
+      iconColor: '#FFFFFF',
     },
   };
 
@@ -61,7 +69,7 @@ export default function LoginButton({
     >
       {/* 왼쪽 아이콘 영역 (52x52) */}
       <View className="w-[52px] h-[52px] items-center justify-center">
-        <Icon name={type} size={24} />
+        <Icon name={type} size={24} color={style.iconColor} />
       </View>
 
       {/* 텍스트 영역 (가운데 정렬) */}
