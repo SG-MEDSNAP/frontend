@@ -21,7 +21,12 @@
         "NSUserNotificationUsageDescription": "복약 시간을 알려드리기 위해 알림을 사용합니다.",
         "UIUserInterfaceStyle": "Light",
         "CFBundleURLTypes": [
-          { "CFBundleURLSchemes": ["naverG2Dui5LZ_lzXaQWiFQtv"] }
+          { "CFBundleURLSchemes": ["naverG2Dui5LZ_lzXaQWiFQtv"] },
+          {
+            "CFBundleURLSchemes": [
+              "com.googleusercontent.apps.507746381359-a9ttvvvt50lkua178guniv5g4buj4j8i"
+            ]
+          }
         ]
       }
     },
@@ -66,6 +71,13 @@
         {
           "naverClientId": "G2Dui5LZ_lzXaQWiFQtv",
           "naverClientSecret": "paDkQEzyNr"
+        }
+      ],
+      [
+        "@react-native-google-signin/google-signin",
+        {
+          "iosUrlScheme": "com.googleusercontent.apps.507746381359-a9ttvvvt50lkua178guniv5g4buj4j8i",
+          "androidClientId": "507746381359-d09u9mphhqkn1ukpht0cegerk2gvoihh.apps.googleusercontent.com"
         }
       ],
       [
