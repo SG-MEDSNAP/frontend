@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, Image, ScrollView } from 'react-native';
+import { View, Text, Image, ScrollView, Platform } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import LoginButton from '../components/LoginButton';
 import { socialLoginOrSignupKickoff } from '../features/socialLogin';
@@ -98,27 +98,29 @@ export default function LoginScreen({ navigation }: Props) {
               }}
               className="w-full"
             />
-            <LoginButton
-              type="apple"
-              title="애플로 로그인"
-              onPress={async () => {
-                try {
-                  const result = await socialLoginOrSignupKickoff('APPLE');
-                  if (result.next === 'HOME') {
-                    navigation.replace('MainTabs');
-                  } else {
-                    navigation.navigate('Join', {
-                      idToken: result.idToken,
-                      provider: 'APPLE',
-                    });
+            {Platform.OS === 'ios' && (
+              <LoginButton
+                type="apple"
+                title="애플로 로그인"
+                onPress={async () => {
+                  try {
+                    const result = await socialLoginOrSignupKickoff('APPLE');
+                    if (result.next === 'HOME') {
+                      navigation.replace('MainTabs');
+                    } else {
+                      navigation.navigate('Join', {
+                        idToken: result.idToken,
+                        provider: 'APPLE',
+                      });
+                    }
+                  } catch (e) {
+                    console.warn('Apple 로그인 실패:', e);
+                    // 에러 토스트 표시 (구현 필요)
                   }
-                } catch (e) {
-                  console.warn('Apple 로그인 실패:', e);
-                  // 에러 토스트 표시 (구현 필요)
-                }
-              }}
-              className="w-full"
-            />
+                }}
+                className="w-full"
+              />
+            )}
           </View>
         </View>
       </ScrollView>

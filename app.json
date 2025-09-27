@@ -81,6 +81,12 @@
         }
       ],
       [
+        "expo-apple-authentication",
+        {
+          "appleTeamId": "5ZWF33SVGW"
+        }
+      ],
+      [
         "expo-build-properties",
         {
           "ios": {
