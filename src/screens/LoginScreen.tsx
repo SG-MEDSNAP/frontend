@@ -98,6 +98,27 @@ export default function LoginScreen({ navigation }: Props) {
               }}
               className="w-full"
             />
+            <LoginButton
+              type="apple"
+              title="애플로 로그인"
+              onPress={async () => {
+                try {
+                  const result = await socialLoginOrSignupKickoff('APPLE');
+                  if (result.next === 'HOME') {
+                    navigation.replace('MainTabs');
+                  } else {
+                    navigation.navigate('Join', {
+                      idToken: result.idToken,
+                      provider: 'APPLE',
+                    });
+                  }
+                } catch (e) {
+                  console.warn('Apple 로그인 실패:', e);
+                  // 에러 토스트 표시 (구현 필요)
+                }
+              }}
+              className="w-full"
+            />
           </View>
         </View>
       </ScrollView>
