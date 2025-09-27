@@ -35,6 +35,7 @@ import SupportScreen from '@/screens/SupportScreen';
 import * as Notifications from 'expo-notifications';
 import { useEffect } from 'react';
 
+
 // icons
 import HomeIcon from './assets/icons/HomeIcon.svg';
 import LogIcon from './assets/icons/LogIcon.svg';
@@ -53,7 +54,10 @@ export type RootStackParamList = {
   MedicationRegister: {
     imageUri: string;
   };
-  Join: undefined;
+  Join: {
+    idToken: string;
+    provider: 'GOOGLE' | 'APPLE' | 'KAKAO' | 'NAVER';
+  };
   JoinDone: undefined;
   RegisterScreen: undefined;
   RegisterDoneScreen: undefined;

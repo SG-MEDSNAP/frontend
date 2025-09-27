@@ -12,13 +12,14 @@ import {
 import { InputField } from '@/components/InputField';
 import { Faq, FaqItem } from '@/components/FaqItem';
 import Button from '@/components/Button';
-import { RootStackParamList } from '../../App';
+import { RootStackParamList, BottomTabParamList } from '../../App';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
+import { BottomTabScreenProps } from '@react-navigation/bottom-tabs';
 
 // images
 import HeaderLogo from '../../assets/images/header_logo.svg';
 
-type Props = NativeStackScreenProps<RootStackParamList, 'QnaRegister'>;
+type Props = BottomTabScreenProps<BottomTabParamList, 'Support'>;
 
 const ALL_FAQ_DATA: Faq[] = [
   {

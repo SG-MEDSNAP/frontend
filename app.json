@@ -1,12 +1,13 @@
 {
   "expo": {
+    "scheme": "medsnap",
     "name": "medsnap",
     "slug": "medsnap",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
-    "newArchEnabled": false,
+    "newArchEnabled": true,
     "splash": {
       "image": "./assets/splash.png",
       "resizeMode": "cover",
@@ -18,7 +19,15 @@
       "infoPlist": {
         "ITSAppUsesNonExemptEncryption": false,
         "NSUserNotificationUsageDescription": "복약 시간을 알려드리기 위해 알림을 사용합니다.",
-        "UIUserInterfaceStyle": "Light"
+        "UIUserInterfaceStyle": "Light",
+        "CFBundleURLTypes": [
+          { "CFBundleURLSchemes": ["naverG2Dui5LZ_lzXaQWiFQtv"] },
+          {
+            "CFBundleURLSchemes": [
+              "com.googleusercontent.apps.507746381359-a9ttvvvt50lkua178guniv5g4buj4j8i"
+            ]
+          }
+        ]
       }
     },
     "android": {
@@ -54,17 +63,50 @@
         }
       ],
       [
+        "@react-native-seoul/kakao-login",
+        { "kakaoAppKey": "4d0de224c7f89c443ef4e795ca6ec88c" }
+      ],
+      [
+        "@react-native-seoul/naver-login",
+        {
+          "naverClientId": "G2Dui5LZ_lzXaQWiFQtv",
+          "naverClientSecret": "paDkQEzyNr"
+        }
+      ],
+      [
+        "@react-native-google-signin/google-signin",
+        {
+          "iosUrlScheme": "com.googleusercontent.apps.507746381359-a9ttvvvt50lkua178guniv5g4buj4j8i",
+          "androidClientId": "507746381359-d09u9mphhqkn1ukpht0cegerk2gvoihh.apps.googleusercontent.com"
+        }
+      ],
+      [
+        "expo-apple-authentication",
+        {
+          "appleTeamId": "5ZWF33SVGW"
+        }
+      ],
+      [
         "expo-build-properties",
         {
           "ios": {
             "flipper": false,
-            "deploymentTarget": "15.1"
+            "deploymentTarget": "15.1",
+            "infoPlist": {
+              "NSAppTransportSecurity": {
+                "NSAllowsArbitraryLoads": true
+              }
+            }
           },
           "android": {
-            "newArchEnabled": true
+            "newArchEnabled": true,
+            "extraMavenRepos": [
+              "https://devrepo.kakao.com/nexus/content/groups/public/"
+            ]
           }
         }
-      ]
+      ],
+      "expo-secure-store"
     ],
     "extra": {
       "eas": {
