@@ -35,7 +35,6 @@ import SupportScreen from '@/screens/SupportScreen';
 import * as Notifications from 'expo-notifications';
 import { useEffect } from 'react';
 
-
 // icons
 import HomeIcon from './assets/icons/HomeIcon.svg';
 import LogIcon from './assets/icons/LogIcon.svg';
@@ -219,7 +218,7 @@ export default function App() {
     <Providers>
       <NavigationContainer>
         <Stack.Navigator
-          initialRouteName="MainTabs"
+          initialRouteName="Login"
           screenOptions={({ navigation, route }) => ({
             headerShown: true,
             headerStyle: { backgroundColor: '#FFFFFF' },
