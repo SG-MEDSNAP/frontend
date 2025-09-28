@@ -13,17 +13,18 @@ import {
 import { InputField } from '@/components/InputField';
 import { Faq, FaqItem } from '@/components/FaqItem';
 import Button from '@/components/Button';
-import { RootStackParamList } from '../../App';
+import { RootStackParamList, BottomTabParamList } from '../../App';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { useFaqsQuery } from '@/api/faq';
 import type { FaqData } from '@/api/faq';
 import axios from 'axios';
+import { BottomTabScreenProps } from '@react-navigation/bottom-tabs';
 
 // images
 import HeaderLogo from '../../assets/images/header_logo.svg';
 import { API_BASE_URL } from '@env';
 
-type Props = NativeStackScreenProps<RootStackParamList, 'QnaRegister'>;
+type Props = BottomTabScreenProps<BottomTabParamList, 'Support'>;
 
 // 카테고리 매핑 함수
 const mapCategoryToKorean = (category: string): string => {
