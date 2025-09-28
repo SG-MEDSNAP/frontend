@@ -12,9 +12,10 @@ export const jsonAxios = axios.create({
 
 // 공통 인터셉터
 jsonAxios.interceptors.response.use(
-  (r) => (console.log('[AUTH/login res]', r.status, r.config.url, r.data), r),
+  (r) => (console.log('[API res]', r.status, r.config.url?.split('/').pop()), r),
   (e) => {
-    console.log('[AUTH/login err]', e?.response?.status, e?.response?.data);
+    const endpoint = e?.config?.url?.split('/').pop() || 'unknown';
+    console.log('[API err]', endpoint, e?.response?.status, e?.response?.data);
     throw e;
   },
 );

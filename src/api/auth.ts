@@ -11,13 +11,7 @@ async function saveTokens(accessToken: string, refreshToken: string) {
 export async function loginWithIdToken(idToken: string, provider: Provider) {
   try {
     // 로그인 호출 직전
-    console.log('[AUTH/login req]', { provider, idTokenLen: idToken?.length });
-    console.log('[AUTH/login req] idToken 첫 50자:', idToken?.substring(0, 50));
-    console.log(
-      '[AUTH/login req] idToken 마지막 50자:',
-      idToken?.substring(idToken.length - 50),
-    );
-    console.log('[AUTH/login req] 전체 요청 바디:', { idToken, provider });
+    console.log('[AUTH/login] 요청 바디:', { provider });
 
     const res = await jsonAxios.post('/auth/login', { idToken, provider });
     if (res.status >= 200 && res.status < 300) {
@@ -39,26 +33,29 @@ export async function loginWithIdToken(idToken: string, provider: Provider) {
 export async function signupWithIdToken(input: {
   idToken: string;
   provider: Provider;
+  name: string;
   birthday: string;
   phone: string;
   caregiverPhone?: string;
   isPushConsent: boolean;
 }) {
-  console.log('[AUTH/signup req]', {
+  // caregiverPhone이 undefined이거나 빈 문자열이면 필드 자체를 제거
+  const requestBody: any = {
+    idToken: input.idToken,
     provider: input.provider,
-    idTokenLen: input.idToken?.length,
+    name: input.name,
     birthday: input.birthday,
     phone: input.phone,
-    caregiverPhone: input.caregiverPhone,
     isPushConsent: input.isPushConsent,
-  });
-  console.log(
-    '[AUTH/signup req] idToken 첫 50자:',
-    input.idToken?.substring(0, 50),
-  );
-  console.log('[AUTH/signup req] 전체 요청 바디:', input);
+  };
 
-  const res = await jsonAxios.post('/auth/signup', input);
+  if (input.caregiverPhone && input.caregiverPhone.trim() !== '') {
+    requestBody.caregiverPhone = input.caregiverPhone.trim();
+  }
+
+  console.log('[AUTH/signup] 요청 바디:', requestBody);
+
+  const res = await jsonAxios.post('/auth/signup', requestBody);
   const { accessToken, refreshToken } = res.data.data;
   await saveTokens(accessToken, refreshToken);
   return res.data.data;
