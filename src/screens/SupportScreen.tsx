@@ -85,7 +85,7 @@ export default function SupportScreen({ navigation }: Props) {
   };
 
   const handleRegisterPress = () => {
-    navigation.navigate('QnaRegister');
+    navigation.navigate('FaqRegister');
   };
 
   return (

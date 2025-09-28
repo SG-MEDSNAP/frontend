@@ -20,3 +20,19 @@ export interface FaqApiResponse {
   data: FaqData[];
   error: null | any;
 }
+
+// FAQ 등록 요청 타입
+export interface FaqRegisterRequest {
+  question: string;
+  answer: string;
+  category: FaqCategory;
+}
+
+// FAQ 등록 응답 타입
+export interface FaqRegisterResponse {
+  code: string;
+  httpStatus: number;
+  message: string;
+  data: FaqData;
+  error: null | any;
+}
