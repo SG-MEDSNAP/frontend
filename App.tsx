@@ -53,7 +53,10 @@ export type RootStackParamList = {
   MedicationRegister: {
     imageUri: string;
   };
-  Join: undefined;
+  Join: {
+    idToken: string;
+    provider: 'GOOGLE' | 'APPLE' | 'KAKAO' | 'NAVER';
+  };
   JoinDone: undefined;
   RegisterScreen: undefined;
   RegisterDoneScreen: undefined;
@@ -215,7 +218,7 @@ export default function App() {
     <Providers>
       <NavigationContainer>
         <Stack.Navigator
-          initialRouteName="MainTabs"
+          initialRouteName="Login"
           screenOptions={({ navigation, route }) => ({
             headerShown: true,
             headerStyle: { backgroundColor: '#FFFFFF' },
