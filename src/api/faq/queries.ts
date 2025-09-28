@@ -10,14 +10,6 @@ export function useFaqsQuery() {
     queryFn: fetchFaqs,
   });
 
-  console.log('FAQ Query 상태:', {
-    isLoading: query.isLoading,
-    isError: query.isError,
-    isSuccess: query.isSuccess,
-    hasData: !!query.data,
-    error: query.error?.message,
-  });
-
   return query;
 }
 

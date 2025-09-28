@@ -17,12 +17,10 @@ import { RootStackParamList, BottomTabParamList } from '../../App';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { useFaqsQuery } from '@/api/faq';
 import type { FaqData } from '@/api/faq';
-import axios from 'axios';
 import { BottomTabScreenProps } from '@react-navigation/bottom-tabs';
 
 // images
 import HeaderLogo from '../../assets/images/header_logo.svg';
-import { API_BASE_URL } from '@env';
 
 type Props = BottomTabScreenProps<BottomTabParamList, 'Support'>;
 
@@ -54,26 +52,6 @@ export default function SupportScreen({ navigation }: Props) {
 
   // FAQ 데이터를 API에서 가져오기
   const { data: faqData, isLoading, isError, error } = useFaqsQuery();
-
-  const fetchFaqsTest = async () => {
-    console.log('테스트');
-    try {
-      const res = await axios.get(`${API_BASE_URL}/v1/faqs`);
-      console.log('테스트용 FAQ API 응답 성공:', res.data);
-      return res.data;
-    } catch (error) {
-      console.error('FAQ API 호출 실패:', error);
-      throw error;
-    }
-  };
-
-  console.log('SupportScreen 상태:', {
-    isLoading,
-    isError,
-    hasData: !!faqData,
-    dataLength: faqData?.length,
-    error: error?.message,
-  });
 
   const filteredFaqData = useMemo(() => {
     // API 데이터가 없으면 빈 배열 반환
@@ -122,7 +100,6 @@ export default function SupportScreen({ navigation }: Props) {
         <View className="flex-row items-center px-4 bg-white h-[60px]">
           <HeaderLogo />
         </View>
-        <Button title="FAQ 테스트" onPress={fetchFaqsTest} />
         <View className="flex-col justify-between h-[14rem] bg-[#F2F4FF]">
           <Text className="mt-10 text-center text-[#232323] text-[24px]/[34px] font-bold">
             MEDSNAP에 관한 {'\n'} 궁금하신 사항을 확인하세요
