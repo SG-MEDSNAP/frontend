@@ -1,22 +1,14 @@
-// import { jsonAxios } from '../http';
-import axios from 'axios';
-import { API_BASE_URL } from '@env';
-
-// Base API URL with versioning
-const BASE_URL = `${API_BASE_URL}/v1`;
+import { jsonAxios } from '../http';
 import type { FaqApiResponse, FaqData } from './types';
 
-// GET /v1/faqs - FAQ 목록 조회
+// GET /api/v1/faqs - FAQ 목록 조회
 export const fetchFaqs = async (): Promise<FaqData[]> => {
-  console.log('FAQ API 호출 시작');
-  // console.log(jsonAxios.getUri());
   try {
-    // const res = await jsonAxios.get<FaqApiResponse>('/faqs');
-    const res = await axios.get<FaqApiResponse>(`${BASE_URL}/faqs`);
-    console.log('FAQ API 응답 성공:', res.data);
+    const res = await jsonAxios.get<FaqApiResponse>('/faqs');
+    console.log('GET /api/v1/faqs:', res.data);
     return res.data.data;
   } catch (error) {
-    console.error('FAQ API 호출 실패:', error);
+    console.error('GET /api/v1/faqs:', error);
     throw error;
   }
 };
