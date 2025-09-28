@@ -112,10 +112,10 @@ export async function refreshToken(): Promise<{
   });
 
   const res = await refreshAxios.post('/auth/refresh', { refreshToken });
-  
+
   // 응답 구조 확인을 위한 로그
   console.log('[AUTH/refresh] 응답 구조:', res.data);
-  
+
   const { accessToken: newAccessToken, refreshToken: newRefreshToken } =
     res.data.data || res.data; // data.data 또는 data 구조 모두 지원
 
@@ -123,4 +123,36 @@ export async function refreshToken(): Promise<{
   console.log('[AUTH/refresh] 토큰 재발급 완료');
 
   return { accessToken: newAccessToken, refreshToken: newRefreshToken };
+}
+
+// 로그아웃 함수
+export async function logout(): Promise<void> {
+  const refreshToken = await getRefreshToken();
+  if (!refreshToken) {
+    await clearTokens();
+    return;
+  }
+
+  try {
+    console.log('[AUTH/logout] 로그아웃 요청');
+
+    const logoutAxios = axios.create({
+      baseURL: `${API_BASE_URL}/api/v1`,
+      headers: { 'Content-Type': 'application/json' },
+    });
+
+    await logoutAxios.post('/auth/logout', { refreshToken });
+    console.log('[AUTH/logout] 서버 로그아웃 성공');
+  } catch (e) {
+    console.warn('[AUTH/logout] 서버 로그아웃 실패, 로컬 토큰 삭제:', e);
+  } finally {
+    // 서버 로그아웃 성공/실패와 관계없이 로컬 토큰 삭제
+    await clearTokens();
+  }
+}
+
+async function clearTokens(): Promise<void> {
+  await SecureStore.deleteItemAsync('accessToken');
+  await SecureStore.deleteItemAsync('refreshToken');
+  console.log('[AUTH] 로컬 토큰 삭제 완료');
 }
