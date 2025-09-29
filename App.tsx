@@ -40,7 +40,7 @@ import HomeIcon from './assets/icons/HomeIcon.svg';
 import LogIcon from './assets/icons/LogIcon.svg';
 import SupportIcon from './assets/icons/SupportIcon.svg';
 import MyPageIcon from './assets/icons/MyPageIcon.svg';
-import QnaRegisterScreen from '@/screens/QnaRegisterScreen';
+import FaqRegisterScreen from '@/screens/FaqRegisterScreen';
 import MyPageScreen from './src/screens/MyPageScreen';
 import SettingScreen from './src/screens/SettingScreen';
 import EditInfoScreen from './src/screens/EditInfoScreen';
@@ -65,7 +65,7 @@ export type RootStackParamList = {
     | undefined;
   MainTabs: undefined;
   Calendar: undefined;
-  QnaRegister: undefined;
+  FaqRegister: undefined;
   Settings: undefined;
   EditInfo: undefined;
   EditMedication: undefined;
@@ -294,8 +294,8 @@ export default function App() {
             options={{ headerShown: false }}
           />
           <Stack.Screen
-            name="QnaRegister"
-            component={QnaRegisterScreen}
+            name="FaqRegister"
+            component={FaqRegisterScreen}
             options={{ headerShown: true, title: 'Q&A 등록' }}
           />
           <Stack.Screen
