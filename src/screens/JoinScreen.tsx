@@ -60,6 +60,7 @@ export default function JoinScreen({ route, navigation }: JoinScreenProps) {
 
       // caregiverPhone 정규화: 값 없으면 필드 자체를 생략
       const signupData: any = {
+        name,
         idToken,
         provider,
         birthday: normalizedBirthday,
@@ -67,8 +68,9 @@ export default function JoinScreen({ route, navigation }: JoinScreenProps) {
         isPushConsent: pushAgree,
       };
 
-      if (caregiverPhone && caregiverPhone.trim()) {
-        signupData.caregiverPhone = caregiverPhone;
+      // caregiverPhone이 비어있지 않을 때만 추가
+      if (caregiverPhone && caregiverPhone.trim() !== '') {
+        signupData.caregiverPhone = caregiverPhone.trim();
       }
 
       await signupWithIdToken(signupData);
