@@ -35,7 +35,7 @@ export default function JoinScreen({ route, navigation }: JoinScreenProps) {
       name: '',
       birth: '',
       phone: '',
-      caregiverPhone: '',
+      // caregiverPhone: '',
       pushAgree: false,
     },
     mode: 'onChange',
@@ -44,7 +44,7 @@ export default function JoinScreen({ route, navigation }: JoinScreenProps) {
   const name = watch('name');
   const birth = watch('birth');
   const phone = watch('phone');
-  const caregiverPhone = watch('caregiverPhone');
+//   const caregiverPhone = watch('caregiverPhone');
   const pushAgree = watch('pushAgree');
 
   const canSubmit = formState.isValid && Boolean(name && birth && phone);
@@ -67,11 +67,6 @@ export default function JoinScreen({ route, navigation }: JoinScreenProps) {
         phone: phone,
         isPushConsent: pushAgree,
       };
-
-      // caregiverPhone이 비어있지 않을 때만 추가
-      if (caregiverPhone && caregiverPhone.trim() !== '') {
-        signupData.caregiverPhone = caregiverPhone.trim();
-      }
 
       await signupWithIdToken(signupData);
 
