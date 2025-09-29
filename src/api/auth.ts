@@ -11,7 +11,6 @@ async function saveTokens(accessToken: string, refreshToken: string) {
   await SecureStore.setItemAsync('refreshToken', refreshToken);
 }
 
-
 export async function getAccessToken(): Promise<string | null> {
   return await SecureStore.getItemAsync('accessToken');
 }
@@ -68,8 +67,6 @@ export async function signupWithIdToken(input: {
   caregiverPhone?: string;
   isPushConsent: boolean;
 }) {
-
-
   const res = await jsonAxios.post('/auth/signup', input);
 
   // caregiverPhone이 undefined이거나 빈 문자열이면 필드 자체를 제거
@@ -87,19 +84,7 @@ export async function signupWithIdToken(input: {
   }
 
   console.log('[AUTH/signup] 요청 바디:', requestBody);
-
-  const authAxios = axios.create({
-    baseURL: `${API_BASE_URL}/api/v1`,
-    headers: { 'Content-Type': 'application/json' },
-  });
-
-  const res = await authAxios.post('/auth/signup', requestBody);
-
-  const { accessToken, refreshToken } = res.data.data;
-  await saveTokens(accessToken, refreshToken);
-  return res.data.data;
 }
-
 
 // 토큰 재발급 함수 (순환 참조 방지를 위해 별도 axios 인스턴스 사용)
 export async function refreshToken(): Promise<{
