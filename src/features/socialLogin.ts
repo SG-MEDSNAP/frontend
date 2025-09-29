@@ -1,3 +1,4 @@
+import { useMutation } from '@tanstack/react-query';
 import { loginWithIdToken, Provider } from '../api/auth';
 import { getIdTokenFor } from '../auth/getIdToken';
 
@@ -7,7 +8,7 @@ export async function socialLoginOrSignupKickoff(provider: Provider) {
 
   // 2) 로그인 시도
   try {
-    const login = await loginWithIdToken(idToken, provider);
+    const login = await loginWithIdToken({ idToken, provider });
     if (login) return { next: 'HOME' as const }; // 로그인 완료
     // loginWithIdToken이 404/409에서 null 리턴하도록 이미 구현되어 있음
     return { next: 'SIGNUP' as const, idToken, provider }; // 회원가입 화면으로
@@ -18,4 +19,17 @@ export async function socialLoginOrSignupKickoff(provider: Provider) {
     }
     throw e;
   }
+}
+
+// TanStack Query mutation hook for social login
+export function useSocialLoginMutation() {
+  return useMutation({
+    mutationFn: async (provider: Provider) => {
+      return await socialLoginOrSignupKickoff(provider);
+    },
+    onError: (error: any) => {
+      console.error('[SOCIAL_LOGIN] 로그인 실패:', error);
+      // 에러 토스트 표시 로직 추가 가능
+    },
+  });
 }
