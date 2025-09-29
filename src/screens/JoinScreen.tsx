@@ -35,7 +35,7 @@ export default function JoinScreen({ route, navigation }: JoinScreenProps) {
       name: '',
       birth: '',
       phone: '',
-      caregiverPhone: '',
+      // caregiverPhone: '',
       pushAgree: false,
     },
     mode: 'onChange',
@@ -44,7 +44,7 @@ export default function JoinScreen({ route, navigation }: JoinScreenProps) {
   const name = watch('name');
   const birth = watch('birth');
   const phone = watch('phone');
-  const caregiverPhone = watch('caregiverPhone');
+//   const caregiverPhone = watch('caregiverPhone');
   const pushAgree = watch('pushAgree');
 
   const canSubmit = formState.isValid && Boolean(name && birth && phone);
@@ -60,16 +60,13 @@ export default function JoinScreen({ route, navigation }: JoinScreenProps) {
 
       // caregiverPhone 정규화: 값 없으면 필드 자체를 생략
       const signupData: any = {
+        name,
         idToken,
         provider,
         birthday: normalizedBirthday,
         phone: phone,
         isPushConsent: pushAgree,
       };
-
-      if (caregiverPhone && caregiverPhone.trim()) {
-        signupData.caregiverPhone = caregiverPhone;
-      }
 
       await signupWithIdToken(signupData);
 
