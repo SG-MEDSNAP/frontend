@@ -1,9 +1,18 @@
 // src/screens/CalendarScreen.tsx
 
 import { useState, useEffect, useMemo } from 'react';
-import { View, ScrollView, StyleSheet, Text } from 'react-native';
+import {
+  View,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+} from 'react-native';
 import { Calendar, LocaleConfig } from 'react-native-calendars';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { useNavigation } from '@react-navigation/native';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { RootStackParamList } from '../../App';
 
 // images
 import HeaderLogo from '../../assets/images/header_logo.svg';
@@ -16,6 +25,11 @@ import {
   useMedicationRecordsQuery,
   useMedicationRecordDatesQuery,
 } from '@/api/medication';
+
+type CalendarScreenNavigationProp = NativeStackNavigationProp<
+  RootStackParamList,
+  'MainTabs'
+>;
 
 interface Medication {
   id: string;
@@ -78,6 +92,7 @@ const getTodayDateString = () => {
 };
 
 export default function CalendarScreen() {
+  const navigation = useNavigation<CalendarScreenNavigationProp>();
   const [selected, setSelected] = useState('');
   const [currentMonth, setCurrentMonth] = useState(() => {
     const today = new Date();
@@ -234,9 +249,17 @@ export default function CalendarScreen() {
               {formatDateHeader(selected || getTodayDateString())}
             </Text>
           </View>
-          <Text className="text-[18px]/[18px] font-bold text-[#232323]">
-            상세보기
-          </Text>
+          <TouchableOpacity
+            onPress={() =>
+              navigation.navigate('MedicationDetail', {
+                date: selected || getTodayDateString(),
+              })
+            }
+          >
+            <Text className="text-[18px]/[18px] font-bold text-[#232323]">
+              상세보기
+            </Text>
+          </TouchableOpacity>
         </View>
         <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
           {recordsLoading ? (
