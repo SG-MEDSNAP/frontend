@@ -5,7 +5,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useForm, Controller } from 'react-hook-form';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../../App';
-import { useRegisterFaqMutation } from '@/api/faq';
+import { useRegisterFaqMutation, useUpdateFaqMutation } from '@/api/faq';
 import type { FaqRegisterRequest, FaqCategory } from '@/api/faq';
 import Button from '@/components/Button';
 import { InputField } from '@/components/InputField';
@@ -25,24 +25,28 @@ const CATEGORY_OPTIONS: { label: string; value: FaqCategory }[] = [
   { label: '타임라인', value: 'TIMELINE' },
 ];
 
-export default function FaqRegisterScreen({ navigation }: Props) {
-  const [selectedCategory, setSelectedCategory] =
-    useState<FaqCategory>('MEDICATION_STATUS');
+export default function FaqRegisterScreen({ navigation, route }: Props) {
+  const { faqData, isEdit } = route.params || {};
+  const [selectedCategory, setSelectedCategory] = useState<FaqCategory>(
+    faqData?.category || 'MEDICATION_STATUS',
+  );
 
   const {
     control,
     handleSubmit,
+    setValue,
     formState: { errors, isValid },
   } = useForm<FaqForm>({
     defaultValues: {
-      question: '',
-      answer: '',
-      category: 'MEDICATION_STATUS',
+      question: faqData?.question || '',
+      answer: faqData?.answer || '',
+      category: faqData?.category || 'MEDICATION_STATUS',
     },
     mode: 'onChange',
   });
 
   const registerFaqMutation = useRegisterFaqMutation();
+  const updateFaqMutation = useUpdateFaqMutation();
 
   const onSubmit = async (data: FaqForm) => {
     if (!data.question.trim()) {
@@ -55,22 +59,46 @@ export default function FaqRegisterScreen({ navigation }: Props) {
       return;
     }
 
-    const requestData: FaqRegisterRequest = {
-      question: data.question.trim(),
-      answer: data.answer.trim(),
-      category: selectedCategory,
-    };
-
     try {
-      await registerFaqMutation.mutateAsync(requestData);
-      Alert.alert('등록 완료', 'Q&A가 성공적으로 등록되었습니다.', [
-        {
-          text: '확인',
-          onPress: () => navigation.goBack(),
-        },
-      ]);
+      if (isEdit && faqData) {
+        // 수정 모드
+        await updateFaqMutation.mutateAsync({
+          faqId: faqData.id,
+          data: {
+            question: data.question.trim(),
+            answer: data.answer.trim(),
+            category: selectedCategory,
+          },
+        });
+        Alert.alert('수정 완료', 'Q&A가 성공적으로 수정되었습니다.', [
+          {
+            text: '확인',
+            onPress: () => navigation.goBack(),
+          },
+        ]);
+      } else {
+        // 등록 모드
+        const requestData: FaqRegisterRequest = {
+          question: data.question.trim(),
+          answer: data.answer.trim(),
+          category: selectedCategory,
+        };
+
+        await registerFaqMutation.mutateAsync(requestData);
+        Alert.alert('등록 완료', 'Q&A가 성공적으로 등록되었습니다.', [
+          {
+            text: '확인',
+            onPress: () => navigation.goBack(),
+          },
+        ]);
+      }
     } catch (error) {
-      Alert.alert('등록 실패', 'Q&A 등록에 실패했습니다. 다시 시도해주세요.');
+      Alert.alert(
+        isEdit ? '수정 실패' : '등록 실패',
+        isEdit
+          ? 'Q&A 수정에 실패했습니다. 다시 시도해주세요.'
+          : 'Q&A 등록에 실패했습니다. 다시 시도해주세요.',
+      );
     }
   };
 
@@ -178,16 +206,28 @@ export default function FaqRegisterScreen({ navigation }: Props) {
             )}
           </View>
 
-          {/* 등록 버튼 */}
+          {/* 등록/수정 버튼 */}
           <Button
-            title={registerFaqMutation.isPending ? '등록 중...' : '등록하기'}
+            title={
+              isEdit
+                ? updateFaqMutation.isPending
+                  ? '수정 중...'
+                  : '수정하기'
+                : registerFaqMutation.isPending
+                  ? '등록 중...'
+                  : '등록하기'
+            }
             type="primary"
             size="lg"
             onPress={handleSubmit(onSubmit)}
-            disabled={registerFaqMutation.isPending || !isValid}
+            disabled={
+              isEdit
+                ? updateFaqMutation.isPending || !isValid
+                : registerFaqMutation.isPending || !isValid
+            }
           />
 
-          {registerFaqMutation.isPending && (
+          {(registerFaqMutation.isPending || updateFaqMutation.isPending) && (
             <View className="items-center mt-4">
               <ActivityIndicator size="small" color="#597AFF" />
             </View>

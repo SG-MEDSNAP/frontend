@@ -4,11 +4,15 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { Icon } from '../components/Icon';
 import { useNavigation } from '@react-navigation/native';
 import { logout } from '../api/auth';
+import { useDeleteUserMutation } from '../api/user';
 import CustomModal from '../components/CustomModal';
 
 export default function SettingScreen() {
   const navigation: any = useNavigation();
   const [isLogoutModalVisible, setLogoutModalVisible] = useState(false);
+  const [isDeleteModalVisible, setDeleteModalVisible] = useState(false);
+
+  const deleteUserMutation = useDeleteUserMutation();
 
   const handleLogout = () => {
     setLogoutModalVisible(true);
@@ -27,6 +31,33 @@ export default function SettingScreen() {
       Alert.alert('오류', '로그아웃 중 오류가 발생했습니다.');
     } finally {
       setLogoutModalVisible(false);
+    }
+  };
+
+  const handleDeleteUser = () => {
+    setDeleteModalVisible(true);
+  };
+
+  const confirmDeleteUser = async () => {
+    try {
+      await deleteUserMutation.mutateAsync();
+      // 탈퇴 성공 시 로그인 화면으로 이동
+      Alert.alert('탈퇴 완료', '회원탈퇴가 완료되었습니다.', [
+        {
+          text: '확인',
+          onPress: () => {
+            navigation.reset({
+              index: 0,
+              routes: [{ name: 'Login' }],
+            });
+          },
+        },
+      ]);
+    } catch (error) {
+      console.error('회원탈퇴 실패:', error);
+      Alert.alert('오류', '회원탈퇴 중 오류가 발생했습니다.');
+    } finally {
+      setDeleteModalVisible(false);
     }
   };
 
@@ -52,10 +83,7 @@ export default function SettingScreen() {
         <TouchableOpacity
           activeOpacity={0.8}
           className="py-4"
-          onPress={() => {
-            // TODO: 회원탈퇴 기능 구현
-            Alert.alert('준비중', '회원탈퇴 기능은 준비중입니다.');
-          }}
+          onPress={handleDeleteUser}
         >
           <Text className="h7 text-gray-600">회원탈퇴</Text>
         </TouchableOpacity>
@@ -70,6 +98,17 @@ export default function SettingScreen() {
         onConfirm={confirmLogout}
         cancelText="닫기"
         onCancel={() => setLogoutModalVisible(false)}
+      />
+
+      {/* 회원탈퇴 확인 모달 */}
+      <CustomModal
+        visible={isDeleteModalVisible}
+        line1="정말로,"
+        line2="탈퇴하시겠습니까?"
+        confirmText="확인"
+        onConfirm={confirmDeleteUser}
+        cancelText="닫기"
+        onCancel={() => setDeleteModalVisible(false)}
       />
     </SafeAreaView>
   );
