@@ -48,14 +48,14 @@ export const deleteUser = async (): Promise<void> => {
 // PUT /api/v1/users/mypage - 마이페이지 수정
 export const updateMyPage = async (
   data: MyPageUpdateRequest,
-): Promise<MyPageUpdateResponse> => {
+): Promise<MyPageUpdateResponse['data']> => {
   try {
     const res = await jsonAxios.put<MyPageUpdateResponse>(
       '/users/mypage',
       data,
     );
     console.log('PUT /api/v1/users/mypage:', res.data);
-    return res.data;
+    return res.data.data;
   } catch (error) {
     console.error('PUT /api/v1/users/mypage:', error);
     throw error;

@@ -47,6 +47,7 @@ export const registerMedication = async (
   }
 
   formData.append('image', imageData as any);
+  console.log('[API] 이미지가 FormData에 추가되었습니다');
 
   console.log('[API] POST /medications 요청 시작');
   try {
@@ -78,7 +79,7 @@ export const deleteMedication = async (medicationId: number): Promise<void> => {
   }
 };
 
-// (Optional) GET list - shape to be aligned with backend later
+// GET /v1/medications - 약 목록 조회
 export const fetchMedications = async (): Promise<MedicationData[]> => {
   console.log('[API] 약 목록 조회 요청 시작');
   try {
@@ -88,6 +89,70 @@ export const fetchMedications = async (): Promise<MedicationData[]> => {
     return res.data.data;
   } catch (error: any) {
     console.error('[API] 약 목록 조회 에러:', error);
+    console.error('[API] 에러 응답:', error.response?.data);
+    console.error('[API] 에러 상태:', error.response?.status);
+    throw error;
+  }
+};
+
+// GET /v1/medications/{id} - 특정 약 정보 조회
+export const fetchMedication = async (
+  medicationId: number,
+): Promise<MedicationData> => {
+  console.log('[API] 약 정보 조회 요청 ID:', medicationId);
+  try {
+    const res = await jsonAxios.get<ApiResponse<MedicationData>>(
+      `/medications/${medicationId}`,
+    );
+    console.log('[API] 약 정보 조회 응답:', res.data);
+    return res.data.data;
+  } catch (error: any) {
+    console.error('[API] 약 정보 조회 에러:', error);
+    console.error('[API] 에러 응답:', error.response?.data);
+    console.error('[API] 에러 상태:', error.response?.status);
+    throw error;
+  }
+};
+
+// PUT /v1/medications/{id} - 약 정보 수정
+export const updateMedication = async (
+  medicationId: number,
+  data: MedicationRegisterRequest,
+  image?: string,
+): Promise<MedicationData> => {
+  console.log('[API] 약 수정 요청 ID:', medicationId);
+  console.log('[API] 약 수정 요청 데이터:', data);
+  if (image) {
+    console.log('[API] 수정할 이미지 URI:', image);
+  }
+
+  const formData = new FormData();
+  const requestData = { ...data };
+
+  console.log('[API] FormData에 추가할 request:', requestData);
+  formData.append('request', JSON.stringify(requestData));
+
+  // 이미지가 제공된 경우에만 추가
+  if (image) {
+    const imageData = {
+      uri: image,
+      type: 'image/jpeg',
+      name: 'medication.jpg',
+    };
+    console.log('[API] 수정할 이미지 데이터:', imageData);
+    formData.append('image', imageData as any);
+  }
+
+  console.log('[API] PUT /medications/' + medicationId + ' 요청 시작');
+  try {
+    const res = await formAxios.put<ApiResponse<MedicationData>>(
+      `/medications/${medicationId}`,
+      formData,
+    );
+    console.log('[API] 약 수정 응답:', res.data);
+    return res.data.data;
+  } catch (error: any) {
+    console.error('[API] 약 수정 에러:', error);
     console.error('[API] 에러 응답:', error.response?.data);
     console.error('[API] 에러 상태:', error.response?.status);
     throw error;

@@ -50,7 +50,9 @@ export default function MyMedicationCard({
         </View>
         <View className="flex-row items-center gap-2">
           <TouchableOpacity
-            onPress={() => navigation.navigate('EditMedication')}
+            onPress={() =>
+              navigation.navigate('EditMedication', { medicationId: id })
+            }
           >
             <Text className="h8 text-gray-500">수정</Text>
           </TouchableOpacity>
