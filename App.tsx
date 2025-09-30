@@ -34,6 +34,7 @@ import SupportScreen from '@/screens/SupportScreen';
 
 import * as Notifications from 'expo-notifications';
 import { useEffect } from 'react';
+import { setupPushNotifications } from './src/lib/notifications';
 
 // icons
 import HomeIcon from './assets/icons/HomeIcon.svg';
@@ -81,16 +82,7 @@ export type BottomTabParamList = {
 const Stack = createNativeStackNavigator<RootStackParamList>();
 const BottomTab = createBottomTabNavigator<BottomTabParamList>();
 
-// ✅ 글로벌 알림 핸들러 (앱 전체에서 한 번만 설정)
-Notifications.setNotificationHandler({
-  handleNotification: async () => ({
-    shouldShowAlert: true,
-    shouldPlaySound: true,
-    shouldSetBadge: false,
-    shouldShowBanner: true,
-    shouldShowList: true,
-  }),
-});
+// 알림 핸들러는 setupPushNotifications 함수에서 설정됩니다.
 
 function MainTabNavigator() {
   return (
@@ -168,29 +160,25 @@ export default function App() {
     'Pretendard-Bold': require('./assets/fonts/Pretendard-Bold.ttf'),
   });
 
-  // ✅ 알림 권한/채널 설정
+  // ✅ 푸시 알림 설정 (토큰 받기 및 서버 등록 포함)
   useEffect(() => {
     if (!loaded) return;
 
-    (async () => {
-      const ios = await Notifications.getPermissionsAsync();
-      if (ios.status !== 'granted') {
-        const req = await Notifications.requestPermissionsAsync();
-        if (req.status !== 'granted') {
-          Alert.alert(
-            '알림 권한 필요',
-            '알림 기능을 사용하려면 권한을 허용해주세요.',
-          );
+    // 푸시 알림 설정을 백그라운드에서 실행
+    // 로그인한 사용자에게만 푸시 토큰을 등록하기 위해
+    // 로그인 상태 확인 후 실행하는 것이 좋지만,
+    // 일단 앱 시작시 실행하도록 설정
+    setupPushNotifications()
+      .then((success) => {
+        if (success) {
+          console.log('[APP] 푸시 알림 설정 완료');
+        } else {
+          console.warn('[APP] 푸시 알림 설정 실패 또는 권한 거부');
         }
-      }
-
-      if (Platform.OS === 'android') {
-        await Notifications.setNotificationChannelAsync('default', {
-          name: '약 알림',
-          importance: Notifications.AndroidImportance.HIGH,
-        });
-      }
-    })();
+      })
+      .catch((error) => {
+        console.error('[APP] 푸시 알림 설정 중 예외 발생:', error);
+      });
   }, [loaded]);
 
   const RnText: any = Text as any;

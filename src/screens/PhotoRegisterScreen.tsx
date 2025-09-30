@@ -21,10 +21,10 @@ export default function PhotoRegisterScreen({ navigation }: Props) {
   const [pickedImage, setPickedImage] = useState<ImagePickerAsset | null>(null);
 
   // 시뮬레이터 감지
-  const isSimulator =
-    __DEV__ &&
-    Platform.OS === 'ios' &&
-    Platform.constants.systemName?.includes('Simulator');
+  // const isSimulator =
+  //   __DEV__ &&
+  //   Platform.OS === 'ios' &&
+  //   Platform.constants.systemName?.includes('Simulator');
 
   // iOS/Android 공통 카메라 권한 훅
   const [cameraPermissionInformation, requestPermission] =
@@ -51,10 +51,10 @@ export default function PhotoRegisterScreen({ navigation }: Props) {
   // 카메라 촬영 또는 시뮬레이터에서 바로 넘어가기
   async function takeImageHandler() {
     // 시뮬레이터나 카메라가 없는 환경에서 바로 이동
-    if (isSimulator) {
-      navigation.navigate('MedicationRegister', { imageUri: '' });
-      return;
-    }
+    // if (isSimulator) {
+    //   navigation.navigate('MedicationRegister', { imageUri: '' });
+    //   return;
+    // }
 
     const hasPermission = await verifyPermissions();
     if (!hasPermission) return;
@@ -158,7 +158,8 @@ export default function PhotoRegisterScreen({ navigation }: Props) {
       <View className="m-4">
         {!pickedImage ? (
           <Button
-            title={isSimulator ? '바로 등록하기' : '촬영하기'}
+            // title={isSimulator ? '바로 등록하기' : '촬영하기'}
+            title="촬영하기"
             type="primary"
             onPress={takeImageHandler}
           />
