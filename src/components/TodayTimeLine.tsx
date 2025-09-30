@@ -26,7 +26,7 @@ export default function TodayTimeLine({ medications }: TodayTimeLineProps) {
           />
         ))
       ) : (
-        <View className="bg-[#F8F9FA] rounded-[16px] p-6 items-center">
+        <View className="rounded-[16px] p-6 items-center">
           <Text className="text-[16px] text-[#666] text-center">
             등록된 약물이 없습니다.{'\n'}새로운 약물을 등록해보세요.
           </Text>

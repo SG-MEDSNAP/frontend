@@ -3,6 +3,8 @@ import type {
   ApiResponse,
   MedicationData,
   MedicationRegisterRequest,
+  MedicationRecordsResponse,
+  MedicationRecordDates,
 } from './types';
 
 export const registerMedication = async (
@@ -153,6 +155,51 @@ export const updateMedication = async (
     return res.data.data;
   } catch (error: any) {
     console.error('[API] 약 수정 에러:', error);
+    console.error('[API] 에러 응답:', error.response?.data);
+    console.error('[API] 에러 상태:', error.response?.status);
+    throw error;
+  }
+};
+
+// GET /v1/medication-records - 특정 날짜의 복약 목록 조회
+export const fetchMedicationRecords = async (
+  date: string,
+): Promise<MedicationRecordsResponse> => {
+  console.log('[API] 복약 기록 조회 요청 날짜:', date);
+  try {
+    const res = await jsonAxios.get<ApiResponse<MedicationRecordsResponse>>(
+      `/medication-records`,
+      {
+        params: { date },
+      },
+    );
+    console.log('[API] 복약 기록 조회 응답:', res.data);
+    return res.data.data;
+  } catch (error: any) {
+    console.error('[API] 복약 기록 조회 에러:', error);
+    console.error('[API] 에러 응답:', error.response?.data);
+    console.error('[API] 에러 상태:', error.response?.status);
+    throw error;
+  }
+};
+
+// GET /v1/medication-records/dates - 달력 점 표시용 날짜 목록 조회
+export const fetchMedicationRecordDates = async (
+  year: number,
+  month: number,
+): Promise<MedicationRecordDates> => {
+  console.log('[API] 복약 기록 날짜 목록 조회 요청:', { year, month });
+  try {
+    const res = await jsonAxios.get<ApiResponse<MedicationRecordDates>>(
+      `/medication-records/dates`,
+      {
+        params: { year, month },
+      },
+    );
+    console.log('[API] 복약 기록 날짜 목록 조회 응답:', res.data);
+    return res.data.data;
+  } catch (error: any) {
+    console.error('[API] 복약 기록 날짜 목록 조회 에러:', error);
     console.error('[API] 에러 응답:', error.response?.data);
     console.error('[API] 에러 상태:', error.response?.status);
     throw error;
