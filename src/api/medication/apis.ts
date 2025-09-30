@@ -5,7 +5,11 @@ import type {
   MedicationRegisterRequest,
   MedicationRecordsResponse,
   MedicationRecordDates,
+  DeleteAlarmsRequest,
 } from './types';
+
+// 샘플 데이터 사용 여부 플래그 (개발용)
+const USE_SAMPLE_DATA = true;
 
 export const registerMedication = async (
   data: MedicationRegisterRequest,
@@ -167,8 +171,8 @@ export const fetchMedicationRecords = async (
 ): Promise<MedicationRecordsResponse> => {
   console.log('[API] 복약 기록 조회 요청 날짜:', date);
 
-  // 10월 1일 샘플 데이터
-  if (date === '2025-10-01') {
+  // 샘플 데이터 사용 (10월 1일)
+  if (USE_SAMPLE_DATA && date === '2025-10-01') {
     await new Promise((resolve) => setTimeout(() => resolve(undefined), 300));
     return {
       date: '2025-10-01',
@@ -241,8 +245,8 @@ export const fetchMedicationRecordDates = async (
 ): Promise<MedicationRecordDates> => {
   console.log('[API] 복약 기록 날짜 목록 조회 요청:', { year, month });
 
-  // 2025년 10월만 샘플 데이터
-  if (year === 2025 && month === 10) {
+  // 샘플 데이터 사용 (2025년 10월)
+  if (USE_SAMPLE_DATA && year === 2025 && month === 10) {
     await new Promise((resolve) => setTimeout(() => resolve(undefined), 200));
     return [
       '2025-10-01',
@@ -277,6 +281,26 @@ export const fetchMedicationRecordDates = async (
     return res.data.data;
   } catch (error: any) {
     console.error('[API] 복약 기록 날짜 목록 조회 에러:', error);
+    console.error('[API] 에러 응답:', error.response?.data);
+    console.error('[API] 에러 상태:', error.response?.status);
+    throw error;
+  }
+};
+
+// DELETE /v1/medications/{medicationId}/alarms - 약물 알림 삭제
+export const deleteMedicationAlarms = async (
+  medicationId: number,
+  data: DeleteAlarmsRequest,
+): Promise<void> => {
+  console.log('[API] 약물 알림 삭제 요청 ID:', medicationId);
+  console.log('[API] 삭제할 알림 IDs:', data.alarmIds);
+  try {
+    await jsonAxios.delete(`/medications/${medicationId}/alarms`, {
+      data,
+    });
+    console.log('[API] 약물 알림 삭제 성공');
+  } catch (error: any) {
+    console.error('[API] 약물 알림 삭제 에러:', error);
     console.error('[API] 에러 응답:', error.response?.data);
     console.error('[API] 에러 상태:', error.response?.status);
     throw error;
