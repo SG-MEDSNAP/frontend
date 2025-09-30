@@ -46,6 +46,7 @@ import MyPageScreen from './src/screens/MyPageScreen';
 import SettingScreen from './src/screens/SettingScreen';
 import EditInfoScreen from './src/screens/EditInfoScreen';
 import EditMedication from './src/screens/EditMedication';
+import MedicationDetailScreen from './src/screens/MedicationDetailScreen';
 
 export type RootStackParamList = {
   Login: undefined;
@@ -75,6 +76,9 @@ export type RootStackParamList = {
   Settings: undefined;
   EditInfo: undefined;
   EditMedication: undefined;
+  MedicationDetail: {
+    date: string;
+  };
 };
 
 export type BottomTabParamList = {
@@ -306,9 +310,12 @@ export default function App() {
             component={EditMedication}
             options={{ title: '약 정보 수정' }}
           />
+          <Stack.Screen
+            name="MedicationDetail"
+            component={MedicationDetailScreen}
+            options={{ title: '복약 상세' }}
+          />
         </Stack.Navigator>
-        {/* Settings screen outside tabs */}
-
         <StatusBar style="auto" />
       </NavigationContainer>
     </Providers>
