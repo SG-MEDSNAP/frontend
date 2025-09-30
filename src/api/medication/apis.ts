@@ -166,6 +166,57 @@ export const fetchMedicationRecords = async (
   date: string,
 ): Promise<MedicationRecordsResponse> => {
   console.log('[API] 복약 기록 조회 요청 날짜:', date);
+
+  // 10월 1일 샘플 데이터
+  if (date === '2025-10-01') {
+    await new Promise((resolve) => setTimeout(() => resolve(undefined), 300));
+    return {
+      date: '2025-10-01',
+      items: [
+        {
+          recordId: 101,
+          alarmTime: '09:00',
+          medicationId: 1,
+          medicationName: '타이레놀',
+          status: 'TAKEN',
+          imageUrl: 'https://s3.amazonaws.com/bucket/medication_photo_101.jpg',
+          checkedAt: '2025-10-01T09:15:00',
+          firstAlarmAt: '2025-10-01T09:00:00',
+          secondAlarmAt: '2025-10-01T09:10:00',
+          caregiverNotifiedAt: '2025-10-01T09:20:00',
+        },
+        {
+          recordId: 102,
+          alarmTime: '13:00',
+          medicationId: 2,
+          medicationName: '혈압약',
+          status: 'TAKEN',
+          imageUrl: 'https://s3.amazonaws.com/bucket/medication_photo_102.jpg',
+          checkedAt: '2025-10-01T13:05:00',
+          firstAlarmAt: '2025-10-01T13:00:00',
+          secondAlarmAt: '2025-10-01T13:10:00',
+          caregiverNotifiedAt: '2025-10-01T13:15:00',
+        },
+        {
+          recordId: 103,
+          alarmTime: '21:00',
+          medicationId: 1,
+          medicationName: '타이레놀',
+          status: 'PENDING',
+        },
+        {
+          recordId: 104,
+          alarmTime: '08:00',
+          medicationId: 3,
+          medicationName: '비타민',
+          status: 'SKIPPED',
+          firstAlarmAt: '2025-10-01T08:00:00',
+          secondAlarmAt: '2025-10-01T08:10:00',
+        },
+      ],
+    };
+  }
+
   try {
     const res = await jsonAxios.get<ApiResponse<MedicationRecordsResponse>>(
       `/medication-records`,
@@ -189,6 +240,32 @@ export const fetchMedicationRecordDates = async (
   month: number,
 ): Promise<MedicationRecordDates> => {
   console.log('[API] 복약 기록 날짜 목록 조회 요청:', { year, month });
+
+  // 2025년 10월만 샘플 데이터
+  if (year === 2025 && month === 10) {
+    await new Promise((resolve) => setTimeout(() => resolve(undefined), 200));
+    return [
+      '2025-10-01',
+      '2025-10-02',
+      '2025-10-04',
+      '2025-10-05',
+      '2025-10-07',
+      '2025-10-08',
+      '2025-10-10',
+      '2025-10-12',
+      '2025-10-14',
+      '2025-10-15',
+      '2025-10-17',
+      '2025-10-19',
+      '2025-10-21',
+      '2025-10-22',
+      '2025-10-24',
+      '2025-10-26',
+      '2025-10-28',
+      '2025-10-30',
+    ];
+  }
+
   try {
     const res = await jsonAxios.get<ApiResponse<MedicationRecordDates>>(
       `/medication-records/dates`,
