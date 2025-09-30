@@ -142,16 +142,15 @@ export default function RegisterScreen({ navigation, route }: Props) {
 
       console.log('[REGISTER] 약 등록 API 성공:', registeredMedication);
 
-      // 3) 로컬 알림 예약 실행
-      const notificationDays = everyDay ? days : selectedDays; // 로컬 알림은 실제 요일 배열 필요
-      const ids = await scheduleWeeklyNotifications({
-        selectedDays: notificationDays,
-        times: form.times, // 예: ['09:00','21:30']
-        tenMinutesBefore: tenMinuteReminder,
-        drugName: form.name,
-      });
-
-      console.log('예약된 알림 IDs:', ids);
+      // 3) 로컬 알림 예약 실행 → 백엔드 푸시로 대체하여 비활성화
+      // const notificationDays = everyDay ? days : selectedDays;
+      // const ids = await scheduleWeeklyNotifications({
+      //   selectedDays: notificationDays,
+      //   times: form.times, // 예: ['09:00','21:30']
+      //   tenMinutesBefore: tenMinuteReminder,
+      //   drugName: form.name,
+      // });
+      // console.log('예약된 알림 IDs:', ids);
 
       // 4) 완료 화면으로 이동
       navigation.replace('RegisterDoneScreen');

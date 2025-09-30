@@ -45,6 +45,10 @@ function prevWeekday(weekday: number) {
   return weekday === 1 ? 7 : weekday - 1;
 }
 
+/**
+ * @deprecated ⚠️ 더 이상 사용하지 마세요! 백엔드 푸시 알림으로 대체되었습니다.
+ * 로컬 알림과 백엔드 푸시 알림이 중복으로 발생할 수 있습니다.
+ */
 export async function scheduleWeeklyNotifications({
   selectedDays,
   times,
@@ -282,12 +286,35 @@ export function cleanupNotificationListeners(subscriptions: {
 }
 
 /**
+ * 기존에 예약된 로컬 알림을 모두 정리합니다.
+ * 백엔드 푸시 알림으로 전환하면서 중복 방지용
+ */
+export async function clearAllLocalNotifications(): Promise<void> {
+  try {
+    console.log('[PUSH] 기존 로컬 알림 정리 시작...');
+
+    // 예약된 모든 로컬 알림 취소
+    await Notifications.cancelAllScheduledNotificationsAsync();
+
+    // 배지 초기화
+    await Notifications.setBadgeCountAsync(0);
+
+    console.log('[PUSH] 기존 로컬 알림 정리 완료');
+  } catch (error) {
+    console.error('[PUSH] 로컬 알림 정리 실패:', error);
+  }
+}
+
+/**
  * 푸시 토큰을 받아서 서버에 등록하는 통합 함수
  * @returns 성공 여부
  */
 export async function setupPushNotifications(): Promise<boolean> {
   try {
     console.log('[PUSH] 푸시 알림 설정 시작');
+
+    // 🧹 기존 로컬 알림 정리 (중복 방지)
+    await clearAllLocalNotifications();
 
     // 푸시 알림 설정
     configurePushNotifications();
