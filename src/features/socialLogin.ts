@@ -25,7 +25,23 @@ export async function socialLoginOrSignupKickoff(provider: Provider) {
 export function useSocialLoginMutation() {
   return useMutation({
     mutationFn: async (provider: Provider) => {
-      return await socialLoginOrSignupKickoff(provider);
+      console.log(`[SOCIAL_LOGIN] ${provider} 로그인 시작`);
+      try {
+        const result = await Promise.race([
+          socialLoginOrSignupKickoff(provider),
+          new Promise((_, reject) =>
+            setTimeout(
+              () => reject(new Error('로그인 타임아웃 (60초)')),
+              60000,
+            ),
+          ),
+        ]);
+        console.log(`[SOCIAL_LOGIN] ${provider} 로그인 완료:`, result);
+        return result;
+      } catch (error) {
+        console.error(`[SOCIAL_LOGIN] ${provider} 로그인 에러:`, error);
+        throw error;
+      }
     },
     onError: (error: any) => {
       console.error('[SOCIAL_LOGIN] 로그인 실패:', error);

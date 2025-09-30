@@ -13,11 +13,9 @@ export type DoseDay =
 // Request payload for registering a medication
 export interface MedicationRegisterRequest {
   name: string;
-  notifyCaregiver: boolean;
   preNotify: boolean;
   doseTimes: string[]; // "HH:mm"
   doseDays: DoseDay[];
-  caregiverPhone?: string;
 }
 
 // Medication resource returned by API
@@ -25,11 +23,9 @@ export interface MedicationData {
   id: number;
   name: string;
   imageUrl: string;
-  notifyCaregiver: boolean;
   preNotify: boolean;
   doseTimes: string[];
   doseDays: DoseDay[];
-  caregiverPhone: string;
   createdAt: string;
   updatedAt: string;
 }
