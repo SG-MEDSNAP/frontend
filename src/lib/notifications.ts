@@ -213,6 +213,75 @@ export function configurePushNotifications() {
   });
 }
 /**
+ * 알림 수신 리스너 설정
+ */
+export function setupNotificationListeners() {
+  // 포그라운드에서 알림 수신 처리
+  const foregroundSubscription = Notifications.addNotificationReceivedListener(
+    (notification) => {
+      console.log('[PUSH] 포그라운드 알림 수신:', notification);
+
+      // 알림 데이터 처리
+      const data = notification.request.content.data;
+      if (data) {
+        console.log('[PUSH] 알림 데이터:', data);
+        // 필요시 특정 로직 처리 (예: 상태 업데이트)
+      }
+    },
+  );
+
+  // 알림 탭 처리 (사용자가 알림을 탭했을 때)
+  const responseSubscription =
+    Notifications.addNotificationResponseReceivedListener((response) => {
+      console.log('[PUSH] 알림 탭됨:', response);
+
+      const data = response.notification.request.content.data;
+
+      // 알림 데이터에 따라 특정 화면으로 이동
+      handleNotificationNavigation(data);
+    });
+
+  return {
+    foregroundSubscription,
+    responseSubscription,
+  };
+}
+
+/**
+ * 알림 데이터에 따른 네비게이션 처리
+ */
+function handleNotificationNavigation(data: any) {
+  console.log('[PUSH] 네비게이션 처리:', data);
+
+  // 알림 타입에 따른 화면 이동
+  if (data?.type === 'medication_reminder') {
+    // 복약 알림 - 홈 화면으로 이동
+    console.log('[PUSH] 복약 알림 - 홈 화면으로 이동');
+    // TODO: 네비게이션 구현 필요
+  } else if (data?.type === 'medication_check') {
+    // 복약 확인 - 복약 현황 화면으로 이동
+    console.log('[PUSH] 복약 확인 - 복약 현황 화면으로 이동');
+    // TODO: 네비게이션 구현 필요
+  } else {
+    // 기본 - 홈 화면으로 이동
+    console.log('[PUSH] 기본 알림 - 홈 화면으로 이동');
+    // TODO: 네비게이션 구현 필요
+  }
+}
+
+/**
+ * 알림 리스너 정리
+ */
+export function cleanupNotificationListeners(subscriptions: {
+  foregroundSubscription: any;
+  responseSubscription: any;
+}) {
+  subscriptions.foregroundSubscription?.remove();
+  subscriptions.responseSubscription?.remove();
+  console.log('[PUSH] 알림 리스너 정리 완료');
+}
+
+/**
  * 푸시 토큰을 받아서 서버에 등록하는 통합 함수
  * @returns 성공 여부
  */
@@ -222,6 +291,9 @@ export async function setupPushNotifications(): Promise<boolean> {
 
     // 푸시 알림 설정
     configurePushNotifications();
+
+    // 알림 리스너 설정
+    setupNotificationListeners();
 
     // 푸시 토큰 받기
     const token = await registerForPushNotificationsAsync();
