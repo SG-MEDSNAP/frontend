@@ -56,6 +56,11 @@ export interface MedicationRecordsResponse {
 // Response for GET /medication-records/dates
 export type MedicationRecordDates = string[];
 
+// Request payload for DELETE /medications/{medicationId}/alarms
+export interface DeleteAlarmsRequest {
+  alarmIds: number[];
+}
+
 // Standard API envelope
 export interface ApiResponse<T = MedicationData> {
   code: string;
