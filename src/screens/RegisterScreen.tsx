@@ -41,8 +41,11 @@ export default function RegisterScreen({ navigation, route }: Props) {
   const toggleEveryDay = () => {
     setEveryDay((prev) => {
       const next = !prev;
-      // 매일 토글은 selectedDays와 독립적으로 작동
-      // 매일이면 selectedDays는 무시하고, 아니면 selectedDays 사용
+      if (next) {
+        setSelectedDays(days); // 켤 때: 모든 요일 선택
+      } else {
+        setSelectedDays([]); // 끌 때: 모두 해제
+      }
       return next;
     });
   };
@@ -130,12 +133,14 @@ export default function RegisterScreen({ navigation, route }: Props) {
 
       console.log('[REGISTER] 최종 페이로드:', medicationPayload);
 
-      await registerMedicationMutation.mutateAsync({
-        payload: medicationPayload,
-        image: route.params?.imageUri || '',
-      });
+      const registeredMedication = await registerMedicationMutation.mutateAsync(
+        {
+          payload: medicationPayload,
+          image: route.params?.imageUri || '',
+        },
+      );
 
-      console.log('[REGISTER] 약 등록 API 성공');
+      console.log('[REGISTER] 약 등록 API 성공:', registeredMedication);
 
       // 3) 로컬 알림 예약 실행
       const notificationDays = everyDay ? days : selectedDays; // 로컬 알림은 실제 요일 배열 필요

@@ -9,6 +9,9 @@ export interface UserData {
   role: UserRole;
   name: string;
   provider: Provider;
+  birthday: string;
+  phone: string;
+  isPushConsent: boolean;
 }
 
 // 사용자 정보 조회 API 응답 타입
@@ -46,11 +49,20 @@ export interface MyPageUpdateRequest {
   isPushConsent: boolean;
 }
 
+// 마이페이지 수정 응답 데이터 타입
+export interface MyPageUpdateData {
+  id: number;
+  name: string;
+  birthday: string;
+  phone: string;
+  isPushConsent: boolean;
+}
+
 // 마이페이지 수정 응답 타입
 export interface MyPageUpdateResponse {
   code: string;
   httpStatus: number;
   message: string;
-  data: UserData;
+  data: MyPageUpdateData;
   error: null | any;
 }

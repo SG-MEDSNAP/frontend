@@ -1,7 +1,8 @@
-import React from 'react';
-import { View, Text, ScrollView } from 'react-native';
+import React, { useEffect } from 'react';
+import { View, Text, ScrollView, Alert } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useForm } from 'react-hook-form';
+import { useUserQuery, useUpdateMyPageMutation } from '../api/user';
 import Button from '../components/Button';
 import ToggleSwitch from '../components/ToggleSwitch';
 import { PersonNameField } from '../components/field/PersonNameField';
@@ -12,21 +13,37 @@ type EditForm = {
   name: string;
   birth: string;
   phone: string;
-  caregiverPhone: string;
   pushAgree: boolean;
 };
 
 export default function EditInfoScreen() {
+  // 사용자 정보 조회 활성화 (새로운 응답 구조로 재활성화)
+  const { data: user, isLoading, error } = useUserQuery();
+  const updateMyPageMutation = useUpdateMyPageMutation();
+
   const { control, watch, setValue, formState } = useForm<EditForm>({
     defaultValues: {
       name: '',
       birth: '',
       phone: '',
-      caregiverPhone: '',
       pushAgree: true,
     },
     mode: 'onChange',
   });
+
+  // 사용자 정보 로드 시 폼에 데이터 설정
+  useEffect(() => {
+    if (user) {
+      setValue('name', user.name);
+      // API에서 받은 날짜를 - 형식으로 변환 (2002.08.19 -> 2002-08-19)
+      const formattedBirthday = user.birthday
+        ? user.birthday.replace(/\./g, '-')
+        : '';
+      setValue('birth', formattedBirthday);
+      setValue('phone', user.phone);
+      setValue('pushAgree', user.isPushConsent);
+    }
+  }, [user, setValue]);
 
   const name = watch('name');
   const birth = watch('birth');
@@ -34,6 +51,62 @@ export default function EditInfoScreen() {
   const pushAgree = watch('pushAgree');
 
   const canSubmit = formState.isValid && Boolean(name && birth && phone);
+
+  const handleSubmit = async () => {
+    try {
+      const formData = {
+        name: name,
+        birthday: birth, // 이미 - 형식으로 입력받음
+        phone: phone,
+        isPushConsent: pushAgree,
+      };
+
+      console.log('[EDIT_INFO] 마이페이지 수정 요청:', formData);
+
+      await updateMyPageMutation.mutateAsync(formData);
+
+      console.log('[EDIT_INFO] 마이페이지 수정 성공');
+      Alert.alert('수정 완료', '개인정보가 수정되었습니다.');
+    } catch (e: any) {
+      console.error('[EDIT_INFO] 마이페이지 수정 실패:', e);
+      Alert.alert('수정 실패', e?.message ?? '다시 시도해주세요.');
+    }
+  };
+
+  // 로딩 및 에러 처리
+  if (isLoading) {
+    return (
+      <SafeAreaView style={{ flex: 1 }} className="bg-white" edges={['bottom']}>
+        <View className="flex-1 justify-center items-center">
+          <Text className="text-lg text-gray-600">
+            사용자 정보를 불러오는 중...
+          </Text>
+        </View>
+      </SafeAreaView>
+    );
+  }
+
+  if (error) {
+    return (
+      <SafeAreaView style={{ flex: 1 }} className="bg-white" edges={['bottom']}>
+        <View className="flex-1 justify-center items-center px-4">
+          <Text className="text-lg text-red-600 text-center">
+            사용자 정보를 불러올 수 없습니다
+          </Text>
+          <Button
+            title="다시 시도"
+            type="primary"
+            size="md"
+            className="mt-4"
+            onPress={() => {
+              // React Native에서는 페이지 새로고침 대신 다른 방법 사용
+              // 예: navigation.goBack() 또는 queryClient.invalidateQueries()
+            }}
+          />
+        </View>
+      </SafeAreaView>
+    );
+  }
 
   return (
     <SafeAreaView style={{ flex: 1 }} className="bg-white" edges={['bottom']}>
@@ -58,14 +131,7 @@ export default function EditInfoScreen() {
           />
         </View>
 
-        <View className="mt-8">
-          <PhoneField
-            control={control as any}
-            name="caregiverPhone"
-            label="보호자 핸드폰 번호(결과 전송)"
-            requiredField={false}
-          />
-        </View>
+        {/* 보호자 번호 필드 제거 - API 스펙에 없음 */}
 
         <View className="mt-8">
           <ToggleSwitch
@@ -83,12 +149,7 @@ export default function EditInfoScreen() {
       </ScrollView>
 
       <View className="px-4 pb-4">
-        <Button
-          title="수정완료"
-          type={canSubmit ? 'primary' : 'quaternary'}
-          disabled={!canSubmit}
-          onPress={() => {}}
-        />
+        <Button title="수정완료" type="primary" onPress={handleSubmit} />
       </View>
     </SafeAreaView>
   );
