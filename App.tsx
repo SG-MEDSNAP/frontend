@@ -66,7 +66,12 @@ export type RootStackParamList = {
     | undefined;
   MainTabs: undefined;
   Calendar: undefined;
-  FaqRegister: undefined;
+  FaqRegister:
+    | {
+        faqData?: any; // 수정할 FAQ 데이터 (optional)
+        isEdit?: boolean; // 수정 모드 여부 (optional)
+      }
+    | undefined;
   Settings: undefined;
   EditInfo: undefined;
   EditMedication: undefined;

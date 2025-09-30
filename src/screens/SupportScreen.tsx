@@ -13,16 +13,23 @@ import {
 import { InputField } from '@/components/InputField';
 import { Faq, FaqItem } from '@/components/FaqItem';
 import Button from '@/components/Button';
+import CustomModal from '@/components/CustomModal';
 import { RootStackParamList, BottomTabParamList } from '../../App';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
-import { useFaqsQuery } from '@/api/faq';
+import {
+  useFaqsQuery,
+  useDeleteFaqMutation,
+  useUpdateFaqMutation,
+} from '@/api/faq';
 import type { FaqData } from '@/api/faq';
 import { BottomTabScreenProps } from '@react-navigation/bottom-tabs';
 
 // images
 import HeaderLogo from '../../assets/images/header_logo.svg';
 
-type Props = BottomTabScreenProps<BottomTabParamList, 'Support'>;
+type Props = BottomTabScreenProps<BottomTabParamList, 'Support'> & {
+  navigation: any; // RootStackParamList의 모든 화면에 접근 가능하도록
+};
 
 // 카테고리 매핑 함수
 const mapCategoryToKorean = (category: string): string => {
@@ -49,9 +56,16 @@ const transformFaqData = (data: FaqData): Faq => ({
 export default function SupportScreen({ navigation }: Props) {
   const [searchQuery, setSearchQuery] = useState('');
   const [openFaqId, setOpenFaqId] = useState<number | null>(null);
+  const [deleteModalVisible, setDeleteModalVisible] = useState(false);
+  const [faqToDelete, setFaqToDelete] = useState<number | null>(null);
+
+  // TODO: 실제 권한 체크 로직 구현 (예: 관리자 권한)
+  const isAdmin = true; // 임시로 true 설정
 
   // FAQ 데이터를 API에서 가져오기
   const { data: faqData, isLoading, isError, error } = useFaqsQuery();
+  const deleteFaqMutation = useDeleteFaqMutation();
+  const updateFaqMutation = useUpdateFaqMutation();
 
   const filteredFaqData = useMemo(() => {
     // API 데이터가 없으면 빈 배열 반환
@@ -86,6 +100,41 @@ export default function SupportScreen({ navigation }: Props) {
 
   const handleRegisterPress = () => {
     navigation.navigate('FaqRegister');
+  };
+
+  const handleEditFaq = (faqId: number) => {
+    // 현재 FAQ 데이터 찾기
+    const faqToEdit = faqData?.find((faq) => faq.id === faqId);
+    if (!faqToEdit) {
+      Alert.alert('오류', '수정할 FAQ를 찾을 수 없습니다.');
+      return;
+    }
+
+    // FaqRegister 화면으로 이동하면서 기존 데이터 전달
+    navigation.navigate('FaqRegister', {
+      faqData: faqToEdit, // 수정할 FAQ 데이터 전달
+      isEdit: true, // 수정 모드임을 표시
+    });
+  };
+
+  const handleDeleteFaq = (faqId: number) => {
+    setFaqToDelete(faqId);
+    setDeleteModalVisible(true);
+  };
+
+  const confirmDeleteFaq = async () => {
+    if (faqToDelete) {
+      try {
+        await deleteFaqMutation.mutateAsync(faqToDelete);
+        Alert.alert('삭제 완료', 'FAQ가 삭제되었습니다.');
+      } catch (error) {
+        console.error('FAQ 삭제 실패:', error);
+        Alert.alert('삭제 실패', 'FAQ 삭제 중 오류가 발생했습니다.');
+      } finally {
+        setDeleteModalVisible(false);
+        setFaqToDelete(null);
+      }
+    }
   };
 
   return (
@@ -148,6 +197,9 @@ export default function SupportScreen({ navigation }: Props) {
                   item={item}
                   isOpen={item.id === openFaqId}
                   onPress={() => handleToggleFaq(item.id)}
+                  showActions={isAdmin}
+                  onEdit={() => handleEditFaq(item.id)}
+                  onDelete={() => handleDeleteFaq(item.id)}
                 />
               )}
               // 검색 결과가 없을 때 보여줄 컴포넌트
@@ -174,6 +226,20 @@ export default function SupportScreen({ navigation }: Props) {
             />
           )}
         </View>
+
+        {/* FAQ 삭제 확인 모달 */}
+        <CustomModal
+          visible={deleteModalVisible}
+          line1="정말로,"
+          line2="삭제하시겠습니까?"
+          confirmText="확인"
+          onConfirm={confirmDeleteFaq}
+          cancelText="닫기"
+          onCancel={() => {
+            setDeleteModalVisible(false);
+            setFaqToDelete(null);
+          }}
+        />
       </SafeAreaView>
     </TouchableOpacity>
   );
