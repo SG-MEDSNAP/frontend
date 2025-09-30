@@ -36,3 +36,19 @@ export interface FaqRegisterResponse {
   data: FaqData;
   error: null | any;
 }
+
+// FAQ 수정 요청 타입
+export interface FaqUpdateRequest {
+  question: string;
+  answer: string;
+  category: FaqCategory;
+}
+
+// FAQ 수정 응답 타입
+export interface FaqUpdateResponse {
+  code: string;
+  httpStatus: number;
+  message: string;
+  data: FaqData;
+  error: null | any;
+}
