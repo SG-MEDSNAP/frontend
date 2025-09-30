@@ -319,18 +319,12 @@ export default function EditMedicationScreen({ navigation, route }: Props) {
 
             {/* 수정 완료 버튼 */}
             <Button
-              title={
-                updateMedicationMutation.isPending
-                  ? '저장 중...'
-                  : medication
-                    ? '수정완료'
-                    : '등록완료'
-              }
+              title="수정완료"
               type={canSubmit ? 'primary' : 'quaternary'}
               size="lg"
               className="mt-2"
               onPress={handleSubmit(onSubmit, onInvalid)}
-              disabled={!canSubmit || updateMedicationMutation.isPending}
+              disabled={!canSubmit}
             />
           </View>
         </View>
