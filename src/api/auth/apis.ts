@@ -1,11 +1,17 @@
 import * as SecureStore from 'expo-secure-store';
-import { jsonAxios } from './http';
 import axios from 'axios';
 import { API_BASE_URL } from '@env';
 import { jwtDecode } from 'jwt-decode';
+import type {
+  LoginRequest,
+  SignupRequest,
+  AuthResponse,
+  RefreshTokenRequest,
+  LogoutRequest,
+  TokenPair,
+} from './types';
 
-export type Provider = 'GOOGLE' | 'APPLE' | 'KAKAO' | 'NAVER';
-
+// 토큰 저장/조회 함수들
 async function saveTokens(accessToken: string, refreshToken: string) {
   await SecureStore.setItemAsync('accessToken', accessToken);
   await SecureStore.setItemAsync('refreshToken', refreshToken);
@@ -31,9 +37,12 @@ export function shouldRefreshToken(accessToken: string): boolean {
   }
 }
 
-export async function loginWithIdToken(idToken: string, provider: Provider) {
+// 로그인 API
+export async function loginWithIdToken({
+  idToken,
+  provider,
+}: LoginRequest): Promise<AuthResponse | null> {
   try {
-    // 로그인 호출 직전
     console.log('[AUTH/login] 요청 바디:', { provider });
 
     const authAxios = axios.create({
@@ -58,39 +67,50 @@ export async function loginWithIdToken(idToken: string, provider: Provider) {
   }
 }
 
-export async function signupWithIdToken(input: {
-  idToken: string;
-  provider: Provider;
-  name: string;
-  birthday: string;
-  phone: string;
-  caregiverPhone?: string;
-  isPushConsent: boolean;
-}) {
-  const res = await jsonAxios.post('/auth/signup', input);
+// 회원가입 API
+export async function signupWithIdToken(
+  input: SignupRequest,
+): Promise<AuthResponse> {
+  const {
+    idToken,
+    provider,
+    name,
+    birthday,
+    phone,
+    caregiverPhone,
+    isPushConsent,
+  } = input;
 
   // caregiverPhone이 undefined이거나 빈 문자열이면 필드 자체를 제거
   const requestBody: any = {
-    idToken: input.idToken,
-    provider: input.provider,
-    name: input.name,
-    birthday: input.birthday,
-    phone: input.phone,
-    isPushConsent: input.isPushConsent,
+    idToken,
+    provider,
+    name,
+    birthday,
+    phone,
+    isPushConsent,
   };
 
-  if (input.caregiverPhone && input.caregiverPhone.trim() !== '') {
-    requestBody.caregiverPhone = input.caregiverPhone.trim();
+  if (caregiverPhone && caregiverPhone.trim() !== '') {
+    requestBody.caregiverPhone = caregiverPhone.trim();
   }
 
   console.log('[AUTH/signup] 요청 바디:', requestBody);
+
+  const authAxios = axios.create({
+    baseURL: `${API_BASE_URL}/api/v1`,
+    headers: { 'Content-Type': 'application/json' },
+  });
+
+  const res = await authAxios.post('/auth/signup', requestBody);
+  const { accessToken, refreshToken } = res.data.data;
+  await saveTokens(accessToken, refreshToken);
+
+  return res.data.data;
 }
 
-// 토큰 재발급 함수 (순환 참조 방지를 위해 별도 axios 인스턴스 사용)
-export async function refreshToken(): Promise<{
-  accessToken: string;
-  refreshToken: string;
-}> {
+// 토큰 재발급 API
+export async function refreshToken(): Promise<TokenPair> {
   const refreshToken = await getRefreshToken();
   if (!refreshToken) {
     throw new Error('리프레시 토큰이 없습니다. 다시 로그인해주세요.');
@@ -98,7 +118,6 @@ export async function refreshToken(): Promise<{
 
   console.log('[AUTH/refresh] 토큰 재발급 요청');
 
-  // 순환 참조 방지를 위해 별도 axios 인스턴스 사용
   const refreshAxios = axios.create({
     baseURL: `${API_BASE_URL}/api/v1`,
     headers: { 'Content-Type': 'application/json' },
@@ -106,11 +125,10 @@ export async function refreshToken(): Promise<{
 
   const res = await refreshAxios.post('/auth/refresh', { refreshToken });
 
-  // 응답 구조 확인을 위한 로그
   console.log('[AUTH/refresh] 응답 구조:', res.data);
 
   const { accessToken: newAccessToken, refreshToken: newRefreshToken } =
-    res.data.data || res.data; // data.data 또는 data 구조 모두 지원
+    res.data.data || res.data;
 
   await saveTokens(newAccessToken, newRefreshToken);
   console.log('[AUTH/refresh] 토큰 재발급 완료');
@@ -118,7 +136,7 @@ export async function refreshToken(): Promise<{
   return { accessToken: newAccessToken, refreshToken: newRefreshToken };
 }
 
-// 로그아웃 함수
+// 로그아웃 API
 export async function logout(): Promise<void> {
   const refreshToken = await getRefreshToken();
   if (!refreshToken) {
@@ -139,11 +157,11 @@ export async function logout(): Promise<void> {
   } catch (e) {
     console.warn('[AUTH/logout] 서버 로그아웃 실패, 로컬 토큰 삭제:', e);
   } finally {
-    // 서버 로그아웃 성공/실패와 관계없이 로컬 토큰 삭제
     await clearTokens();
   }
 }
 
+// 토큰 삭제 함수
 async function clearTokens(): Promise<void> {
   await SecureStore.deleteItemAsync('accessToken');
   await SecureStore.deleteItemAsync('refreshToken');
