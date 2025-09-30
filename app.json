@@ -16,6 +16,7 @@
     "ios": {
       "supportsTablet": false,
       "bundleIdentifier": "com.qkrb8019.medsnap",
+      "googleServicesFile": "./ios/medsnap/GoogleService-Info.plist",
       "infoPlist": {
         "ITSAppUsesNonExemptEncryption": false,
         "NSUserNotificationUsageDescription": "복약 시간을 알려드리기 위해 알림을 사용합니다.",
@@ -37,7 +38,8 @@
       },
       "edgeToEdgeEnabled": true,
       "permissions": ["android.permission.RECORD_AUDIO"],
-      "package": "com.rn0917.medsnap"
+      "package": "com.qkrb8019.medsnap",
+      "googleServicesFile": "./android/app/google-services.json"
     },
     "web": {
       "favicon": "./assets/favicon.png",
@@ -100,6 +102,11 @@
           },
           "android": {
             "newArchEnabled": true,
+            "kotlinVersion": "2.0.21",
+            "compileSdkVersion": 36,
+            "targetSdkVersion": 36,
+            "minSdkVersion": 24,
+            "buildToolsVersion": "36.0.0",
             "extraMavenRepos": [
               "https://devrepo.kakao.com/nexus/content/groups/public/"
             ]
