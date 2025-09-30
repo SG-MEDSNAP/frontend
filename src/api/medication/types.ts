@@ -30,6 +30,37 @@ export interface MedicationData {
   updatedAt: string;
 }
 
+// Medication record status types
+export type MedicationRecordStatus = 'TAKEN' | 'PENDING' | 'SKIPPED';
+
+// Medication record item
+export interface MedicationRecordItem {
+  recordId?: number;
+  alarmTime: string;
+  medicationId: number;
+  medicationName: string;
+  status: MedicationRecordStatus;
+  imageUrl?: string;
+  checkedAt?: string;
+  firstAlarmAt?: string;
+  secondAlarmAt?: string;
+  caregiverNotifiedAt?: string;
+}
+
+// Response for GET /medication-records
+export interface MedicationRecordsResponse {
+  date: string;
+  items: MedicationRecordItem[];
+}
+
+// Response for GET /medication-records/dates
+export type MedicationRecordDates = string[];
+
+// Request payload for DELETE /medications/{medicationId}/alarms
+export interface DeleteAlarmsRequest {
+  alarmIds: number[];
+}
+
 // Standard API envelope
 export interface ApiResponse<T = MedicationData> {
   code: string;

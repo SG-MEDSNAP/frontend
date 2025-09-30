@@ -1,15 +1,35 @@
 // src/screens/CalendarScreen.tsx
 
-import { useState } from 'react';
-import { View, ScrollView, StyleSheet, Text } from 'react-native';
+import { useState, useEffect, useMemo } from 'react';
+import {
+  View,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+} from 'react-native';
 import { Calendar, LocaleConfig } from 'react-native-calendars';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { useNavigation } from '@react-navigation/native';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { RootStackParamList } from '../../App';
 
 // images
 import HeaderLogo from '../../assets/images/header_logo.svg';
 import { colors, fontStyles } from '@/styles/designSystem';
 import TodayTimeLine from '@/components/TodayTimeLine';
 import MedicationCard from '@/components/MedicationCard';
+
+// API hooks
+import {
+  useMedicationRecordsQuery,
+  useMedicationRecordDatesQuery,
+} from '@/api/medication';
+
+type CalendarScreenNavigationProp = NativeStackNavigationProp<
+  RootStackParamList,
+  'MainTabs'
+>;
 
 interface Medication {
   id: string;
@@ -62,41 +82,46 @@ LocaleConfig.locales['kr'] = {
 };
 LocaleConfig.defaultLocale = 'kr';
 
+// 오늘 날짜를 YYYY-MM-DD 형식으로 반환하는 함수
+const getTodayDateString = () => {
+  const today = new Date();
+  const year = today.getFullYear();
+  const month = String(today.getMonth() + 1).padStart(2, '0');
+  const day = String(today.getDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
+};
+
 export default function CalendarScreen() {
+  const navigation = useNavigation<CalendarScreenNavigationProp>();
   const [selected, setSelected] = useState('');
-
-  // 샘플 데이터
-  const [medications, setMedications] = useState<Medication[]>([
-    {
-      id: '1',
-      name: '혈압약',
-      time: '오전 8:00',
-      frequency: '매일',
-      taken: true,
-    },
-    {
-      id: '2',
-      name: '당뇨약',
-      time: '오후 1:00',
-      frequency: '매일',
-      taken: true,
-    },
-    {
-      id: '3',
-      name: '비타민',
-      time: '오후 6:00',
-      frequency: '주 3회',
-      taken: false,
-    },
-  ]);
-
-  const getTodayDateString = () => {
+  const [currentMonth, setCurrentMonth] = useState(() => {
     const today = new Date();
-    const year = today.getFullYear();
-    const month = String(today.getMonth() + 1).padStart(2, '0');
-    const day = String(today.getDate()).padStart(2, '0');
-    return `${year}-${month}-${day}`;
-  };
+    return {
+      year: today.getFullYear(),
+      month: today.getMonth() + 1,
+    };
+  });
+
+  // 현재 선택된 날짜 (또는 오늘)의 복약 기록 조회
+  const currentDate = selected || getTodayDateString();
+  const { data: medicationRecords, isLoading: recordsLoading } =
+    useMedicationRecordsQuery(currentDate);
+
+  // 달력에 점 표시할 날짜 목록 조회
+  const { data: recordDates, isLoading: datesLoading } =
+    useMedicationRecordDatesQuery(currentMonth.year, currentMonth.month);
+
+  // API 데이터를 기존 Medication 인터페이스에 맞게 변환
+  const medications: Medication[] = useMemo(() => {
+    if (!medicationRecords?.items) return [];
+    return medicationRecords.items.map((item, index) => ({
+      id: item.recordId?.toString() || index.toString(),
+      name: item.medicationName,
+      time: item.alarmTime,
+      frequency: '매일', // API에서 제공하지 않으므로 기본값
+      taken: item.status === 'TAKEN',
+    }));
+  }, [medicationRecords]);
 
   const formatDateHeader = (dateString: string) => {
     if (!dateString) return '';
@@ -108,6 +133,46 @@ export default function CalendarScreen() {
     return `${month}월 ${day}일 ${dayOfWeek}`;
   };
 
+  // 달력의 marked dates 생성
+  const markedDates = useMemo(() => {
+    const marks: any = {};
+
+    // 복약 기록이 있는 날짜에 점 표시
+    if (recordDates) {
+      recordDates.forEach((date) => {
+        marks[date] = {
+          ...marks[date],
+          marked: true,
+          dotColor: colors.primary[500],
+        };
+      });
+    }
+
+    // 선택된 날짜 표시
+    if (selected) {
+      marks[selected] = {
+        ...marks[selected],
+        disableTouchEvent: true,
+        customStyles: {
+          container: {
+            backgroundColor: colors.primary[500],
+            width: 36,
+            height: 36,
+            borderRadius: 18,
+            justifyContent: 'center',
+            alignItems: 'center',
+          },
+          text: {
+            color: 'white',
+            fontWeight: '600',
+          },
+        },
+      };
+    }
+
+    return marks;
+  }, [selected, recordDates]);
+
   return (
     <SafeAreaView className="flex-1 bg-[#F4F7FF]">
       <View className="flex-row items-center px-4 bg-white h-[60px]">
@@ -118,35 +183,18 @@ export default function CalendarScreen() {
         onDayPress={(day) => {
           setSelected(day.dateString);
         }}
+        onMonthChange={(month) => {
+          setCurrentMonth({
+            year: month.year,
+            month: month.month,
+          });
+        }}
         monthFormat="yyyy년 M월"
         hideExtraDays={true} // 이전달, 다음달 날짜 표시 여부.
         enableSwipeMonths={true} // 달력 스와이프 가능 여부
         firstDay={0} // 0: 일요일, 1: 월요일
         markingType={'custom'}
-        markedDates={{
-          // 2. selected 값이 있을 때만 markedDates 객체를 적용
-          ...(selected && {
-            [selected]: {
-              disableTouchEvent: true,
-              // 3. customStyles를 사용하여 컨테이너와 텍스트 스타일을 직접 지정
-              customStyles: {
-                container: {
-                  backgroundColor: colors.primary[500], // 원의 배경색
-                  width: 36, // 원의 너비
-                  height: 36, // 원의 높이
-                  borderRadius: 18, // 원으로 만들기 (width/height의 절반)
-                  justifyContent: 'center', // 내부 텍스트 세로 중앙 정렬
-                  alignItems: 'center', // 내부 텍스트 가로 중앙 정렬
-                },
-                text: {
-                  color: 'white', // 글자색
-                  fontWeight: '600',
-                },
-              },
-            },
-          }),
-          // 다른 marked 날짜가 있다면 여기에 추가 가능
-        }}
+        markedDates={markedDates}
         theme={{
           stylesheet: {
             calendar: {
@@ -201,12 +249,26 @@ export default function CalendarScreen() {
               {formatDateHeader(selected || getTodayDateString())}
             </Text>
           </View>
-          <Text className="text-[18px]/[18px] font-bold text-[#232323]">
-            상세보기
-          </Text>
+          <TouchableOpacity
+            onPress={() =>
+              navigation.navigate('MedicationDetail', {
+                date: selected || getTodayDateString(),
+              })
+            }
+          >
+            <Text className="text-[18px]/[18px] font-bold text-[#232323]">
+              상세보기
+            </Text>
+          </TouchableOpacity>
         </View>
         <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
-          <TodayTimeLine medications={medications} />
+          {recordsLoading ? (
+            <View className="flex-1 items-center justify-center py-10">
+              <Text className="text-gray-500">복약 기록을 불러오는 중...</Text>
+            </View>
+          ) : (
+            <TodayTimeLine medications={medications} />
+          )}
         </ScrollView>
       </View>
     </SafeAreaView>

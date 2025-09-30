@@ -12,6 +12,7 @@ type CustomModalProps = {
   onConfirm?: () => void;
   onCancel?: () => void;
   disableBackdropClose?: boolean; // 바깥 영역 탭 닫기 방지
+  children?: React.ReactNode; // 추가 컨텐츠
 };
 
 export default function CustomModal({
@@ -24,6 +25,7 @@ export default function CustomModal({
   onConfirm,
   onCancel,
   disableBackdropClose = false,
+  children,
 }: CustomModalProps) {
   return (
     <Modal visible={visible} animationType="fade" transparent>
@@ -59,6 +61,7 @@ export default function CustomModal({
                 {line3}
               </Text>
             )}
+            {children}
           </View>
 
           {/* Footer Buttons: onCancel 유무에 따라 1개 또는 2개의 버튼을 렌더링 */}
