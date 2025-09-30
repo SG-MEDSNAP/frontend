@@ -14,8 +14,20 @@ export default function LoginScreen({ navigation }: Props) {
   const handleSocialLogin = (
     provider: 'KAKAO' | 'NAVER' | 'GOOGLE' | 'APPLE',
   ) => {
+    console.log(`[LOGIN] ${provider} 로그인 시작`);
+
     socialLoginMutation.mutate(provider, {
-      onSuccess: (result) => {
+      onSuccess: (result: any) => {
+        console.log(`[LOGIN] ${provider} 로그인 성공:`, result);
+
+        // Swagger 테스트용 아이디 토큰 로그 출력
+        if (result.idToken) {
+          console.log('='.repeat(50));
+          console.log(`[SWAGGER] ${provider} ID TOKEN:`);
+          console.log(result.idToken);
+          console.log('='.repeat(50));
+        }
+
         if (result.next === 'HOME') {
           navigation.replace('MainTabs');
         } else {
@@ -26,8 +38,9 @@ export default function LoginScreen({ navigation }: Props) {
         }
       },
       onError: (error) => {
-        console.warn(`${provider} 로그인 실패:`, error);
+        console.error(`[LOGIN] ${provider} 로그인 실패:`, error);
         // 에러 토스트 표시 (구현 필요)
+        // TODO: 에러 토스트 표시
       },
     });
   };

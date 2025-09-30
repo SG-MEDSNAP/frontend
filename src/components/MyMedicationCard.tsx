@@ -1,12 +1,11 @@
 import React from 'react';
 import { View, Text, TouchableOpacity, Alert } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
-import { deleteMedication } from '../api/medication/medication';
+import { useDeleteMedicationMutation } from '../api/medication';
 
 type Props = {
   name: string;
   times: string;
-  caregiver: string;
   days: string;
   alarm: string;
   id?: number;
@@ -17,7 +16,6 @@ type Props = {
 export default function MyMedicationCard({
   name,
   times,
-  caregiver,
   days,
   alarm,
   onEdit,
@@ -25,19 +23,23 @@ export default function MyMedicationCard({
   id,
 }: Props) {
   const navigation: any = useNavigation();
+  const deleteMedicationMutation = useDeleteMedicationMutation();
 
   const handleDelete = async () => {
-    try {
-      if (!id) {
-        Alert.alert('삭제 실패', '삭제할 약 ID가 없습니다.');
-        return;
-      }
-      await deleteMedication(id);
-      Alert.alert('삭제 완료', '약 정보가 삭제되었습니다.');
-      if (onDelete) onDelete();
-    } catch (e: any) {
-      Alert.alert('삭제 실패', e?.message ?? '다시 시도해주세요.');
+    if (!id) {
+      Alert.alert('삭제 실패', '삭제할 약 ID가 없습니다.');
+      return;
     }
+
+    deleteMedicationMutation.mutate(id, {
+      onSuccess: () => {
+        Alert.alert('삭제 완료', '약 정보가 삭제되었습니다.');
+        if (onDelete) onDelete();
+      },
+      onError: (error: any) => {
+        Alert.alert('삭제 실패', error?.message ?? '다시 시도해주세요.');
+      },
+    });
   };
   return (
     <View className="mb-4">
@@ -72,12 +74,6 @@ export default function MyMedicationCard({
         <View className="mb-4">
           <Text className="h8 text-gray-500 mb-1">시간</Text>
           <Text className="body-lg text-gray-900">{times}</Text>
-        </View>
-
-        {/* 보호자 문자 수신 */}
-        <View className="mb-4">
-          <Text className="h8 text-gray-500 mb-1">보호자 문자 수신</Text>
-          <Text className="body-lg text-gray-900">{caregiver}</Text>
         </View>
 
         {/* 요일 */}

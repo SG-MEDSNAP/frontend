@@ -1,7 +1,11 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { deleteMedication, registerMedication } from './apis';
 import { medicationKeys } from './keys';
-import type { MedicationRegisterRequest, MedicationData } from './types';
+import type {
+  MedicationRegisterRequest,
+  MedicationData,
+  ApiResponse,
+} from './types';
 
 export function useRegisterMedicationMutation() {
   const qc = useQueryClient();
@@ -13,8 +17,12 @@ export function useRegisterMedicationMutation() {
       payload: MedicationRegisterRequest;
       image: string;
     }) => registerMedication(payload, image),
-    onSuccess: () => {
+    onSuccess: (data: MedicationData) => {
       qc.invalidateQueries({ queryKey: medicationKeys.lists() });
+      console.log('Medication registered successfully:', data);
+    },
+    onError: (error) => {
+      console.error('Failed to register medication:', error);
     },
   });
 }
@@ -28,4 +36,3 @@ export function useDeleteMedicationMutation() {
     },
   });
 }
-
