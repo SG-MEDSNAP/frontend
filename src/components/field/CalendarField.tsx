@@ -23,7 +23,7 @@ export function CalendarField({
         required: '생년월일을 입력해 주세요.',
         validate: (v) =>
           isValidBirthYYYYMMDD(v || '') ||
-          '유효한 생년월일(YYYY.MM.DD) 형식이 아닙니다.',
+          '유효한 생년월일(YYYY-MM-DD) 형식이 아닙니다.',
       }}
       render={({
         field: { onChange, value, onBlur },
@@ -50,20 +50,20 @@ export function CalendarField({
                 digits = prevDigits.slice(0, -1);
               }
 
-              // 숫자를 화면용 포맷으로 변환
+              // 숫자를 화면용 포맷으로 변환 (- 구분자 사용)
               let f = digits;
               if (digits.length >= 8)
-                f = `${digits.slice(0, 4)}.${digits.slice(4, 6)}.${digits.slice(6, 8)}`;
+                f = `${digits.slice(0, 4)}-${digits.slice(4, 6)}-${digits.slice(6, 8)}`;
               else if (digits.length >= 6)
-                f = `${digits.slice(0, 4)}.${digits.slice(4, 6)}.${digits.slice(6)}`;
+                f = `${digits.slice(0, 4)}-${digits.slice(4, 6)}-${digits.slice(6)}`;
               else if (digits.length >= 4)
-                f = `${digits.slice(0, 4)}.${digits.slice(4)}`;
+                f = `${digits.slice(0, 4)}-${digits.slice(4)}`;
 
               prevFormattedRef.current = f;
               prevDigitsRef.current = digits;
               onChange(f);
             }}
-            placeholder="년.월.일"
+            placeholder="년-월-일"
             keyboardType="number-pad"
             className="text-[20px] text-[#000000] font-semibold"
             placeholderTextColor="#99979C"

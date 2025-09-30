@@ -2,6 +2,7 @@ import { Provider } from '../api/auth';
 import {
   login as kakaoLogin,
   loginWithKakaoAccount,
+  isKakaoTalkLoginAvailable,
 } from '@react-native-seoul/kakao-login';
 import { signInWithNaver } from './naver';
 import { signInWithGoogle } from './google';
@@ -24,26 +25,29 @@ export async function getIdTokenFor(provider: Provider): Promise<string> {
 }
 
 async function getKakaoIdToken(): Promise<string> {
-  // 1) 카카오톡 앱 로그인 시도 (파라미터 없음)
-  try {
-    const r = await kakaoLogin();
-    if (r?.idToken) {
-      debugClaims(r.idToken);
-      return r.idToken;
-    }
-  } catch (err) {
-    console.log('[KAKAO] 톡 로그인 실패 → 계정 로그인으로 fallback:', err);
-  }
+  console.log('[KAKAO] 카카오 로그인 시작');
 
-  // 2) 계정 로그인(웹뷰) 시도 (파라미터 없음)
-  const r2 = await loginWithKakaoAccount();
-  if (!r2?.idToken) {
-    throw new Error(
-      'Kakao idToken 없음 (콘솔 OIDC ON + 동의항목에 openid 추가 필요)',
-    );
+  // 임시: 카카오톡 앱 로그인 문제로 인해 웹뷰 로그인만 사용
+  // TODO: 카카오톡 앱 로그인 URL Scheme 문제 해결 후 다시 활성화
+  console.log('[KAKAO] 카카오톡 앱 로그인 비활성화 (임시) → 웹뷰 로그인 사용');
+
+  try {
+    // 계정 로그인(웹뷰) 시도
+    console.log('[KAKAO] 카카오 계정 로그인 시도');
+    const r2 = await loginWithKakaoAccount();
+    if (!r2?.idToken) {
+      console.error('[KAKAO] 카카오 계정 로그인 - idToken 없음');
+      throw new Error(
+        'Kakao idToken 없음 (콘솔 OIDC ON + 동의항목에 openid 추가 필요)',
+      );
+    }
+    console.log('[KAKAO] 카카오 계정 로그인 성공');
+    debugClaims(r2.idToken);
+    return r2.idToken;
+  } catch (err) {
+    console.error('[KAKAO] 카카오 계정 로그인 실패:', err);
+    throw err;
   }
-  debugClaims(r2.idToken);
-  return r2.idToken;
 }
 
 function debugClaims(idToken: string) {
