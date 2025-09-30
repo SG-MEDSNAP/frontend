@@ -7,11 +7,12 @@ import Button from '../components/Button';
 
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { useRegisterMedicationMutation } from '../api/medication';
 
-import { medicationSchema, type MedicationForm } from '../schemas/medication'; // name/times/caregiverPhone 스키마
+import { medicationSchema, type MedicationForm } from '../schemas/medication'; // name/times 스키마
+import type { DoseDay } from '../api/medication/types';
 import { NameField } from '../components/field/NameField';
 import { TimePickField } from 'src/components/field/TimePickField'; // declarations.d.ts에 경로 추가 했으므로 import 가능. 단 절대경로로, 확장자 없이.
-import { PhoneField } from '../components/field/PhoneField';
 import ToggleSwitch from '../components/ToggleSwitch';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import * as Notifications from 'expo-notifications';
@@ -25,21 +26,10 @@ type RegisterScreenNavigationProp = NativeStackNavigationProp<
 type Props = NativeStackScreenProps<RootStackParamList, 'MedicationRegister'>;
 
 export default function RegisterScreen({ navigation, route }: Props) {
+  const registerMedicationMutation = useRegisterMedicationMutation();
   const days = ['월', '화', '수', '목', '금', '토', '일'];
-  const [selectedDays, setSelectedDays] = useState<string[]>([
-    '월',
-    '화',
-    '수',
-    '목',
-    '금',
-    '월',
-    '화',
-    '수',
-    '목',
-    '금',
-  ]);
+  const [selectedDays, setSelectedDays] = useState<string[]>([]);
   const [everyDay, setEveryDay] = useState(false);
-  const [guardianSms, setGuardianSms] = useState(false);
   const [tenMinuteReminder, setTenMinuteReminder] = useState(false);
 
   const toggleDay = (day: string) => {
@@ -63,45 +53,28 @@ export default function RegisterScreen({ navigation, route }: Props) {
   const {
     control,
     handleSubmit,
-    setValue,
-    watch,
     formState: { isValid, errors },
   } = useForm<MedicationForm>({
     resolver: zodResolver(medicationSchema),
-    defaultValues: { name: '', times: [], caregiverPhone: '' },
+    defaultValues: { name: '', times: [] },
     mode: 'onChange',
     reValidateMode: 'onChange',
     delayError: 2000,
     shouldFocusError: true,
   });
 
-  // 보호자 스위치 끄면 폰 입력 비우기
-  const caregiverPhone = watch('caregiverPhone');
-  useEffect(() => {
-    if (!guardianSms && caregiverPhone) setValue('caregiverPhone', '');
-  }, [guardianSms]);
-
-  // 🔹 추가 유효성: 요일/보호자번호(ON이면 필수)
-  const isDayValid = useMemo(() => selectedDays.length > 0, [selectedDays]);
-  const isPhoneValid = useMemo(() => {
-    if (!guardianSms) return true;
-    const digits = (caregiverPhone ?? '').replace(/\D/g, '');
-    return /^01[016789]\d{7,8}$/.test(digits);
-  }, [guardianSms, caregiverPhone]);
+  // 🔹 추가 유효성: 요일 (매일이거나 개별 요일 선택)
+  const isDayValid = useMemo(
+    () => everyDay || selectedDays.length > 0,
+    [everyDay, selectedDays],
+  );
 
   //  버튼 활성 조건: Zod + 추가 유효성
-  const canSubmit = isValid && isDayValid && isPhoneValid;
+  const canSubmit = isValid && isDayValid;
 
   const onSubmit = async (form: MedicationForm) => {
     if (!isDayValid) {
       Alert.alert('입력 확인', '요일을 최소 1개 이상 선택해주세요.');
-      return;
-    }
-    if (!isPhoneValid) {
-      Alert.alert(
-        '입력 확인',
-        '보호자 문자 수신이 켜져있으면 전화번호가 필요해요.',
-      );
       return;
     }
 
@@ -112,7 +85,7 @@ export default function RegisterScreen({ navigation, route }: Props) {
       return;
     }
 
-    const daysToUse = everyDay ? days : selectedDays; // '매일' ON이면 7일 전체
+    // 매일이면 DAILY 타입 사용, 아니면 선택된 개별 요일들 사용
 
     try {
       // 1) 권한 보장 (iOS/Android 공통)
@@ -128,9 +101,51 @@ export default function RegisterScreen({ navigation, route }: Props) {
         }
       }
 
-      // 2) 예약 실행
+      // 2) API로 약 등록
+      console.log('[REGISTER] 약 등록 API 호출 시작');
+      console.log('[REGISTER] 폼 데이터:', form);
+      console.log('[REGISTER] 매일 토글:', everyDay);
+      console.log('[REGISTER] 선택된 요일:', selectedDays);
+      console.log('[REGISTER] 10분 전 알림:', tenMinuteReminder);
+
+      // 매일이면 DAILY, 아니면 선택된 개별 요일들
+      const doseDays: DoseDay[] = everyDay
+        ? ['DAILY']
+        : selectedDays.map((day) => {
+            const dayMap: Record<string, DoseDay> = {
+              월: 'MON',
+              화: 'TUE',
+              수: 'WED',
+              목: 'THU',
+              금: 'FRI',
+              토: 'SAT',
+              일: 'SUN',
+            };
+            return dayMap[day] || 'MON';
+          });
+
+      const medicationPayload = {
+        name: form.name,
+        preNotify: tenMinuteReminder,
+        doseTimes: form.times, // ['09:00', '21:30']
+        doseDays: doseDays,
+      };
+
+      console.log('[REGISTER] 최종 페이로드:', medicationPayload);
+
+      const registeredMedication = await registerMedicationMutation.mutateAsync(
+        {
+          payload: medicationPayload,
+          image: route.params?.imageUri || '',
+        },
+      );
+
+      console.log('[REGISTER] 약 등록 API 성공:', registeredMedication);
+
+      // 3) 로컬 알림 예약 실행
+      const notificationDays = everyDay ? days : selectedDays; // 로컬 알림은 실제 요일 배열 필요
       const ids = await scheduleWeeklyNotifications({
-        selectedDays: daysToUse,
+        selectedDays: notificationDays,
         times: form.times, // 예: ['09:00','21:30']
         tenMinutesBefore: tenMinuteReminder,
         drugName: form.name,
@@ -138,22 +153,11 @@ export default function RegisterScreen({ navigation, route }: Props) {
 
       console.log('예약된 알림 IDs:', ids);
 
-      // 3) payload 로그 (필요하다면)
-      const payload = {
-        name: form.name,
-        times: form.times,
-        caregiverPhone: guardianSms ? form.caregiverPhone : undefined,
-        selectedDays: daysToUse,
-        everyDay,
-        tenMinuteReminder,
-      };
-      console.log('등록 payload:', payload);
-
       // 4) 완료 화면으로 이동
       navigation.replace('RegisterDoneScreen');
     } catch (e: any) {
-      console.error(e);
-      Alert.alert('알림 예약 실패', e?.message ?? '다시 시도해주세요.');
+      console.error('[REGISTER] 약 등록 실패:', e);
+      Alert.alert('등록 실패', e?.message ?? '다시 시도해주세요.');
     }
   };
 
@@ -163,11 +167,6 @@ export default function RegisterScreen({ navigation, route }: Props) {
       Alert.alert('입력 확인', String(firstError.message));
     } else if (!isDayValid) {
       Alert.alert('입력 확인', '요일을 최소 1개 이상 선택해주세요.');
-    } else if (!isPhoneValid) {
-      Alert.alert(
-        '입력 확인',
-        '보호자 문자 수신이 켜져있으면 전화번호가 필요해요.',
-      );
     } else {
       Alert.alert('입력 확인', '필수 항목을 확인해 주세요.');
     }
@@ -247,27 +246,6 @@ export default function RegisterScreen({ navigation, route }: Props) {
               <TimePickField control={control} />
             </View>
 
-            {/* 보호자 문자 수신 영역 */}
-            <View className="flex-col gap-[8px]">
-              <View className="flex-row items-center justify-between ">
-                <Text className="text-[18px] font-semibold text-[#404040]">
-                  보호자 문자 수신(결과 전송)
-                </Text>
-                <ToggleSwitch
-                  value={guardianSms}
-                  onValueChange={setGuardianSms}
-                />
-              </View>
-
-              <PhoneField control={control} />
-              {/* (선택) 번호 에러 안내 */}
-              {!isPhoneValid && guardianSms && (
-                <Text className="mt-1 text-[#EF4444] text-[14px]">
-                  올바른 전화번호를 입력해주세요.
-                </Text>
-              )}
-            </View>
-
             {/* 10분 전 알림 */}
             <ToggleSwitch
               label="10분전 알림"
@@ -283,12 +261,14 @@ export default function RegisterScreen({ navigation, route }: Props) {
 
             {/* 등록 버튼 */}
             <Button
-              title="등록하기"
+              title={
+                registerMedicationMutation.isPending ? '등록 중...' : '등록하기'
+              }
               type={canSubmit ? 'primary' : 'quaternary'}
               size="lg"
               className="mt-2"
               onPress={handleSubmit(onSubmit, onInvalid)}
-              disabled={!canSubmit} //  유효할 때만 활성화
+              disabled={!canSubmit || registerMedicationMutation.isPending} //  유효할 때만 활성화
             />
           </View>
         </View>
