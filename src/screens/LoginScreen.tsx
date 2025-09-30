@@ -2,13 +2,49 @@ import React from 'react';
 import { View, Text, Image, ScrollView, Platform } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import LoginButton from '../components/LoginButton';
-import { socialLoginOrSignupKickoff } from '../features/socialLogin';
+import { useSocialLoginMutation } from '../features/socialLogin';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../../App';
 
 type Props = NativeStackScreenProps<RootStackParamList, any>;
 
 export default function LoginScreen({ navigation }: Props) {
+  const socialLoginMutation = useSocialLoginMutation();
+
+  const handleSocialLogin = (
+    provider: 'KAKAO' | 'NAVER' | 'GOOGLE' | 'APPLE',
+  ) => {
+    console.log(`[LOGIN] ${provider} 로그인 시작`);
+
+    socialLoginMutation.mutate(provider, {
+      onSuccess: (result: any) => {
+        console.log(`[LOGIN] ${provider} 로그인 성공:`, result);
+
+        // Swagger 테스트용 아이디 토큰 로그 출력
+        if (result.idToken) {
+          console.log('='.repeat(50));
+          console.log(`[SWAGGER] ${provider} ID TOKEN:`);
+          console.log(result.idToken);
+          console.log('='.repeat(50));
+        }
+
+        if (result.next === 'HOME') {
+          navigation.replace('MainTabs');
+        } else {
+          navigation.navigate('Join', {
+            idToken: result.idToken,
+            provider,
+          });
+        }
+      },
+      onError: (error) => {
+        console.error(`[LOGIN] ${provider} 로그인 실패:`, error);
+        // 에러 토스트 표시 (구현 필요)
+        // TODO: 에러 토스트 표시
+      },
+    });
+  };
+
   return (
     <SafeAreaView style={{ flex: 1 }} className="bg-white">
       <ScrollView
@@ -38,86 +74,31 @@ export default function LoginScreen({ navigation }: Props) {
             <LoginButton
               type="kakao"
               title="카카오로 로그인"
-              onPress={async () => {
-                try {
-                  const result = await socialLoginOrSignupKickoff('KAKAO');
-                  if (result.next === 'HOME') {
-                    navigation.replace('MainTabs');
-                  } else {
-                    navigation.navigate('Join', {
-                      idToken: result.idToken,
-                      provider: 'KAKAO',
-                    });
-                  }
-                } catch (e) {
-                  console.warn('Kakao 로그인 실패:', e);
-                  // 에러 토스트 표시 (구현 필요)
-                }
-              }}
+              onPress={() => handleSocialLogin('KAKAO')}
+              disabled={socialLoginMutation.isPending}
               className="w-full"
             />
-            <LoginButton
+            {/* 네이버 로그인 비활성화 */}
+            {/* <LoginButton
               type="naver"
               title="네이버로 로그인"
-              onPress={async () => {
-                try {
-                  const result = await socialLoginOrSignupKickoff('NAVER');
-                  if (result.next === 'HOME') {
-                    navigation.replace('MainTabs');
-                  } else {
-                    navigation.navigate('Join', {
-                      idToken: result.idToken,
-                      provider: 'NAVER',
-                    });
-                  }
-                } catch (e) {
-                  console.warn('Naver 로그인 실패:', e);
-                  // 에러 토스트 표시 (구현 필요)
-                }
-              }}
+              onPress={() => handleSocialLogin('NAVER')}
+              disabled={socialLoginMutation.isPending}
               className="w-full"
-            />
+            /> */}
             <LoginButton
               type="google"
               title="구글로 로그인"
-              onPress={async () => {
-                try {
-                  const result = await socialLoginOrSignupKickoff('GOOGLE');
-                  if (result.next === 'HOME') {
-                    navigation.replace('MainTabs');
-                  } else {
-                    navigation.navigate('Join', {
-                      idToken: result.idToken,
-                      provider: 'GOOGLE',
-                    });
-                  }
-                } catch (e) {
-                  console.warn('Google 로그인 실패:', e);
-                  // 에러 토스트 표시 (구현 필요)
-                }
-              }}
+              onPress={() => handleSocialLogin('GOOGLE')}
+              disabled={socialLoginMutation.isPending}
               className="w-full"
             />
             {Platform.OS === 'ios' && (
               <LoginButton
                 type="apple"
                 title="애플로 로그인"
-                onPress={async () => {
-                  try {
-                    const result = await socialLoginOrSignupKickoff('APPLE');
-                    if (result.next === 'HOME') {
-                      navigation.replace('MainTabs');
-                    } else {
-                      navigation.navigate('Join', {
-                        idToken: result.idToken,
-                        provider: 'APPLE',
-                      });
-                    }
-                  } catch (e) {
-                    console.warn('Apple 로그인 실패:', e);
-                    // 에러 토스트 표시 (구현 필요)
-                  }
-                }}
+                onPress={() => handleSocialLogin('APPLE')}
+                disabled={socialLoginMutation.isPending}
                 className="w-full"
               />
             )}

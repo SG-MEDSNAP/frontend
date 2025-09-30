@@ -8,10 +8,10 @@ export function isKoreanEnglishName(value: string): boolean {
   return /^[a-zA-Z가-힣ㄱ-ㅎㅏ-ㅣ\s]+$/.test(trimmed);
 }
 
-// Validate YYYY.MM.DD with real calendar bounds (supports leap year)
+// Validate YYYY-MM-DD with real calendar bounds (supports leap year)
 export function isValidBirthYYYYMMDD(value: string): boolean {
-  if (!/^\d{4}\.\d{2}\.\d{2}$/.test(value)) return false;
-  const [yStr, mStr, dStr] = value.split('.');
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(value)) return false;
+  const [yStr, mStr, dStr] = value.split('-');
   const y = parseInt(yStr, 10);
   const m = parseInt(mStr, 10);
   const d = parseInt(dStr, 10);

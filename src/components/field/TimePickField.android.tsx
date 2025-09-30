@@ -12,6 +12,8 @@ import type { MedicationForm } from '../../schemas/medication';
 import Picker from 'react-native-wheel-picker-expo';
 import WheelPicker from 'react-native-wheely';
 import { to24h, toKoreanTimeLabelFromHHMM, pad2 } from '../../lib/date';
+import { Icon } from '../Icon';
+import CustomModal from '../CustomModal';
 
 export function TimePickField({
   control,
@@ -25,6 +27,8 @@ export function TimePickField({
   const [minuteIndex, setMinuteIndex] = useState(0); // '00'분
 
   const [dupMsg, setDupMsg] = useState<string | null>(null);
+  const [deleteModalVisible, setDeleteModalVisible] = useState(false);
+  const [timeToDelete, setTimeToDelete] = useState<string | null>(null);
 
   const scheme = useColorScheme();
   const isDark = scheme === 'dark';
@@ -84,6 +88,24 @@ export function TimePickField({
 
         const remove = (t: string) => onChange(value.filter((v) => v !== t));
 
+        const handleDeleteTime = (t: string) => {
+          setTimeToDelete(t);
+          setDeleteModalVisible(true);
+        };
+
+        const confirmDelete = () => {
+          if (timeToDelete) {
+            remove(timeToDelete);
+            setTimeToDelete(null);
+          }
+          setDeleteModalVisible(false);
+        };
+
+        const cancelDelete = () => {
+          setTimeToDelete(null);
+          setDeleteModalVisible(false);
+        };
+
         return (
           <>
             {/* 추가용 플레이스홀더 행 */}
@@ -111,7 +133,10 @@ export function TimePickField({
                 <Text className="flex-1 text-[20px] font-bold text-[#111111]">
                   {toKoreanTimeLabelFromHHMM(t)}
                 </Text>
-                <TouchableOpacity onPress={() => remove(t)} hitSlop={8}>
+                <TouchableOpacity
+                  onPress={() => handleDeleteTime(t)}
+                  hitSlop={8}
+                >
                   <Text className="text-[28px] leading-[28px] text-[#597AFF]">
                     −
                   </Text>
@@ -218,6 +243,17 @@ export function TimePickField({
                 </View>
               </View>
             </Modal>
+
+            {/* 삭제 확인 모달 */}
+            <CustomModal
+              visible={deleteModalVisible}
+              line1="정말로,"
+              line2="삭제하시겠습니까?"
+              confirmText="확인"
+              cancelText="닫기"
+              onConfirm={confirmDelete}
+              onCancel={cancelDelete}
+            />
           </>
         );
       }}
