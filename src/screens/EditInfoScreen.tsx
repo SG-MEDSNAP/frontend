@@ -2,6 +2,7 @@ import React, { useEffect } from 'react';
 import { View, Text, ScrollView, Alert } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useForm } from 'react-hook-form';
+import { useNavigation } from '@react-navigation/native';
 import { useUserQuery, useUpdateMyPageMutation } from '../api/user';
 import Button from '../components/Button';
 import ToggleSwitch from '../components/ToggleSwitch';
@@ -17,6 +18,7 @@ type EditForm = {
 };
 
 export default function EditInfoScreen() {
+  const navigation: any = useNavigation();
   // 사용자 정보 조회 활성화 (새로운 응답 구조로 재활성화)
   const { data: user, isLoading, error } = useUserQuery();
   const updateMyPageMutation = useUpdateMyPageMutation();
@@ -35,11 +37,7 @@ export default function EditInfoScreen() {
   useEffect(() => {
     if (user) {
       setValue('name', user.name);
-      // API에서 받은 날짜를 - 형식으로 변환 (2002.08.19 -> 2002-08-19)
-      const formattedBirthday = user.birthday
-        ? user.birthday.replace(/\./g, '-')
-        : '';
-      setValue('birth', formattedBirthday);
+      setValue('birth', user.birthday);
       setValue('phone', user.phone);
       setValue('pushAgree', user.isPushConsent);
     }
@@ -66,7 +64,9 @@ export default function EditInfoScreen() {
       await updateMyPageMutation.mutateAsync(formData);
 
       console.log('[EDIT_INFO] 마이페이지 수정 성공');
-      Alert.alert('수정 완료', '개인정보가 수정되었습니다.');
+      Alert.alert('수정 완료', '개인정보가 수정되었습니다.', [
+        { text: '확인', onPress: () => navigation.goBack() },
+      ]);
     } catch (e: any) {
       console.error('[EDIT_INFO] 마이페이지 수정 실패:', e);
       Alert.alert('수정 실패', e?.message ?? '다시 시도해주세요.');
@@ -149,7 +149,12 @@ export default function EditInfoScreen() {
       </ScrollView>
 
       <View className="px-4 pb-4">
-        <Button title="수정완료" type="primary" onPress={handleSubmit} />
+        <Button
+          title="수정완료"
+          type={canSubmit ? 'primary' : 'quaternary'}
+          onPress={handleSubmit}
+          disabled={!canSubmit}
+        />
       </View>
     </SafeAreaView>
   );
