@@ -86,7 +86,7 @@ export default function HomeScreen({ navigation }: Props) {
               <Text className="text-[34px]/[46px] font-bold text-[#404040]">
                 복약 알림 서비스
               </Text>
-              <Text className="text-[18px]/[18px] mt-[15px] font-normal text-[#404040]">
+              <Text className="text-[18px] mt-[15px] font-normal text-[#404040]">
                 처방 받은 약을 등록해보세요
               </Text>
             </View>
