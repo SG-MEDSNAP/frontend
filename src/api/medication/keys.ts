@@ -7,4 +7,6 @@ export const medicationKeys = {
   records: (date: string) => [...medicationKeys.all, 'records', date] as const,
   recordDates: (year: number, month: number) =>
     [...medicationKeys.all, 'record-dates', { year, month }] as const,
+  verify: (recordId: number) =>
+    [...medicationKeys.all, 'verify', recordId] as const,
 };
