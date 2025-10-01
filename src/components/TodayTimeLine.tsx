@@ -1,16 +1,10 @@
 import React from 'react';
 import { View, Text } from 'react-native';
 import MedicationCard from './MedicationCard';
-
-interface Medication {
-  id: string;
-  name: string;
-  time: string;
-  taken: boolean;
-}
+import { MedicationRecordItem } from '../api/medication/types';
 
 interface TodayTimeLineProps {
-  medications: Medication[];
+  medications: MedicationRecordItem[];
 }
 
 export default function TodayTimeLine({ medications }: TodayTimeLineProps) {
@@ -19,16 +13,21 @@ export default function TodayTimeLine({ medications }: TodayTimeLineProps) {
       {medications.length > 0 ? (
         medications.map((medication) => (
           <MedicationCard
-            key={medication.id}
-            name={medication.name}
-            time={medication.time}
-            taken={medication.taken}
+            key={
+              medication.recordId?.toString() ||
+              (medication.medicationId && medication.medicationId.toString()) ||
+              Math.random().toString()
+            }
+            name={medication.medicationName}
+            time={medication.alarmTime}
+            status={medication.status}
+            recordId={medication.recordId}
           />
         ))
       ) : (
-        <View className="rounded-[16px] p-6 items-center">
+        <View className="flex-1 p-6 items-center">
           <Text className="text-[16px] text-[#666] text-center">
-            등록된 약물이 없습니다.{'\n'}새로운 약물을 등록해보세요.
+            등록된 약이 없습니다.{'\n'}새로운 약을 등록해보세요.
           </Text>
         </View>
       )}
