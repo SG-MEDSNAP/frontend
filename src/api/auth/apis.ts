@@ -25,6 +25,48 @@ export async function getRefreshToken(): Promise<string | null> {
   return await SecureStore.getItemAsync('refreshToken');
 }
 
+// JWT 토큰에서 사용자 정보 추출
+export interface UserInfo {
+  role: string;
+  userId: string;
+  exp: number;
+}
+
+// 토큰에서 사용자 정보 추출 함수
+export function getUserInfoFromToken(accessToken: string): UserInfo | null {
+  try {
+    const decoded = jwtDecode(accessToken) as any;
+    return {
+      role: decoded.role || 'USER',
+      userId: decoded.sub || decoded.userId || '',
+      exp: decoded.exp || 0,
+    };
+  } catch (e) {
+    console.warn('[TOKEN] JWT 디코딩 실패:', e);
+    return null;
+  }
+}
+
+// 현재 사용자의 Role 확인 함수
+export async function getUserRole(): Promise<string | null> {
+  try {
+    const accessToken = await getAccessToken();
+    if (!accessToken) return null;
+
+    const userInfo = getUserInfoFromToken(accessToken);
+    return userInfo?.role || null;
+  } catch (e) {
+    console.warn('[TOKEN] 사용자 Role 조회 실패:', e);
+    return null;
+  }
+}
+
+// Admin 권한 체크 함수
+export async function isAdmin(): Promise<boolean> {
+  const role = await getUserRole();
+  return role === 'ADMIN';
+}
+
 // 토큰 만료 체크 함수
 export function shouldRefreshToken(accessToken: string): boolean {
   try {

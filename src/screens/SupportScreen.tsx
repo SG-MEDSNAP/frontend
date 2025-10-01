@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useMemo, useState, useEffect } from 'react';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import {
   Text,
@@ -23,6 +23,7 @@ import {
 } from '@/api/faq';
 import type { FaqData } from '@/api/faq';
 import { BottomTabScreenProps } from '@react-navigation/bottom-tabs';
+import { isAdmin } from '@/api/auth/apis';
 
 // images
 import HeaderLogo from '../../assets/images/header_logo.svg';
@@ -58,9 +59,22 @@ export default function SupportScreen({ navigation }: Props) {
   const [openFaqId, setOpenFaqId] = useState<number | null>(null);
   const [deleteModalVisible, setDeleteModalVisible] = useState(false);
   const [faqToDelete, setFaqToDelete] = useState<number | null>(null);
+  const [userIsAdmin, setUserIsAdmin] = useState(false);
 
-  // TODO: 실제 권한 체크 로직 구현 (예: 관리자 권한)
-  const isAdmin = true; // 임시로 true 설정
+  // Admin 권한 체크
+  useEffect(() => {
+    const checkAdminPermission = async () => {
+      try {
+        const adminStatus = await isAdmin();
+        setUserIsAdmin(adminStatus);
+      } catch (error) {
+        console.error('Admin 권한 체크 실패:', error);
+        setUserIsAdmin(false);
+      }
+    };
+
+    checkAdminPermission();
+  }, []);
 
   // FAQ 데이터를 API에서 가져오기
   const { data: faqData, isLoading, isError, error } = useFaqsQuery();
@@ -197,7 +211,7 @@ export default function SupportScreen({ navigation }: Props) {
                   item={item}
                   isOpen={item.id === openFaqId}
                   onPress={() => handleToggleFaq(item.id)}
-                  showActions={isAdmin}
+                  showActions={userIsAdmin}
                   onEdit={() => handleEditFaq(item.id)}
                   onDelete={() => handleDeleteFaq(item.id)}
                 />
@@ -212,16 +226,18 @@ export default function SupportScreen({ navigation }: Props) {
                   </Text>
                 </View>
               }
-              // 리스트의 맨 아래에 "Q&A 등록하기" 버튼 구현
+              // 리스트의 맨 아래에 "Q&A 등록하기" 버튼 구현 (Admin만 표시)
               ListFooterComponent={
-                <View className="m-4">
-                  <Button
-                    title="Q&A 등록하기"
-                    type="primary"
-                    size="lg"
-                    onPress={handleRegisterPress}
-                  />
-                </View>
+                userIsAdmin ? (
+                  <View className="m-4">
+                    <Button
+                      title="Q&A 등록하기"
+                      type="primary"
+                      size="lg"
+                      onPress={handleRegisterPress}
+                    />
+                  </View>
+                ) : null
               }
             />
           )}
