@@ -1,18 +1,81 @@
 import React from 'react';
-import { View, Text, TouchableOpacity } from 'react-native';
+import { View, Text, TouchableOpacity, Platform } from 'react-native';
 import Button from './Button';
+import { useCamera } from '../hooks/useCamera';
+import { MedicationRecordStatus } from '../api/medication/types';
+import { useNavigation } from '@react-navigation/native';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { USE_SAMPLE_DATA } from '../api/medication/config';
 
 interface MedicationCardProps {
   name: string;
   time: string;
-  taken?: boolean;
+  status: MedicationRecordStatus;
+  recordId?: number;
 }
 
 export default function MedicationCard({
   name,
   time,
-  taken = false,
+  status,
+  recordId,
 }: MedicationCardProps) {
+  const navigation = useNavigation<NativeStackNavigationProp<any>>();
+  const { pickedImage, setPickedImage, takeImage } = useCamera({
+    simulatorMessage: '카메라를 사용할 수 없어 복용 확인을 건너뜁니다.',
+    errorMessage: '복용 확인 촬영 중 문제가 발생했습니다.',
+  });
+
+  // 샘플 이미지 경로 (플랫폼에 따라 다른 경로 형식 사용)
+  const getSampleImageUri = () => {
+    const imageName = 'SampleImage1.png';
+
+    if (Platform.OS === 'ios') {
+      return `${Platform.constants.reactNativeVersion ? '' : '/Users/artisan/work/med/frontend/'}assets/images/${imageName}`;
+    } else if (Platform.OS === 'android') {
+      return `file:///android_asset/images/${imageName}`;
+    } else {
+      // 웹이나 다른 플랫폼의 경우 (개발 환경)
+      return `../assets/images/${imageName}`;
+    }
+  };
+
+  const handleTakeImage = async () => {
+    // 샘플 데이터 모드일 때는 카메라를 실행하지 않고 샘플 이미지 사용
+    if (USE_SAMPLE_DATA && recordId) {
+      console.log('[SAMPLE] 샘플 모드: 카메라 실행 없이 샘플 이미지 사용');
+
+      // 샘플 이미지 URI 생성
+      const sampleImageUri = getSampleImageUri();
+      console.log('[SAMPLE] 샘플 이미지 URI:', sampleImageUri);
+
+      // VerifyResultScreen으로 바로 이동
+      navigation.navigate('VerifyIntakeResult', {
+        imageUri: sampleImageUri,
+        recordId: recordId,
+      });
+
+      return;
+    }
+
+    // 샘플 모드가 아니면 기존 카메라 로직 실행
+    const image = await takeImage();
+    if (image) {
+      console.log('촬영된 이미지:', image.uri);
+
+      // recordId가 있는 경우에만 촬영 후 분석 화면으로 이동
+      if (recordId) {
+        // 촬영 이미지와 recordId를 파라미터로 VerifyResultScreen으로 이동
+        navigation.navigate('VerifyIntakeResult', {
+          imageUri: image.uri,
+          recordId: recordId,
+        });
+      } else {
+        console.warn('복약 기록 ID가 없어 인증을 진행할 수 없습니다.');
+      }
+    }
+  };
+
   return (
     <View className="flex-col grow p-4 mb-4 bg-white rounded-2xl">
       <View className="flex-row items-center">
@@ -25,15 +88,23 @@ export default function MedicationCard({
         <Text
           className={[
             'ml-[5px] text-[17px]/[26px] font-bold',
-            taken ? 'text-[#597AFF]' : 'text-[#F89900]',
+            status === 'TAKEN'
+              ? 'text-[#597AFF]'
+              : status === 'SKIPPED'
+                ? 'text-[#FF0000]'
+                : 'text-[#F89900]',
           ].join(' ')}
         >
-          {taken ? '복용완료' : '복약 알림 대기'}
+          {status === 'TAKEN'
+            ? '복용완료'
+            : status === 'SKIPPED'
+              ? '복용 미실행'
+              : '복약 알림 대기'}
         </Text>
       </View>
-      {!taken && (
+      {status === 'PENDING' && (
         <View className="mt-5">
-          <Button title="촬영하기" type="primary" />
+          <Button title="촬영하기" type="primary" onPress={handleTakeImage} />
         </View>
       )}
     </View>

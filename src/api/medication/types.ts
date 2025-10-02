@@ -61,6 +61,17 @@ export interface DeleteAlarmsRequest {
   alarmIds: number[];
 }
 
+// 복약 인증 요청 시 필요한 타입 정의
+export interface VerifyMedicationRequest {
+  recordId: number;
+  imageUri: string;
+}
+
+// 복약 인증 결과 타입 (POST /medication-records/{recordId}/verify의 응답)
+export interface VerifyMedicationResponse extends MedicationRecordItem {
+  // MedicationRecordItem을 상속하고 추가 필드가 있으면 여기에 정의
+}
+
 // Standard API envelope
 export interface ApiResponse<T = MedicationData> {
   code: string;

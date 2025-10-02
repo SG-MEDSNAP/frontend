@@ -4,6 +4,7 @@ import {
   registerMedication,
   updateMedication,
   deleteMedicationAlarms,
+  verifyMedicationRecord,
 } from './apis';
 import { medicationKeys } from './keys';
 import type {
@@ -11,6 +12,7 @@ import type {
   MedicationData,
   ApiResponse,
   DeleteAlarmsRequest,
+  MedicationRecordItem,
 } from './types';
 
 export function useRegisterMedicationMutation() {
@@ -91,6 +93,39 @@ export function useDeleteMedicationAlarmsMutation() {
     },
     onError: (error) => {
       console.error('[API] 약물 알림 삭제 실패:', error);
+    },
+  });
+}
+
+// 복약 인증을 위한 mutation 함수
+export function useVerifyMedicationMutation() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: ({
+      recordId,
+      imageUri,
+    }: {
+      recordId: number;
+      imageUri: string;
+    }) => verifyMedicationRecord(recordId, imageUri),
+    onSuccess: (data: MedicationRecordItem, variables) => {
+      // 복약 기록 쿼리를 무효화 (상태가 변경되었으므로 다시 가져와야 함)
+      qc.invalidateQueries({
+        queryKey: medicationKeys.verify(variables.recordId),
+      });
+
+      // 해당 날짜의 복약 기록 무효화 (상태가 변경되었으므로)
+      if (data.checkedAt) {
+        const date = data.checkedAt.split('T')[0]; // YYYY-MM-DD 형식으로 변환
+        qc.invalidateQueries({
+          queryKey: medicationKeys.records(date),
+        });
+      }
+
+      console.log('[API] 복약 인증 성공:', data);
+    },
+    onError: (error) => {
+      console.error('[API] 복약 인증 실패:', error);
     },
   });
 }

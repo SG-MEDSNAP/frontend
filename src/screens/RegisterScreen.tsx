@@ -8,6 +8,7 @@ import Button from '../components/Button';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useRegisterMedicationMutation } from '../api/medication';
+import { useQueryClient } from '@tanstack/react-query';
 
 import { medicationSchema, type MedicationForm } from '../schemas/medication'; // name/times 스키마
 import type { DoseDay } from '../api/medication/types';
@@ -26,6 +27,7 @@ type RegisterScreenNavigationProp = NativeStackNavigationProp<
 type Props = NativeStackScreenProps<RootStackParamList, 'MedicationRegister'>;
 
 export default function RegisterScreen({ navigation, route }: Props) {
+  const queryClient = useQueryClient();
   const registerMedicationMutation = useRegisterMedicationMutation();
   const days = ['월', '화', '수', '목', '금', '토', '일'];
   const [selectedDays, setSelectedDays] = useState<string[]>([]);
@@ -142,7 +144,20 @@ export default function RegisterScreen({ navigation, route }: Props) {
 
       console.log('[REGISTER] 약 등록 API 성공:', registeredMedication);
 
-      // 3) 로컬 알림 예약 실행 → 백엔드 푸시로 대체하여 비활성화
+      // 3) 관련 쿼리 캐시 무효화하여 실시간 업데이트
+      await queryClient.invalidateQueries({
+        queryKey: ['medications'],
+      });
+      await queryClient.invalidateQueries({
+        queryKey: ['medicationRecords'],
+      });
+      await queryClient.invalidateQueries({
+        queryKey: ['medicationRecordDates'],
+      });
+
+      console.log('[REGISTER] 캐시 무효화 완료 - 실시간 업데이트 적용');
+
+      // 4) 로컬 알림 예약 실행 → 백엔드 푸시로 대체하여 비활성화
       // const notificationDays = everyDay ? days : selectedDays;
       // const ids = await scheduleWeeklyNotifications({
       //   selectedDays: notificationDays,
@@ -152,7 +167,7 @@ export default function RegisterScreen({ navigation, route }: Props) {
       // });
       // console.log('예약된 알림 IDs:', ids);
 
-      // 4) 완료 화면으로 이동
+      // 5) 완료 화면으로 이동
       navigation.replace('RegisterDoneScreen');
     } catch (e: any) {
       console.error('[REGISTER] 약 등록 실패:', e);
