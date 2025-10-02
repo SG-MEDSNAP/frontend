@@ -7,7 +7,7 @@ import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { USE_SAMPLE_DATA } from '../api/medication/config';
 
-interface MedicationCardProps {
+export interface MedicationCardProps {
   name: string;
   time: string;
   status: MedicationRecordStatus;

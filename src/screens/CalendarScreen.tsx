@@ -189,6 +189,12 @@ export default function CalendarScreen() {
         markingType={'custom'}
         markedDates={markedDates}
         theme={{
+          dotStyle: {
+            width: 8,
+            height: 8,
+            borderRadius: 4,
+            backgroundColor: selected ? 'white' : colors.primary[500],
+          },
           stylesheet: {
             calendar: {
               main: {
@@ -201,6 +207,7 @@ export default function CalendarScreen() {
                 gap: 16,
               },
             },
+
             // day: {
             //   basic: {
             //     base: {
@@ -234,36 +241,40 @@ export default function CalendarScreen() {
           },
         }}
       />
-      <View className="grow mx-4 mt-12">
-        <View className="mb-5 flex-row justify-between">
-          <View className="flex-row items-center gap-2">
-            <View className="h-2 w-2 bg-primary-500 rounded-full"></View>
-            <Text className="text-[24px]/[34px] font-bold text-[#232323]">
-              {formatDateHeader(selected || getTodayDateString())}
-            </Text>
-          </View>
-          <TouchableOpacity
-            onPress={() =>
-              navigation.navigate('MedicationDetail', {
-                date: selected || getTodayDateString(),
-              })
-            }
-          >
-            <Text className="text-[18px]/[18px] font-bold text-[#232323]">
-              상세보기
-            </Text>
-          </TouchableOpacity>
-        </View>
-        <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
-          {recordsLoading ? (
-            <View className="flex-1 items-center justify-center py-10">
-              <Text className="text-gray-500">복약 기록을 불러오는 중...</Text>
+      <ScrollView>
+        <View className="grow mx-4 mt-12">
+          <View className="mb-5 flex-row justify-between">
+            <View className="flex-row items-center gap-2">
+              <View className="h-2 w-2 bg-primary-500 rounded-full"></View>
+              <Text className="text-[24px]/[34px] font-bold text-[#232323]">
+                {formatDateHeader(selected || getTodayDateString())}
+              </Text>
             </View>
-          ) : (
-            <TodayTimeLine medications={medicationItems} />
-          )}
-        </ScrollView>
-      </View>
+            <TouchableOpacity
+              onPress={() =>
+                navigation.navigate('MedicationDetail', {
+                  date: selected || getTodayDateString(),
+                })
+              }
+            >
+              <Text className="text-[18px]/[18px] font-bold text-[#232323]">
+                상세보기
+              </Text>
+            </TouchableOpacity>
+          </View>
+          <View className="flex-1">
+            {recordsLoading ? (
+              <View className="flex-1 items-center justify-center py-10">
+                <Text className="text-gray-500">
+                  복약 기록을 불러오는 중...
+                </Text>
+              </View>
+            ) : (
+              <TodayTimeLine medications={medicationItems} />
+            )}
+          </View>
+        </View>
+      </ScrollView>
     </SafeAreaView>
   );
 }
