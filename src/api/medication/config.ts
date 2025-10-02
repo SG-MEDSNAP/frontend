@@ -3,4 +3,4 @@
 // 샘플 데이터 사용 여부 플래그
 // true: 샘플 더미 데이터 사용
 // false: 실제 API 호출
-export const USE_SAMPLE_DATA = false;
+export const USE_SAMPLE_DATA = true;
