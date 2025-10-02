@@ -127,10 +127,7 @@ export default function MyPageScreen() {
                 alarm={getAlarmText(medication.preNotify)}
                 onEdit={() => navigation.navigate('Settings')}
                 onDelete={() => {
-                  // 삭제 후 목록 새로고침을 위해 쿼리 무효화
-                  queryClient.invalidateQueries({
-                    queryKey: medicationKeys.lists(),
-                  });
+                  // 삭제는 MyMedicationCard 내부의 mutation에서 처리됨
                 }}
               />
             ))
