@@ -11,6 +11,7 @@ import {
   useMedicationsQuery,
   useUpdateMedicationMutation,
 } from '../api/medication';
+import { useQueryClient } from '@tanstack/react-query';
 
 import { medicationSchema, type MedicationForm } from '../schemas/medication';
 import { NameField } from '../components/field/NameField';
@@ -27,6 +28,7 @@ type EditMedicationNavigationProp = NativeStackNavigationProp<
 type Props = NativeStackScreenProps<RootStackParamList, 'EditMedication'>;
 
 export default function EditMedicationScreen({ navigation, route }: Props) {
+  const queryClient = useQueryClient();
   const medicationId = (route.params as any)?.medicationId as
     | number
     | undefined;
@@ -158,6 +160,20 @@ export default function EditMedicationScreen({ navigation, route }: Props) {
       });
 
       console.log('[EDIT] 약 수정 API 성공');
+
+      // 관련 쿼리 캐시 무효화하여 실시간 업데이트
+      await queryClient.invalidateQueries({
+        queryKey: ['medications'],
+      });
+      await queryClient.invalidateQueries({
+        queryKey: ['medicationRecords'],
+      });
+      await queryClient.invalidateQueries({
+        queryKey: ['medicationRecordDates'],
+      });
+
+      console.log('[EDIT] 캐시 무효화 완료 - 실시간 업데이트 적용');
+
       Alert.alert('수정 완료', '약 정보가 수정되었습니다.', [
         { text: '확인', onPress: () => navigation.replace('MainTabs') },
       ]);
