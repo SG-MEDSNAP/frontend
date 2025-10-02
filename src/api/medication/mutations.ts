@@ -26,7 +26,7 @@ export function useRegisterMedicationMutation() {
       image: string;
     }) => registerMedication(payload, image),
     onSuccess: (data: MedicationData) => {
-      qc.invalidateQueries({ queryKey: medicationKeys.lists() });
+      qc.invalidateQueries({ queryKey: medicationKeys.all }); // 모든 medication 관련 쿼리 무효화
       console.log('Medication registered successfully:', data);
     },
     onError: (error) => {
@@ -48,11 +48,8 @@ export function useUpdateMedicationMutation() {
       image?: string;
     }) => updateMedication(medicationId, payload, image),
     onSuccess: (data: MedicationData, variables) => {
-      // 개별 약 정보와 약 목록 모두 무효화
-      qc.invalidateQueries({
-        queryKey: medicationKeys.detail(variables.medicationId),
-      });
-      qc.invalidateQueries({ queryKey: medicationKeys.lists() });
+      // 모든 medication 관련 쿼리 무효화
+      qc.invalidateQueries({ queryKey: medicationKeys.all });
       console.log('Medication updated successfully:', data);
     },
     onError: (error) => {
@@ -67,8 +64,7 @@ export function useDeleteMedicationMutation() {
     mutationFn: (id: number) => deleteMedication(id),
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: medicationKeys.lists() });
-      qc.invalidateQueries({ queryKey: ['medicationRecords'] });
-      qc.invalidateQueries({ queryKey: ['medicationRecordDates'] });
+      qc.invalidateQueries({ queryKey: medicationKeys.all }); // 모든 medication 관련 쿼리 무효화
     },
   });
 }

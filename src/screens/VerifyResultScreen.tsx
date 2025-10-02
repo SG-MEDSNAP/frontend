@@ -111,7 +111,7 @@ export default function VerifyResultScreen() {
           primaryAction={{
             label: '확인',
             onPress: async () => {
-              // 캐시 무효화하여 실시간 업데이트
+              // 복용 기록 관련 쿼리만 무효화 (약 목록은 변경되지 않음)
               await queryClient.invalidateQueries({
                 queryKey: ['medicationRecords'],
               });
@@ -178,7 +178,7 @@ export default function VerifyResultScreen() {
         primaryAction={{
           label: '확인',
           onPress: async () => {
-            // 캐시 무효화하여 실시간 업데이트
+            // 복용 기록 관련 쿼리만 무효화 (약 목록은 변경되지 않음)
             await queryClient.invalidateQueries({
               queryKey: ['medicationRecords'],
             });
