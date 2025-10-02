@@ -111,16 +111,9 @@ export default function CalendarScreen() {
   const { data: recordDates, isLoading: datesLoading } =
     useMedicationRecordDatesQuery(currentMonth.year, currentMonth.month);
 
-  // API 데이터를 기존 Medication 인터페이스에 맞게 변환
-  const medications: Medication[] = useMemo(() => {
-    if (!medicationRecords?.items) return [];
-    return medicationRecords.items.map((item, index) => ({
-      id: item.recordId?.toString() || index.toString(),
-      name: item.medicationName,
-      time: item.alarmTime,
-      frequency: '매일', // API에서 제공하지 않으므로 기본값
-      taken: item.status === 'TAKEN',
-    }));
+  // API 데이터를 바로 사용
+  const medicationItems = useMemo(() => {
+    return medicationRecords?.items || [];
   }, [medicationRecords]);
 
   const formatDateHeader = (dateString: string) => {
@@ -277,7 +270,7 @@ export default function CalendarScreen() {
                 </Text>
               </View>
             ) : (
-              <TodayTimeLine medications={medications} />
+              <TodayTimeLine medications={medicationItems} />
             )}
           </View>
         </View>

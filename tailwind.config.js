@@ -141,8 +141,8 @@ module.exports = {
           includeFontPadding: false,
         },
         '.body-lg': {
-          fontFamily: 'Pretendard-Medium',
-          fontWeight: '500',
+          fontFamily: 'Pretendard-SemiBold',
+          fontWeight: '600',
           fontSize: 20,
           includeFontPadding: false,
         },

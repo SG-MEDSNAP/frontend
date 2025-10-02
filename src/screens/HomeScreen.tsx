@@ -2,12 +2,17 @@ import React, { useState } from 'react';
 import { View, Text, Image, ScrollView } from 'react-native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { format } from 'date-fns';
 
 import { RootStackParamList } from '../../App';
 
 // Components
 import Button from '../components/Button';
 import TodayTimeLine from '../components/TodayTimeLine';
+
+// API
+import { useMedicationRecordsQuery } from '../api/medication/queries';
+import { MedicationRecordItem } from '../api/medication/types';
 
 // images
 import HeaderLogo from '../../assets/images/header_logo.svg';
@@ -19,39 +24,12 @@ interface Props {
   navigation: HomeScreenNavigationProp;
 }
 
-interface Medication {
-  id: string;
-  name: string;
-  time: string;
-  frequency: string;
-  taken: boolean;
-}
-
 export default function HomeScreen({ navigation }: Props) {
-  // 샘플 데이터
-  const [medications, setMedications] = useState<Medication[]>([
-    {
-      id: '1',
-      name: '혈압약',
-      time: '오전 8:00',
-      frequency: '매일',
-      taken: true,
-    },
-    {
-      id: '2',
-      name: '당뇨약',
-      time: '오후 1:00',
-      frequency: '매일',
-      taken: true,
-    },
-    {
-      id: '3',
-      name: '비타민',
-      time: '오후 6:00',
-      frequency: '주 3회',
-      taken: false,
-    },
-  ]);
+  // 오늘 날짜 포맷팅
+  const today = format(new Date(), 'yyyy-MM-dd');
+
+  // 약물 복용 기록 조회 (오늘 날짜)
+  const { data, isLoading, error } = useMedicationRecordsQuery(today);
 
   // const handleTakeMedication = (id: string) => {
   //   setMedications((prev) =>
@@ -112,7 +90,17 @@ export default function HomeScreen({ navigation }: Props) {
                 타임라인
               </Text>
             </View>
-            <TodayTimeLine medications={medications} />
+            {isLoading ? (
+              <View className="p-4 items-center">
+                <Text>데이터를 불러오는 중입니다...</Text>
+              </View>
+            ) : error ? (
+              <View className="p-4 items-center">
+                <Text>데이터를 불러오는데 실패했습니다.</Text>
+              </View>
+            ) : (
+              <TodayTimeLine medications={data?.items || []} />
+            )}
           </View>
 
           {/* 하단 여백 */}
