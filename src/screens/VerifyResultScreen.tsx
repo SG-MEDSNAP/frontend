@@ -5,6 +5,7 @@ import type { StackNavigationProp } from '@react-navigation/stack';
 import StatusContent from '../components/StatusContent';
 import PillIcon from '../assets/PillIcon.native';
 import { useVerifyMedicationMutation } from '../api/medication/mutations';
+import { useQueryClient } from '@tanstack/react-query';
 
 type ResultCode = 'success' | 'not_taken' | 'error';
 
@@ -16,6 +17,7 @@ type RouteParams = {
 };
 
 export default function VerifyResultScreen() {
+  const queryClient = useQueryClient();
   const navigation = useNavigation<StackNavigationProp<any>>();
   const route = useRoute<RouteProp<Record<string, RouteParams>, string>>();
 
@@ -108,7 +110,16 @@ export default function VerifyResultScreen() {
           subtitle="약을 잘 챙겨드셨어요. 다음 복용도 응원할게요!"
           primaryAction={{
             label: '확인',
-            onPress: () => navigation.goBack(),
+            onPress: async () => {
+              // 캐시 무효화하여 실시간 업데이트
+              await queryClient.invalidateQueries({
+                queryKey: ['medicationRecords'],
+              });
+              await queryClient.invalidateQueries({
+                queryKey: ['medicationRecordDates'],
+              });
+              navigation.goBack();
+            },
           }}
         />
       );
@@ -166,7 +177,16 @@ export default function VerifyResultScreen() {
         subtitle="약을 잘 챙겨드셨어요. 다음 복용도 응원할게요!"
         primaryAction={{
           label: '확인',
-          onPress: () => navigation.goBack(),
+          onPress: async () => {
+            // 캐시 무효화하여 실시간 업데이트
+            await queryClient.invalidateQueries({
+              queryKey: ['medicationRecords'],
+            });
+            await queryClient.invalidateQueries({
+              queryKey: ['medicationRecordDates'],
+            });
+            navigation.goBack();
+          },
         }}
       />
     );
