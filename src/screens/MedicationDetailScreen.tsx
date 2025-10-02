@@ -18,153 +18,12 @@ import {
 
 // Components
 import CustomModal from '@/components/CustomModal';
+import MedicationDetailCard from '@/components/MedicationDetailCard';
 
 type MedicationDetailRouteProp = RouteProp<
   RootStackParamList,
   'MedicationDetail'
 >;
-
-interface StatusItemProps {
-  label: string;
-  completed: boolean;
-  showViewButton?: boolean;
-  onViewPress?: () => void;
-}
-
-interface MedicationItemProps {
-  recordId?: number;
-  medicationName: string;
-  alarmTime: string;
-  status: string;
-  imageUrl?: string;
-  firstAlarmAt?: string;
-  secondAlarmAt?: string;
-  caregiverNotifiedAt?: string;
-  checkedAt?: string;
-  isSelectionMode: boolean;
-  isSelected: boolean;
-  onSelectionToggle: () => void;
-  onImageView: (imageUrl: string) => void;
-}
-
-function StatusItem({
-  label,
-  completed,
-  showViewButton,
-  onViewPress,
-}: StatusItemProps) {
-  return (
-    <View className="mb-4">
-      <View className="flex-row items-center justify-between">
-        <Text className="text-[18px]/[26px] font-medium text-[#232323]">
-          {label}
-        </Text>
-        <View className="flex-row items-center gap-3">
-          {showViewButton && (
-            <TouchableOpacity onPress={onViewPress}>
-              <Text className="text-[18px]/[26px] font-medium text-[#232323] underline">
-                보기
-              </Text>
-            </TouchableOpacity>
-          )}
-          <Text className="text-[16px]/[22px] font-medium text-[#597AFF]">
-            {completed ? '완료' : '미완료'}
-          </Text>
-        </View>
-      </View>
-    </View>
-  );
-}
-
-function MedicationItem({
-  recordId,
-  medicationName,
-  alarmTime,
-  status,
-  imageUrl,
-  firstAlarmAt,
-  secondAlarmAt,
-  caregiverNotifiedAt,
-  isSelectionMode,
-  isSelected,
-  onSelectionToggle,
-  onImageView,
-}: MedicationItemProps) {
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case 'TAKEN':
-        return '#597AFF'; // 복약 완료
-      case 'PENDING':
-        return '#597AFF'; // 복약 완료 (파란색)
-      case 'SKIPPED':
-        return '#FF4444'; // 복약 미 실행 (빨간색)
-      default:
-        return '#666666';
-    }
-  };
-
-  const getStatusText = (status: string) => {
-    switch (status) {
-      case 'TAKEN':
-        return '복약 완료';
-      case 'PENDING':
-        return '복약 완료';
-      case 'SKIPPED':
-        return '복약 미 실행';
-      default:
-        return status;
-    }
-  };
-
-  return (
-    <View className="mb-8">
-      {/* Header with selection */}
-      <View className="flex-row items-center justify-between mb-6">
-        <View className="flex-1">
-          <Text className="text-[20px]/[28px] font-bold text-[#232323] mb-1">
-            {medicationName}
-          </Text>
-          <Text className="text-[16px]/[16px] text-[#232323] font-bold">
-            {alarmTime}
-          </Text>
-          <Text
-            className="text-[16px]/[22px] font-medium mt-1"
-            style={{ color: getStatusColor(status) }}
-          >
-            {getStatusText(status)}
-          </Text>
-        </View>
-
-        {/* Selection Circle */}
-        <TouchableOpacity
-          onPress={onSelectionToggle}
-          className="w-8 h-8 rounded-full border-2 border-gray-300 items-center justify-center"
-          style={{
-            backgroundColor: isSelected ? colors.primary[500] : 'white',
-            borderColor: isSelected ? colors.primary[500] : '#D1D5DB',
-          }}
-        >
-          {isSelected && (
-            <Text className="text-white text-sm font-bold">✓</Text>
-          )}
-        </TouchableOpacity>
-      </View>
-
-      {/* Status Items */}
-      <View className="bg-white rounded-2xl p-6">
-        <StatusItem label="앱 알림 1차" completed={!!firstAlarmAt} />
-        <StatusItem label="앱 알림 2차" completed={!!secondAlarmAt} />
-        <StatusItem
-          label="사진 촬영"
-          completed={!!imageUrl}
-          showViewButton={!!imageUrl}
-          onViewPress={() => imageUrl && onImageView(imageUrl)}
-        />
-        <StatusItem label="보호자 알림" completed={!!caregiverNotifiedAt} />
-      </View>
-    </View>
-  );
-}
 
 export default function MedicationDetailScreen() {
   const route = useRoute<MedicationDetailRouteProp>();
@@ -294,7 +153,7 @@ export default function MedicationDetailScreen() {
         <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
           {medicationRecords?.items && medicationRecords.items.length > 0 ? (
             medicationRecords.items.map((item, index) => (
-              <MedicationItem
+              <MedicationDetailCard
                 key={item.recordId || index}
                 recordId={item.recordId}
                 medicationName={item.medicationName}
