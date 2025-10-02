@@ -67,6 +67,8 @@ export function useDeleteMedicationMutation() {
     mutationFn: (id: number) => deleteMedication(id),
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: medicationKeys.lists() });
+      qc.invalidateQueries({ queryKey: ['medicationRecords'] });
+      qc.invalidateQueries({ queryKey: ['medicationRecordDates'] });
     },
   });
 }
