@@ -10,9 +10,6 @@ import type {
   VerifyMedicationResponse,
 } from './types';
 
-// 설정 파일에서 샘플 데이터 사용 플래그 가져오기
-import { USE_SAMPLE_DATA } from './config';
-
 export const registerMedication = async (
   data: MedicationRegisterRequest,
   image: string,
@@ -173,56 +170,6 @@ export const fetchMedicationRecords = async (
 ): Promise<MedicationRecordsResponse> => {
   console.log('[API] 복약 기록 조회 요청 날짜:', date);
 
-  // 샘플 데이터 사용 (아무 날짜나 가능)
-  if (USE_SAMPLE_DATA) {
-    await new Promise((resolve) => setTimeout(() => resolve(undefined), 300));
-    return {
-      date: date, // 요청한 날짜 사용
-      items: [
-        {
-          recordId: 101,
-          alarmTime: '09:00',
-          medicationId: 1,
-          medicationName: '타이레놀',
-          status: 'TAKEN',
-          imageUrl: 'https://s3.amazonaws.com/bucket/medication_photo_101.jpg',
-          checkedAt: '2025-10-01T09:15:00',
-          firstAlarmAt: '2025-10-01T09:00:00',
-          secondAlarmAt: '2025-10-01T09:10:00',
-          caregiverNotifiedAt: '2025-10-01T09:20:00',
-        },
-        {
-          recordId: 102,
-          alarmTime: '13:00',
-          medicationId: 2,
-          medicationName: '혈압약',
-          status: 'TAKEN',
-          imageUrl: 'https://s3.amazonaws.com/bucket/medication_photo_102.jpg',
-          checkedAt: '2025-10-01T13:05:00',
-          firstAlarmAt: '2025-10-01T13:00:00',
-          secondAlarmAt: '2025-10-01T13:10:00',
-          caregiverNotifiedAt: '2025-10-01T13:15:00',
-        },
-        {
-          recordId: 103,
-          alarmTime: '21:00',
-          medicationId: 1,
-          medicationName: '타이레놀',
-          status: 'PENDING',
-        },
-        {
-          recordId: 104,
-          alarmTime: '08:00',
-          medicationId: 3,
-          medicationName: '비타민',
-          status: 'SKIPPED',
-          firstAlarmAt: '2025-10-01T08:00:00',
-          secondAlarmAt: '2025-10-01T08:10:00',
-        },
-      ],
-    };
-  }
-
   try {
     const res = await jsonAxios.get<ApiResponse<MedicationRecordsResponse>>(
       `/medication-records`,
@@ -246,27 +193,6 @@ export const fetchMedicationRecordDates = async (
   month: number,
 ): Promise<MedicationRecordDates> => {
   console.log('[API] 복약 기록 날짜 목록 조회 요청:', { year, month });
-
-  // 샘플 데이터 사용 (아무 년월이나 가능)
-  if (USE_SAMPLE_DATA) {
-    await new Promise((resolve) => setTimeout(() => resolve(undefined), 200));
-    // 현재 년월에 맞게 날짜 생성
-    const daysWithData = [];
-    const daysInMonth = new Date(year, month, 0).getDate();
-
-    // 홀수일에 데이터 있는 것으로 표시 (예시)
-    for (let day = 1; day <= daysInMonth; day++) {
-      if (day % 2 === 1) {
-        // 홀수일만 선택
-        const dayStr = day < 10 ? `0${day}` : `${day}`;
-        daysWithData.push(
-          `${year}-${month < 10 ? '0' + month : month}-${dayStr}`,
-        );
-      }
-    }
-
-    return daysWithData;
-  }
 
   try {
     const res = await jsonAxios.get<ApiResponse<MedicationRecordDates>>(
@@ -311,27 +237,6 @@ export const verifyMedicationRecord = async (
   imageUri: string,
 ): Promise<MedicationRecordItem> => {
   console.log('[API] 복약 인증 요청 시작', { recordId, imageUri });
-
-  // 샘플 데이터 모드인 경우
-  if (USE_SAMPLE_DATA) {
-    console.log('[API] 샘플 데이터 모드로 실행 중입니다');
-    await new Promise<void>((resolve) => {
-      setTimeout(() => resolve(), 800);
-    }); // 분석 중인 것처럼 딜레이 추가
-
-    // 샘플 데이터 응답
-    return {
-      recordId: recordId,
-      alarmTime: '09:00',
-      medicationId: 1,
-      medicationName: '타이레놀',
-      status: 'TAKEN', // 항상 성공 상태로 반환
-      imageUrl: imageUri,
-      checkedAt: new Date().toISOString(),
-      firstAlarmAt: '2025-10-01T09:00:00',
-      secondAlarmAt: '2025-10-01T09:10:00',
-    };
-  }
 
   const formData = new FormData();
 
