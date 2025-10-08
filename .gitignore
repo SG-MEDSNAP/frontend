@@ -23,7 +23,7 @@ android/
 *.mobileprovision
 
 # Firebase
-google-services.json
+
 GoogleService-Info.plist
 
 # Metro
