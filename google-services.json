@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "864988361733",
+    "project_id": "medsnap-dfde4",
+    "storage_bucket": "medsnap-dfde4.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:864988361733:android:f12bb8dc01b0a21d5e586c",
+        "android_client_info": {
+          "package_name": "com.qkrb8019.medsnap"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDNREg8R3q7qKSYWTMxhPY48kBUFhgsfy4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
