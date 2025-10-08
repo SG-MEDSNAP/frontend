@@ -5,7 +5,6 @@ import { useCamera } from '../hooks/useCamera';
 import { MedicationRecordStatus } from '../api/medication/types';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { USE_SAMPLE_DATA } from '../api/medication/config';
 import { colors } from '@/styles/designSystem';
 
 export interface MedicationDetailCardProps {
@@ -106,38 +105,7 @@ export default function MedicationDetailCard({
     }
   };
 
-  // 샘플 이미지 경로 (플랫폼에 따라 다른 경로 형식 사용)
-  const getSampleImageUri = () => {
-    const imageName = 'SampleImage1.png';
-
-    if (Platform.OS === 'ios') {
-      return `${Platform.constants.reactNativeVersion ? '' : '/Users/artisan/work/med/frontend/'}assets/images/${imageName}`;
-    } else if (Platform.OS === 'android') {
-      return `file:///android_asset/images/${imageName}`;
-    } else {
-      // 웹이나 다른 플랫폼의 경우 (개발 환경)
-      return `../assets/images/${imageName}`;
-    }
-  };
-
   const handleTakeImage = async () => {
-    // 샘플 데이터 모드일 때는 카메라를 실행하지 않고 샘플 이미지 사용
-    if (USE_SAMPLE_DATA && recordId) {
-      console.log('[SAMPLE] 샘플 모드: 카메라 실행 없이 샘플 이미지 사용');
-
-      // 샘플 이미지 URI 생성
-      const sampleImageUri = getSampleImageUri();
-      console.log('[SAMPLE] 샘플 이미지 URI:', sampleImageUri);
-
-      // VerifyResultScreen으로 바로 이동
-      navigation.navigate('VerifyIntakeResult', {
-        imageUri: sampleImageUri,
-        recordId: recordId,
-      });
-
-      return;
-    }
-
     // 샘플 모드가 아니면 기존 카메라 로직 실행
     const image = await takeImage();
     if (image) {

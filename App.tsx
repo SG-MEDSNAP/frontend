@@ -47,6 +47,7 @@ import SettingScreen from './src/screens/SettingScreen';
 import EditInfoScreen from './src/screens/EditInfoScreen';
 import EditMedication from './src/screens/EditMedication';
 import MedicationDetailScreen from './src/screens/MedicationDetailScreen';
+import AppInfoScreen from './src/screens/AppInfoScreen';
 
 export type RootStackParamList = {
   Login: undefined;
@@ -76,6 +77,7 @@ export type RootStackParamList = {
   Settings: undefined;
   EditInfo: undefined;
   EditMedication: undefined;
+  AppInfo: undefined;
   MedicationDetail: {
     date: string;
   };
@@ -309,6 +311,11 @@ export default function App() {
             name="EditMedication"
             component={EditMedication}
             options={{ title: '약 정보 수정' }}
+          />
+          <Stack.Screen
+            name="AppInfo"
+            component={AppInfoScreen}
+            options={{ title: '앱 정보' }}
           />
           <Stack.Screen
             name="MedicationDetail"
