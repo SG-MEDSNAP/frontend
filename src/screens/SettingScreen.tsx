@@ -63,30 +63,42 @@ export default function SettingScreen() {
 
   return (
     <SafeAreaView className="flex-1 bg-white" edges={['bottom']}>
-      <View className="px-4 py-4">
-        <TouchableOpacity
-          activeOpacity={0.8}
-          className="flex-row items-center justify-between py-4"
-          onPress={() => navigation.navigate('EditInfo')}
-        >
-          <Text className="h4 text-[#232323]">내 정보 수정</Text>
-          <Icon name="chevron-forward" size={36} color="#3D3D3D" />
-        </TouchableOpacity>
-        <TouchableOpacity
-          activeOpacity={0.8}
-          className="py-4"
-          onPress={handleLogout}
-        >
-          <Text className="h7 text-gray-600">로그아웃</Text>
-        </TouchableOpacity>
+      <View className="flex-1 justify-between">
+        <View className="px-4 py-4">
+          <TouchableOpacity
+            activeOpacity={0.8}
+            className="flex-row items-center justify-between py-4"
+            onPress={() => navigation.navigate('EditInfo')}
+          >
+            <Text className="h4 text-[#232323]">내 정보 수정</Text>
+            <Icon name="chevron-forward" size={36} color="#3D3D3D" />
+          </TouchableOpacity>
 
-        <TouchableOpacity
-          activeOpacity={0.8}
-          className="py-4"
-          onPress={handleDeleteUser}
-        >
-          <Text className="h7 text-gray-600">회원탈퇴</Text>
-        </TouchableOpacity>
+          <TouchableOpacity
+            activeOpacity={0.8}
+            className="py-4"
+            onPress={handleLogout}
+          >
+            <Text className="h7 text-gray-600">로그아웃</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            activeOpacity={0.8}
+            className="py-4"
+            onPress={handleDeleteUser}
+          >
+            <Text className="h7 text-gray-600">회원탈퇴</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            activeOpacity={0.8}
+            className="flex-row items-center justify-between py-4"
+            onPress={() => navigation.navigate('AppInfo')}
+          >
+            <Text className="h7 text-gray-600">앱 정보</Text>
+            <Icon name="chevron-forward" size={36} color="#3D3D3D" />
+          </TouchableOpacity>
+        </View>
       </View>
 
       {/* 로그아웃 확인 모달 */}
