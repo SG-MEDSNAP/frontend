@@ -5,35 +5,29 @@ const IOS_CLIENT_ID =
   '507746381359-a9ttvvvt50lkua178guniv5g4buj4j8i.apps.googleusercontent.com';
 const WEB_CLIENT_ID =
   '507746381359-02g4veqcth365nsu1h4u817adb945i7v.apps.googleusercontent.com';
-const ANDROID_CLIENT_ID =
-  '507746381359-ls66giivob4h58hglnmt8eu2sdjv01g6.apps.googleusercontent.com';
 
 export async function signInWithGoogle(): Promise<string> {
   GoogleSignin.configure({
     iosClientId: IOS_CLIENT_ID,
-    webClientId: WEB_CLIENT_ID, // ← idToken 받으려면 꼭 필요
+    webClientId: WEB_CLIENT_ID, // ← 서버 검증용 aud가 이 값으로 나옵니다
     scopes: ['openid', 'profile', 'email'],
     offlineAccess: false,
     forceCodeForRefreshToken: false,
   });
 
-  // ⬇️ Android 안정성 - Google Play 서비스 체크
+  // Android 안정성
   await GoogleSignin.hasPlayServices({ showPlayServicesUpdateDialog: true });
 
-  console.log('[GOOGLE] 로그인 시작 - Android Client ID:', ANDROID_CLIENT_ID);
-
   const res = await GoogleSignin.signIn();
-
-  console.log('[GOOGLE] 로그인 응답:', res);
 
   if (res.type !== 'success') {
     throw new Error('사용자가 구글 로그인을 취소했습니다.');
   }
 
-  // 최신 타입: 토큰은 res.data 안에 있어요
+  // ✅ v16: 토큰은 res.data.idToken
   let idToken = res.data?.idToken ?? null;
 
-  // 일부 환경 보조 루트
+  // 보조 루트: 일부 기기에서 signIn 직후 idToken이 null일 때
   if (!idToken) {
     try {
       const tokens = await GoogleSignin.getTokens();
@@ -45,7 +39,7 @@ export async function signInWithGoogle(): Promise<string> {
     throw new Error('Google idToken 없음 (webClientId/스코프/재로그인 확인)');
   }
 
-  // (선택) 토큰 클레임 확인
+  // (선택) 토큰 클레임 확인 — 서버 aud 매칭 점검용
   try {
     const c: any = jwtDecode(idToken);
     console.log('[GOOGLE claims]', {
