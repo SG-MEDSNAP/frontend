@@ -37,14 +37,9 @@
         "backgroundColor": "#ffffff"
       },
       "splash": {
-        "image": "./assets/splash.png",
-        "resizeMode": "cover",
-        "backgroundColor": "#ffffff",
-        "mdpi": "./assets/splash.png",
-        "hdpi": "./assets/splash.png",
-        "xhdpi": "./assets/splash.png",
-        "xxhdpi": "./assets/splash.png",
-        "xxxhdpi": "./assets/splash.png"
+        "image": "./assets/adaptive-icon-foreground.png",
+        "resizeMode": "contain",
+        "backgroundColor": "#ffffff"
       },
       "edgeToEdgeEnabled": true,
       "permissions": ["android.permission.RECORD_AUDIO"],
@@ -89,7 +84,7 @@
         "@react-native-google-signin/google-signin",
         {
           "iosUrlScheme": "com.googleusercontent.apps.507746381359-a9ttvvvt50lkua178guniv5g4buj4j8i",
-          "androidClientId": "507746381359-d09u9mphhqkn1ukpht0cegerk2gvoihh.apps.googleusercontent.com"
+          "androidClientId": "507746381359-ls66giivob4h58hglnmt8eu2sdjv01g6.apps.googleusercontent.com"
         }
       ],
       [
@@ -126,9 +121,9 @@
       [
         "expo-splash-screen",
         {
-          "image": "./assets/splash.png",
-          "imageWidth": 400,
-          "resizeMode": "cover",
+          "image": "./assets/adaptive-icon-foreground.png",
+          "imageWidth": 200,
+          "resizeMode": "contain",
           "backgroundColor": "#ffffff"
         }
       ],
