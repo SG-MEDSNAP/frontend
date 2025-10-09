@@ -7,10 +7,10 @@
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
-    "newArchEnabled": true,
+    "newArchEnabled": false,
     "splash": {
       "image": "./assets/splash.png",
-      "resizeMode": "contain",
+      "resizeMode": "cover",
       "backgroundColor": "#ffffff"
     },
     "ios": {
@@ -38,8 +38,13 @@
       },
       "splash": {
         "image": "./assets/splash.png",
-        "resizeMode": "contain",
-        "backgroundColor": "#ffffff"
+        "resizeMode": "cover",
+        "backgroundColor": "#ffffff",
+        "mdpi": "./assets/splash.png",
+        "hdpi": "./assets/splash.png",
+        "xhdpi": "./assets/splash.png",
+        "xxhdpi": "./assets/splash.png",
+        "xxxhdpi": "./assets/splash.png"
       },
       "edgeToEdgeEnabled": true,
       "permissions": ["android.permission.RECORD_AUDIO"],
@@ -106,16 +111,25 @@
             }
           },
           "android": {
-            "newArchEnabled": true,
-            "kotlinVersion": "2.0.21",
-            "compileSdkVersion": 36,
-            "targetSdkVersion": 36,
+            "newArchEnabled": false,
+            "kotlinVersion": "1.9.10",
+            "compileSdkVersion": 34,
+            "targetSdkVersion": 34,
             "minSdkVersion": 24,
-            "buildToolsVersion": "36.0.0",
+            "buildToolsVersion": "34.0.0",
             "extraMavenRepos": [
               "https://devrepo.kakao.com/nexus/content/groups/public/"
             ]
           }
+        }
+      ],
+      [
+        "expo-splash-screen",
+        {
+          "image": "./assets/splash.png",
+          "imageWidth": 400,
+          "resizeMode": "cover",
+          "backgroundColor": "#ffffff"
         }
       ],
       "expo-secure-store"

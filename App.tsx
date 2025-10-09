@@ -1,6 +1,7 @@
 // App.tsx
 import * as React from 'react';
 import { useFonts } from 'expo-font';
+import * as SplashScreen from 'expo-splash-screen';
 import {
   TextInput,
   ActivityIndicator,
@@ -170,6 +171,13 @@ export default function App() {
     'Pretendard-SemiBold': require('./assets/fonts/Pretendard-SemiBold.ttf'),
     'Pretendard-Bold': require('./assets/fonts/Pretendard-Bold.ttf'),
   });
+
+  // ✅ 스플래시 화면 숨기기
+  useEffect(() => {
+    if (loaded) {
+      SplashScreen.hideAsync();
+    }
+  }, [loaded]);
 
   // ✅ 푸시 알림 설정 (토큰 받기 및 서버 등록 포함)
   useEffect(() => {
