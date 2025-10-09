@@ -16,6 +16,9 @@
     },
     "production": {
       "autoIncrement": true,
+      "env": {
+        "API_BASE_URL": "https://hiedu.site"
+      },
       "android": {
         "buildType": "apk",
         "gradleCommand": ":app:assembleRelease"
