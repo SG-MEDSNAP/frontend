@@ -7,7 +7,7 @@
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
-    "newArchEnabled": false,
+    "newArchEnabled": true,
     "splash": {
       "image": "./assets/splash.png",
       "resizeMode": "cover",
@@ -111,12 +111,12 @@
             }
           },
           "android": {
-            "newArchEnabled": false,
-            "kotlinVersion": "1.9.10",
-            "compileSdkVersion": 34,
-            "targetSdkVersion": 34,
+            "newArchEnabled": true,
+            "kotlinVersion": "2.0.21",
+            "compileSdkVersion": 36,
+            "targetSdkVersion": 36,
             "minSdkVersion": 24,
-            "buildToolsVersion": "34.0.0",
+            "buildToolsVersion": "36.0.0",
             "extraMavenRepos": [
               "https://devrepo.kakao.com/nexus/content/groups/public/"
             ]
