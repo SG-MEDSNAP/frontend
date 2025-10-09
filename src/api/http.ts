@@ -4,14 +4,11 @@ import * as SecureStore from 'expo-secure-store';
 import { getAccessToken, shouldRefreshToken, refreshToken } from './auth';
 
 // Base API URL with versioning
-// 우선순위: 빌드 시점 환경 변수 > 개발 환경 .env > 기본값
+// 빌드 시점에 process.env.API_BASE_URL이 실제 값으로 치환됨 (babel-plugin-transform-inline-environment-variables)
 const getApiBaseUrl = () => {
-  // @ts-ignore - 빌드 시점에 process.env.API_BASE_URL이 주입됨
   if (typeof process !== 'undefined' && process.env?.API_BASE_URL) {
-    // @ts-ignore
-    return process.env.API_BASE_URL;
+    return process.env.API_BASE_URL as string;
   }
-
   // 기본값 (개발 환경)
   return 'https://hiedu.site';
 };
