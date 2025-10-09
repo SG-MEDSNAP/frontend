@@ -1,15 +1,43 @@
-import React from 'react';
-import { View, Text, Image, ScrollView, Platform } from 'react-native';
+import React, { useEffect } from 'react';
+import {
+  View,
+  Text,
+  Image,
+  ScrollView,
+  Platform,
+  Alert,
+  NativeModules,
+} from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import LoginButton from '../components/LoginButton';
 import { useSocialLoginMutation } from '../features/socialLogin';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../../App';
 
+const { KeyHashModule } = NativeModules;
+
 type Props = NativeStackScreenProps<RootStackParamList, any>;
 
 export default function LoginScreen({ navigation }: Props) {
   const socialLoginMutation = useSocialLoginMutation();
+
+  // ✅ Android 키 해시 확인 (릴리즈 빌드용)
+  useEffect(() => {
+    if (Platform.OS === 'android' && KeyHashModule) {
+      KeyHashModule.getKeyHashes()
+        .then((hashes: string) => {
+          console.log('🔑 [KEY HASHES]:', hashes);
+          Alert.alert(
+            '🔑 릴리즈 키 해시 정보',
+            `${hashes}\n\n카카오: Kakao Key Hash 값을 카카오 개발자 콘솔에 등록\n구글: Google SHA-1 값을 Google Cloud Console에 등록`,
+            [{ text: '확인' }],
+          );
+        })
+        .catch((err: any) => {
+          console.error('❌ 키 해시 확인 실패:', err);
+        });
+    }
+  }, []);
 
   const handleSocialLogin = (
     provider: 'KAKAO' | 'NAVER' | 'GOOGLE' | 'APPLE',
