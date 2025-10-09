@@ -5,6 +5,8 @@ const IOS_CLIENT_ID =
   '507746381359-a9ttvvvt50lkua178guniv5g4buj4j8i.apps.googleusercontent.com';
 const WEB_CLIENT_ID =
   '507746381359-02g4veqcth365nsu1h4u817adb945i7v.apps.googleusercontent.com';
+const ANDROID_CLIENT_ID =
+  '507746381359-ls66giivob4h58hglnmt8eu2sdjv01g6.apps.googleusercontent.com';
 
 export async function signInWithGoogle(): Promise<string> {
   GoogleSignin.configure({
@@ -18,7 +20,11 @@ export async function signInWithGoogle(): Promise<string> {
   // ⬇️ Android 안정성 - Google Play 서비스 체크
   await GoogleSignin.hasPlayServices({ showPlayServicesUpdateDialog: true });
 
+  console.log('[GOOGLE] 로그인 시작 - Android Client ID:', ANDROID_CLIENT_ID);
+
   const res = await GoogleSignin.signIn();
+
+  console.log('[GOOGLE] 로그인 응답:', res);
 
   if (res.type !== 'success') {
     throw new Error('사용자가 구글 로그인을 취소했습니다.');

@@ -8,11 +8,21 @@ export async function socialLoginOrSignupKickoff(provider: Provider) {
 
   // 2) 로그인 시도
   try {
+    console.log(`[SOCIAL_LOGIN] 백엔드 API 호출 시작 - Provider: ${provider}`);
     const login = await loginWithIdToken({ idToken, provider });
-    if (login) return { next: 'HOME' as const }; // 로그인 완료
+    console.log(`[SOCIAL_LOGIN] 백엔드 API 응답:`, login);
+    if (login) return { next: 'HOME' as const, idToken }; // 로그인 완료
     // loginWithIdToken이 404/409에서 null 리턴하도록 이미 구현되어 있음
     return { next: 'SIGNUP' as const, idToken, provider }; // 회원가입 화면으로
   } catch (e: any) {
+    console.error(`[SOCIAL_LOGIN] 백엔드 API 에러:`, {
+      message: e?.message,
+      code: e?.code,
+      status: e?.response?.status,
+      data: e?.response?.data,
+      config: e?.config?.url,
+    });
+
     // 401: 토큰 검증 실패(issuer/audience/만료 등)
     if (e?.response?.status === 401) {
       throw new Error('소셜 토큰 검증에 실패했어요. 다시 로그인해 주세요.');
