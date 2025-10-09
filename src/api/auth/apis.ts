@@ -85,7 +85,10 @@ export async function loginWithIdToken({
   provider,
 }: LoginRequest): Promise<AuthResponse | null> {
   try {
-    console.log('[AUTH/login] 요청 바디:', { provider });
+    console.log('[AUTH/login] 요청 바디:', {
+      provider,
+      idToken: idToken ? `${idToken.substring(0, 50)}...` : 'null',
+    });
 
     const authAxios = axios.create({
       baseURL: `${API_BASE_URL}/api/v1`,
