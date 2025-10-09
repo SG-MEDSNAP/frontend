@@ -177,19 +177,18 @@ export default function App() {
 
     // 푸시 알림 설정을 백그라운드에서 실행
     // 로그인한 사용자에게만 푸시 토큰을 등록하기 위해
-    // 로그인 상태 확인 후 실행하는 것이 좋지만,
-    // 일단 앱 시작시 실행하도록 설정
-    setupPushNotifications()
-      .then((success) => {
-        if (success) {
-          console.log('[APP] 푸시 알림 설정 완료');
-        } else {
-          console.warn('[APP] 푸시 알림 설정 실패 또는 권한 거부');
-        }
-      })
-      .catch((error) => {
-        console.error('[APP] 푸시 알림 설정 중 예외 발생:', error);
-      });
+    // 푸시 알림 설정은 로그인 후에 실행되도록 주석 처리
+    // setupPushNotifications()
+    //   .then((success) => {
+    //     if (success) {
+    //       console.log('[APP] 푸시 알림 설정 완료');
+    //     } else {
+    //       console.warn('[APP] 푸시 알림 설정 실패 또는 권한 거부');
+    //     }
+    //   })
+    //   .catch((error) => {
+    //     console.error('[APP] 푸시 알림 설정 중 예외 발생:', error);
+    //   });
   }, [loaded]);
 
   const RnText: any = Text as any;

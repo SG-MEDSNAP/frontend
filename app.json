@@ -16,7 +16,7 @@
     "ios": {
       "supportsTablet": false,
       "bundleIdentifier": "com.qkrb8019.medsnap",
-      "googleServicesFile": "./ios/medsnap/GoogleService-Info.plist",
+
       "infoPlist": {
         "ITSAppUsesNonExemptEncryption": false,
         "NSUserNotificationUsageDescription": "복약 시간을 알려드리기 위해 알림을 사용합니다.",
