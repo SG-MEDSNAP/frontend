@@ -6,6 +6,7 @@ import {
   ScrollView,
   Linking,
   Alert,
+  Platform,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
@@ -78,30 +79,11 @@ export default function AppInfoScreen() {
 
                 <View className="flex-row justify-between items-center py-2">
                   <Text className="body-sm text-gray-700">플랫폼</Text>
-                  <Text className="text-black font-medium">iOS / Android</Text>
+                  <Text className="text-black font-medium">
+                    {Platform.OS === 'ios' ? 'iOS' : 'Android'}
+                  </Text>
                 </View>
               </View>
-            </View>
-          </View>
-
-          {/* 법적 정보 */}
-          <View className="mb-8">
-            <Text className="h7 text-black mb-4">법적 정보</Text>
-            <View className="space-y-2 bg-primary-50 rounded-xl p-4">
-              <TouchableOpacity
-                className="flex-row items-center justify-between py-2"
-                onPress={handleContactPress}
-              >
-                <Text className="body-sm text-gray-700">문의하기</Text>
-                <Icon name="chevron-forward" size={20} color="#999" />
-              </TouchableOpacity>
-              <TouchableOpacity
-                className="flex-row items-center justify-between py-2"
-                onPress={handlePrivacyPolicyPress}
-              >
-                <Text className="body-sm text-gray-700">개인정보처리방침</Text>
-                <Icon name="chevron-forward" size={20} color="#999" />
-              </TouchableOpacity>
             </View>
           </View>
 
