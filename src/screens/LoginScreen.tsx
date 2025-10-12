@@ -13,6 +13,7 @@ import LoginButton from '../components/LoginButton';
 import { useSocialLoginMutation } from '../features/socialLogin';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../../App';
+import { setupPushNotifications } from '../lib/notifications';
 
 const { KeyHashModule } = NativeModules;
 
@@ -57,6 +58,19 @@ export default function LoginScreen({ navigation }: Props) {
         }
 
         if (result.next === 'HOME') {
+          // 로그인 성공 후 푸시 알림 설정
+          setupPushNotifications()
+            .then((success) => {
+              if (success) {
+                console.log('[LOGIN] 푸시 알림 설정 완료');
+              } else {
+                console.warn('[LOGIN] 푸시 알림 설정 실패 또는 권한 거부');
+              }
+            })
+            .catch((error) => {
+              console.error('[LOGIN] 푸시 알림 설정 중 예외 발생:', error);
+            });
+
           navigation.replace('MainTabs');
         } else {
           navigation.navigate('Join', {
