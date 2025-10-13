@@ -28,7 +28,7 @@ android/
 *.ipa
 
 # Firebase
-
+google-services.json
 GoogleService-Info.plist
 
 # Metro
