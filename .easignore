@@ -1,0 +1,4 @@
+# EAS Build ignore file
+# 기본적으로 .gitignore를 따릅니다. 아래 줄로 강제 포함
+!google-services.json
+!android/google-services.json

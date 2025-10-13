@@ -32,7 +32,6 @@
       }
     },
     "android": {
-      "useNextNotificationsApi": true,
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon-foreground.png",
         "backgroundColor": "#ffffff"
@@ -50,7 +49,7 @@
         "android.permission.WAKE_LOCK"
       ],
       "package": "com.qkrb8019.medsnap",
-      "googleServicesFile": "./android/google-services.json"
+      "googleServicesFile": "./google-services.json"
     },
     "web": {
       "favicon": "./assets/favicon.png",
