@@ -49,7 +49,7 @@
         "android.permission.WAKE_LOCK"
       ],
       "package": "com.qkrb8019.medsnap",
-      "googleServicesFile": "./google-services.json"
+      "googleServicesFile": "./android/app/google-services.json"
     },
     "web": {
       "favicon": "./assets/favicon.png",
