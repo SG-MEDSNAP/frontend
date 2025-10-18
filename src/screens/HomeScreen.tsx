@@ -42,20 +42,19 @@ export default function HomeScreen({ navigation }: Props) {
   };
 
   return (
-    <SafeAreaView className="flex-1 bg-[#F8F9FA]">
-      {/* 헤더 */}
-      <View className="flex-row items-center px-4 bg-white h-[60px]">
-        <HeaderLogo />
-      </View>
+    <SafeAreaView className="flex-1 bg-[#F8F9FA]" edges={['top']}>
+      <ScrollView
+        className="flex-1"
+        contentContainerClassName="pb-6 bg-[#F2F4FF]"
+      >
+        {/* 헤더 */}
+        <View className="flex-row items-center px-4 bg-white h-[60px]">
+          <HeaderLogo />
+        </View>
 
-      {/* 메인  영역 */}
-      <View className="flex-col bg-[#F2F4FF]">
-        {/* 안내 */}
-        {/* 360*937 기준  h-[337px] */}
-        <ScrollView
-          showsVerticalScrollIndicator={false}
-          alwaysBounceVertical={false}
-        >
+        {/* 메인 영역 */}
+        <View className="flex-col bg-[#F2F4FF]">
+          {/* 안내 섹션 */}
           <View className="grow mx-4">
             <View className="mt-12">
               <Text className="text-[34px]/[46px] font-bold text-[#404040]">
@@ -83,7 +82,8 @@ export default function HomeScreen({ navigation }: Props) {
               />
             </View>
           </View>
-          {/* 타임 라인 */}
+
+          {/* 타임라인 섹션 */}
           <View className="grow mx-4">
             <View className="mb-4">
               <Text className="text-[24px] font-bold text-[#333]">
@@ -102,11 +102,8 @@ export default function HomeScreen({ navigation }: Props) {
               <TodayTimeLine medications={data?.items || []} />
             )}
           </View>
-
-          {/* 하단 여백 */}
-          {/* <View className="h-6" /> */}
-        </ScrollView>
-      </View>
+        </View>
+      </ScrollView>
     </SafeAreaView>
   );
 }
