@@ -7,12 +7,12 @@
     "development": {
       "developmentClient": true,
       "distribution": "internal",
-      "android": { "buildType": "apk" },
+      "android": { "buildType": "app-bundle" },
       "ios": { "image": "latest" }
     },
     "preview": {
       "distribution": "internal",
-      "android": { "buildType": "apk" }
+      "android": { "buildType": "app-bundle" }
     },
     "production": {
       "autoIncrement": true,
@@ -20,8 +20,8 @@
         "API_BASE_URL": "https://hiedu.site"
       },
       "android": {
-        "buildType": "apk",
-        "gradleCommand": ":app:assembleRelease"
+        "buildType": "app-bundle",
+        "gradleCommand": ":app:bundleRelease"
       }
     }
   },
