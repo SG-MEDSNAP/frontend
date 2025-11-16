@@ -76,6 +76,7 @@ export default function LoginScreen({ navigation }: Props) {
           navigation.navigate('Join', {
             idToken: result.idToken,
             provider,
+            nameHint: result.nameHint,
           });
         }
       },

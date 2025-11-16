@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Text, ScrollView, Alert } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useForm } from 'react-hook-form';
@@ -22,17 +22,18 @@ interface JoinScreenProps {
     params: {
       idToken: string;
       provider: Provider;
+      nameHint?: string; // 404 응답에서 받은 이름 힌트
     };
   };
   navigation: any;
 }
 
 export default function JoinScreen({ route, navigation }: JoinScreenProps) {
-  const { idToken, provider } = route.params;
+  const { idToken, provider, nameHint } = route.params;
   const [isLoading, setIsLoading] = useState(false);
   const { control, watch, setValue, formState } = useForm<JoinForm>({
     defaultValues: {
-      name: '',
+      name: nameHint || '', // nameHint가 있으면 이름 필드에 자동 채우기
       birth: '',
       phone: '',
       // caregiverPhone: '',
@@ -41,10 +42,21 @@ export default function JoinScreen({ route, navigation }: JoinScreenProps) {
     mode: 'onChange',
   });
 
+  // nameHint가 있으면 이름 필드에 자동 채우기
+  useEffect(() => {
+    if (nameHint && nameHint.trim() !== '') {
+      setValue('name', nameHint.trim(), {
+        shouldValidate: true,
+        shouldDirty: true,
+      });
+      console.log('[JOIN] nameHint로 이름 필드 채움:', nameHint);
+    }
+  }, [nameHint, setValue]);
+
   const name = watch('name');
   const birth = watch('birth');
   const phone = watch('phone');
-//   const caregiverPhone = watch('caregiverPhone');
+  //   const caregiverPhone = watch('caregiverPhone');
   const pushAgree = watch('pushAgree');
 
   const canSubmit = formState.isValid && Boolean(name && birth && phone);
@@ -75,9 +87,14 @@ export default function JoinScreen({ route, navigation }: JoinScreenProps) {
       if (e?.response?.status === 409) {
         // 이미 가입됨 → 로그인 재시도
         try {
-          await loginWithIdToken(idToken, provider);
-          navigation.replace('MainTabs');
-          return;
+          const loginResult = await loginWithIdToken({
+            idToken,
+            provider,
+          });
+          if (loginResult?.success && loginResult.data) {
+            navigation.replace('MainTabs');
+            return;
+          }
         } catch (loginError) {
           console.error('로그인 재시도 실패:', loginError);
         }

@@ -1,11 +1,11 @@
 export type Provider = 'GOOGLE' | 'APPLE' | 'KAKAO' | 'NAVER';
 
-export interface AppleUserPayload {
+export type AppleUserPayload = {
   name: {
     firstName: string;
     lastName: string;
   };
-}
+};
 
 export interface LoginRequest {
   idToken: string;

@@ -60,6 +60,7 @@ export type RootStackParamList = {
   Join: {
     idToken: string;
     provider: 'GOOGLE' | 'APPLE' | 'KAKAO' | 'NAVER';
+    nameHint?: string; // 404 응답에서 받은 이름 힌트
   };
   JoinDone: undefined;
   RegisterScreen: undefined;

@@ -28,25 +28,19 @@ export async function socialLoginOrSignupKickoff(provider: Provider) {
           familyName: appleResult.fullName?.familyName,
         });
 
-        if (
-          appleResult.fullName?.givenName &&
-          appleResult.fullName?.familyName
-        ) {
-          appleUserPayload = {
-            name: {
-              firstName: appleResult.fullName.givenName,
-              lastName: appleResult.fullName.familyName,
-            },
-          };
-          console.log(
-            '[SOCIAL_LOGIN] appleUserPayload 생성됨:',
-            appleUserPayload,
-          );
-        } else {
-          console.log(
-            '[SOCIAL_LOGIN] Apple fullName 정보 없음 - appleUserPayload 생성 안함',
-          );
-        }
+        const givenName = appleResult.fullName?.givenName?.trim() || '';
+        const familyName = appleResult.fullName?.familyName?.trim() || '';
+        // 응답 매핑: givenName -> firstName, familyName -> lastName (없으면 빈 문자열)
+        appleUserPayload = {
+          name: {
+            firstName: givenName,
+            lastName: familyName,
+          },
+        };
+        console.log(
+          '[SOCIAL_LOGIN] appleUserPayload 생성됨:',
+          appleUserPayload,
+        );
         // 캐시 정리
         clearAppleCache();
       }
@@ -64,9 +58,22 @@ export async function socialLoginOrSignupKickoff(provider: Provider) {
 
     const login = await loginWithIdToken(loginRequest);
     console.log(`[SOCIAL_LOGIN] 백엔드 API 응답:`, login);
-    if (login) return { next: 'HOME' as const, idToken }; // 로그인 완료
-    // loginWithIdToken이 404/409에서 null 리턴하도록 이미 구현되어 있음
-    return { next: 'SIGNUP' as const, idToken, provider }; // 회원가입 화면으로
+    if (login?.success && login.data) {
+      console.log('[SOCIAL_LOGIN] 로그인 성공 - 홈 화면으로 이동');
+      return { next: 'HOME' as const, idToken }; // 로그인 완료
+    }
+    // loginWithIdToken이 404/409에서 { success: false, nameHint? } 리턴
+    const nameHint = login?.nameHint;
+    console.log(
+      '[SOCIAL_LOGIN] 로그인 실패 (404/409) - 회원가입 화면으로 이동',
+      nameHint ? `(nameHint: ${nameHint})` : '',
+    );
+    return {
+      next: 'SIGNUP' as const,
+      idToken,
+      provider,
+      nameHint: nameHint || undefined,
+    }; // 회원가입 화면으로
   } catch (e) {
     interface AxiosErrorResponse {
       status?: number;
