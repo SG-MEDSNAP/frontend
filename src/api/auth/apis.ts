@@ -79,15 +79,50 @@ export function shouldRefreshToken(accessToken: string): boolean {
   }
 }
 
+interface LoginRequestBody {
+  idToken: string;
+  provider: string;
+  appleUserPayload?: {
+    name: {
+      firstName: string;
+      lastName: string;
+    };
+  };
+}
+
+interface AxiosErrorResponse {
+  status?: number;
+  data?: unknown;
+}
+
+interface AxiosError extends Error {
+  response?: AxiosErrorResponse;
+  config?: {
+    url?: string;
+  };
+}
+
 // 로그인 API
 export async function loginWithIdToken({
   idToken,
   provider,
+  appleUserPayload,
 }: LoginRequest): Promise<AuthResponse | null> {
   try {
+    // 요청 본문 구성 (appleUserPayload가 있으면 포함, 없으면 필드 자체를 추가하지 않음)
+    const requestBody: LoginRequestBody = {
+      idToken,
+      provider,
+    };
+
+    if (appleUserPayload) {
+      requestBody.appleUserPayload = appleUserPayload;
+    }
+
     console.log('[AUTH/login] 요청 바디:', {
       provider,
       idToken: idToken ? `${idToken.substring(0, 50)}...` : 'null',
+      ...(appleUserPayload && { appleUserPayload }),
     });
 
     const authAxios = axios.create({
@@ -95,16 +130,17 @@ export async function loginWithIdToken({
       headers: { 'Content-Type': 'application/json' },
     });
 
-    const res = await authAxios.post('/auth/login', { idToken, provider });
+    const res = await authAxios.post('/auth/login', requestBody);
     if (res.status >= 200 && res.status < 300) {
       const { accessToken, refreshToken } = res.data.data;
       await saveTokens(accessToken, refreshToken);
       return res.data.data;
     }
     return null;
-  } catch (e: any) {
+  } catch (e) {
+    const error = e as AxiosError;
     // 404: 미가입, 409: 이미 가입됨 → 회원가입으로 전환
-    if (e?.response?.status === 404 || e?.response?.status === 409) {
+    if (error?.response?.status === 404 || error?.response?.status === 409) {
       return null;
     }
     // 401: 토큰 검증 실패, 기타 에러는 그대로 throw
@@ -127,7 +163,17 @@ export async function signupWithIdToken(
   } = input;
 
   // caregiverPhone이 undefined이거나 빈 문자열이면 필드 자체를 제거
-  const requestBody: any = {
+  interface SignupRequestBody {
+    idToken: string;
+    provider: string;
+    name: string;
+    birthday: string;
+    phone: string;
+    isPushConsent: boolean;
+    caregiverPhone?: string;
+  }
+
+  const requestBody: SignupRequestBody = {
     idToken,
     provider,
     name,

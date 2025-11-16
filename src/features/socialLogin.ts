@@ -1,6 +1,7 @@
 import { useMutation } from '@tanstack/react-query';
-import { loginWithIdToken, Provider } from '../api/auth';
+import { loginWithIdToken, Provider, AppleUserPayload } from '../api/auth';
 import { getIdTokenFor } from '../auth/getIdToken';
+import { signInWithAppleAndGetUserInfo } from '../auth/apple';
 
 export async function socialLoginOrSignupKickoff(provider: Provider) {
   // 1) idToken 확보
@@ -9,22 +10,71 @@ export async function socialLoginOrSignupKickoff(provider: Provider) {
   // 2) 로그인 시도
   try {
     console.log(`[SOCIAL_LOGIN] 백엔드 API 호출 시작 - Provider: ${provider}`);
-    const login = await loginWithIdToken({ idToken, provider });
+    let appleUserPayload: AppleUserPayload | undefined = undefined;
+    
+    // Apple 로그인 시 응답값 확인
+    if (provider === 'APPLE') {
+      const appleResult = await signInWithAppleAndGetUserInfo();
+      console.log('[SOCIAL_LOGIN] Apple 로그인 응답값:', {
+        idToken: appleResult.idToken ? `${appleResult.idToken.substring(0, 50)}...` : 'null',
+        fullName: appleResult.fullName,
+        givenName: appleResult.fullName?.givenName,
+        familyName: appleResult.fullName?.familyName,
+      });
+      
+      if (appleResult.fullName?.givenName && appleResult.fullName?.familyName) {
+        appleUserPayload = {
+          name: {
+            firstName: appleResult.fullName.givenName,
+            lastName: appleResult.fullName.familyName,
+          },
+        };
+        console.log('[SOCIAL_LOGIN] appleUserPayload 생성됨:', appleUserPayload);
+      } else {
+        console.log('[SOCIAL_LOGIN] Apple fullName 정보 없음 - appleUserPayload 생성 안함');
+      }
+    }
+    
+    const loginRequest: {
+      idToken: string;
+      provider: Provider;
+      appleUserPayload?: AppleUserPayload;
+    } = { idToken, provider };
+    
+    if (appleUserPayload) {
+      loginRequest.appleUserPayload = appleUserPayload;
+    }
+
+    const login = await loginWithIdToken(loginRequest);
     console.log(`[SOCIAL_LOGIN] 백엔드 API 응답:`, login);
     if (login) return { next: 'HOME' as const, idToken }; // 로그인 완료
     // loginWithIdToken이 404/409에서 null 리턴하도록 이미 구현되어 있음
     return { next: 'SIGNUP' as const, idToken, provider }; // 회원가입 화면으로
-  } catch (e: any) {
+  } catch (e) {
+    interface AxiosErrorResponse {
+      status?: number;
+      data?: unknown;
+    }
+
+    interface AxiosError extends Error {
+      code?: string;
+      response?: AxiosErrorResponse;
+      config?: {
+        url?: string;
+      };
+    }
+
+    const error = e as AxiosError;
     console.error(`[SOCIAL_LOGIN] 백엔드 API 에러:`, {
-      message: e?.message,
-      code: e?.code,
-      status: e?.response?.status,
-      data: e?.response?.data,
-      config: e?.config?.url,
+      message: error?.message,
+      code: error?.code,
+      status: error?.response?.status,
+      data: error?.response?.data,
+      config: error?.config?.url,
     });
 
     // 401: 토큰 검증 실패(issuer/audience/만료 등)
-    if (e?.response?.status === 401) {
+    if (error?.response?.status === 401) {
       throw new Error('소셜 토큰 검증에 실패했어요. 다시 로그인해 주세요.');
     }
     throw e;
@@ -53,7 +103,7 @@ export function useSocialLoginMutation() {
         throw error;
       }
     },
-    onError: (error: any) => {
+    onError: (error: unknown) => {
       console.error('[SOCIAL_LOGIN] 로그인 실패:', error);
       // 에러 토스트 표시 로직 추가 가능
     },
