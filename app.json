@@ -20,6 +20,7 @@
       "infoPlist": {
         "ITSAppUsesNonExemptEncryption": false,
         "NSUserNotificationUsageDescription": "복약 시간을 알려드리기 위해 알림을 사용합니다.",
+        "NSCameraUsageDescription": "약등록 및 약 복용 분석을 위해 카메라 권한이 필요합니다.",
         "UIUserInterfaceStyle": "Light",
         "CFBundleURLTypes": [
           { "CFBundleURLSchemes": ["naverG2Dui5LZ_lzXaQWiFQtv"] },
@@ -71,6 +72,7 @@
         "expo-image-picker",
         {
           "photosPermission": "사진을 선택하거나 업로드하기 위해 사진 보관함에 접근합니다.",
+          "cameraPermission": "약등록 및 약 복용 분석을 위해 카메라 권한이 필요합니다.",
           "microphonePermission": "동영상 녹화를 위해 마이크 접근을 허용해 주세요."
         }
       ],

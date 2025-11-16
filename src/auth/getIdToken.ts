@@ -2,12 +2,14 @@ import { Provider } from '../api/auth';
 import {
   login as kakaoLogin,
   loginWithKakaoAccount,
-  isKakaoTalkLoginAvailable,
 } from '@react-native-seoul/kakao-login';
 import { signInWithNaver } from './naver';
 import { signInWithGoogle } from './google';
-import { signInWithApple } from './apple';
+import { signInWithAppleAndGetUserInfo, AppleLoginResult } from './apple';
 import { jwtDecode } from 'jwt-decode';
+
+// Apple 로그인 결과 캐시 (getIdTokenFor에서 생성, socialLogin.ts에서 재사용)
+let cachedAppleResult: AppleLoginResult | null = null;
 
 export async function getIdTokenFor(provider: Provider): Promise<string> {
   switch (provider) {
@@ -18,10 +20,22 @@ export async function getIdTokenFor(provider: Provider): Promise<string> {
     case 'GOOGLE':
       return await signInWithGoogle();
     case 'APPLE':
-      return await signInWithApple();
+      // Apple 로그인 결과를 캐시에 저장 (socialLogin.ts에서 fullName 사용)
+      cachedAppleResult = await signInWithAppleAndGetUserInfo();
+      return cachedAppleResult.idToken;
     default:
       throw new Error(`지원하지 않는 소셜 로그인: ${provider}`);
   }
+}
+
+// Apple 로그인 캐시된 결과 가져오기
+export function getCachedAppleResult(): AppleLoginResult | null {
+  return cachedAppleResult;
+}
+
+// Apple 로그인 캐시 초기화
+export function clearAppleCache(): void {
+  cachedAppleResult = null;
 }
 
 async function getKakaoIdToken(): Promise<string> {

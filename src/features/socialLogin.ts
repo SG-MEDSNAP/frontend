@@ -1,7 +1,10 @@
 import { useMutation } from '@tanstack/react-query';
 import { loginWithIdToken, Provider, AppleUserPayload } from '../api/auth';
-import { getIdTokenFor } from '../auth/getIdToken';
-import { signInWithAppleAndGetUserInfo } from '../auth/apple';
+import {
+  getIdTokenFor,
+  getCachedAppleResult,
+  clearAppleCache,
+} from '../auth/getIdToken';
 
 export async function socialLoginOrSignupKickoff(provider: Provider) {
   // 1) idToken 확보
@@ -11,36 +14,50 @@ export async function socialLoginOrSignupKickoff(provider: Provider) {
   try {
     console.log(`[SOCIAL_LOGIN] 백엔드 API 호출 시작 - Provider: ${provider}`);
     let appleUserPayload: AppleUserPayload | undefined = undefined;
-    
-    // Apple 로그인 시 응답값 확인
+
+    // Apple 로그인 시 결과에서 fullName 가져오기 (getIdTokenFor에서 이미 호출됨)
     if (provider === 'APPLE') {
-      const appleResult = await signInWithAppleAndGetUserInfo();
-      console.log('[SOCIAL_LOGIN] Apple 로그인 응답값:', {
-        idToken: appleResult.idToken ? `${appleResult.idToken.substring(0, 50)}...` : 'null',
-        fullName: appleResult.fullName,
-        givenName: appleResult.fullName?.givenName,
-        familyName: appleResult.fullName?.familyName,
-      });
-      
-      if (appleResult.fullName?.givenName && appleResult.fullName?.familyName) {
-        appleUserPayload = {
-          name: {
-            firstName: appleResult.fullName.givenName,
-            lastName: appleResult.fullName.familyName,
-          },
-        };
-        console.log('[SOCIAL_LOGIN] appleUserPayload 생성됨:', appleUserPayload);
-      } else {
-        console.log('[SOCIAL_LOGIN] Apple fullName 정보 없음 - appleUserPayload 생성 안함');
+      const appleResult = getCachedAppleResult();
+      if (appleResult) {
+        console.log('[SOCIAL_LOGIN] Apple 로그인 응답값:', {
+          idToken: appleResult.idToken
+            ? `${appleResult.idToken.substring(0, 50)}...`
+            : 'null',
+          fullName: appleResult.fullName,
+          givenName: appleResult.fullName?.givenName,
+          familyName: appleResult.fullName?.familyName,
+        });
+
+        if (
+          appleResult.fullName?.givenName &&
+          appleResult.fullName?.familyName
+        ) {
+          appleUserPayload = {
+            name: {
+              firstName: appleResult.fullName.givenName,
+              lastName: appleResult.fullName.familyName,
+            },
+          };
+          console.log(
+            '[SOCIAL_LOGIN] appleUserPayload 생성됨:',
+            appleUserPayload,
+          );
+        } else {
+          console.log(
+            '[SOCIAL_LOGIN] Apple fullName 정보 없음 - appleUserPayload 생성 안함',
+          );
+        }
+        // 캐시 정리
+        clearAppleCache();
       }
     }
-    
+
     const loginRequest: {
       idToken: string;
       provider: Provider;
       appleUserPayload?: AppleUserPayload;
     } = { idToken, provider };
-    
+
     if (appleUserPayload) {
       loginRequest.appleUserPayload = appleUserPayload;
     }
