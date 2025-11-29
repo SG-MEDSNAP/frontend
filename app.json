@@ -16,10 +16,11 @@
     "ios": {
       "supportsTablet": false,
       "bundleIdentifier": "com.qkrb8019.medsnap",
-      "googleServicesFile": "./ios/medsnap/GoogleService-Info.plist",
+
       "infoPlist": {
         "ITSAppUsesNonExemptEncryption": false,
         "NSUserNotificationUsageDescription": "복약 시간을 알려드리기 위해 알림을 사용합니다.",
+        "NSCameraUsageDescription": "약 등록 시 알약 사진을 촬영하고, 복용 확인을 위해 약을 카메라로 촬영하여 분석하는 데 사용됩니다. 예: 약통에 담긴 약을 촬영하면 어떤 약인지 자동으로 인식합니다.",
         "UIUserInterfaceStyle": "Light",
         "CFBundleURLTypes": [
           { "CFBundleURLSchemes": ["naverG2Dui5LZ_lzXaQWiFQtv"] },
@@ -33,13 +34,23 @@
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/icon.png",
+        "foregroundImage": "./assets/adaptive-icon-foreground.png",
+        "backgroundColor": "#ffffff"
+      },
+      "splash": {
+        "image": "./assets/adaptive-icon-foreground.png",
+        "resizeMode": "contain",
         "backgroundColor": "#ffffff"
       },
       "edgeToEdgeEnabled": true,
-      "permissions": ["android.permission.RECORD_AUDIO"],
+      "permissions": [
+        "android.permission.RECORD_AUDIO",
+        "android.permission.POST_NOTIFICATIONS",
+        "android.permission.VIBRATE",
+        "android.permission.WAKE_LOCK"
+      ],
       "package": "com.qkrb8019.medsnap",
-      "googleServicesFile": "./android/app/google-services.json"
+      "googleServicesFile": "./google-services.json"
     },
     "web": {
       "favicon": "./assets/favicon.png",
@@ -61,6 +72,7 @@
         "expo-image-picker",
         {
           "photosPermission": "사진을 선택하거나 업로드하기 위해 사진 보관함에 접근합니다.",
+          "cameraPermission": "약 등록 시 알약 사진을 촬영하고, 복용 확인을 위해 약을 카메라로 촬영하여 분석하는 데 사용됩니다. 예: 약통에 담긴 약을 촬영하면 어떤 약인지 자동으로 인식합니다.",
           "microphonePermission": "동영상 녹화를 위해 마이크 접근을 허용해 주세요."
         }
       ],
@@ -79,7 +91,7 @@
         "@react-native-google-signin/google-signin",
         {
           "iosUrlScheme": "com.googleusercontent.apps.507746381359-a9ttvvvt50lkua178guniv5g4buj4j8i",
-          "androidClientId": "507746381359-d09u9mphhqkn1ukpht0cegerk2gvoihh.apps.googleusercontent.com"
+          "androidClientId": "507746381359-tljtrpuj3ubd2961uhjpbl119kkfuapn.apps.googleusercontent.com"
         }
       ],
       [
@@ -111,6 +123,15 @@
               "https://devrepo.kakao.com/nexus/content/groups/public/"
             ]
           }
+        }
+      ],
+      [
+        "expo-splash-screen",
+        {
+          "image": "./assets/adaptive-icon-foreground.png",
+          "imageWidth": 200,
+          "resizeMode": "contain",
+          "backgroundColor": "#ffffff"
         }
       ],
       "expo-secure-store"

@@ -1,15 +1,44 @@
-import React from 'react';
-import { View, Text, Image, ScrollView, Platform } from 'react-native';
+import React, { useEffect } from 'react';
+import {
+  View,
+  Text,
+  Image,
+  ScrollView,
+  Platform,
+  Alert,
+  NativeModules,
+} from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import LoginButton from '../components/LoginButton';
 import { useSocialLoginMutation } from '../features/socialLogin';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../../App';
+// 푸시 알림은 사용자 동의 시에만 설정 (App Store Guideline 4.5.4)
+
+const { KeyHashModule } = NativeModules;
 
 type Props = NativeStackScreenProps<RootStackParamList, any>;
 
 export default function LoginScreen({ navigation }: Props) {
   const socialLoginMutation = useSocialLoginMutation();
+
+  // ✅ Android 키 해시 확인 (릴리즈 빌드용)
+  useEffect(() => {
+    if (Platform.OS === 'android' && KeyHashModule) {
+      KeyHashModule.getKeyHashes()
+        .then((hashes: string) => {
+          console.log('🔑 [KEY HASHES]:', hashes);
+          Alert.alert(
+            '🔑 릴리즈 키 해시 정보',
+            `${hashes}\n\n카카오: Kakao Key Hash 값을 카카오 개발자 콘솔에 등록\n구글: Google SHA-1 값을 Google Cloud Console에 등록`,
+            [{ text: '확인' }],
+          );
+        })
+        .catch((err: any) => {
+          console.error('❌ 키 해시 확인 실패:', err);
+        });
+    }
+  }, []);
 
   const handleSocialLogin = (
     provider: 'KAKAO' | 'NAVER' | 'GOOGLE' | 'APPLE',
@@ -29,11 +58,14 @@ export default function LoginScreen({ navigation }: Props) {
         }
 
         if (result.next === 'HOME') {
+          // 푸시 알림은 사용자 동의가 있을 때만 설정 (App Store Guideline 4.5.4)
+          // 기존 회원의 isPushConsent 여부는 MainTabs에서 확인 후 처리
           navigation.replace('MainTabs');
         } else {
           navigation.navigate('Join', {
             idToken: result.idToken,
             provider,
+            nameHint: result.nameHint,
           });
         }
       },

@@ -22,6 +22,11 @@ android/
 *.key
 *.mobileprovision
 
+# Build outputs
+*.apk
+*.aab
+*.ipa
+
 # Firebase
 google-services.json
 GoogleService-Info.plist

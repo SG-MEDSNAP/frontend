@@ -37,8 +37,8 @@ export default function EditInfoScreen() {
   useEffect(() => {
     if (user) {
       setValue('name', user.name);
-      setValue('birth', user.birthday);
-      setValue('phone', user.phone);
+      setValue('birth', user.birthday ?? '');
+      setValue('phone', user.phone ?? '');
       setValue('pushAgree', user.isPushConsent);
     }
   }, [user, setValue]);
@@ -48,15 +48,17 @@ export default function EditInfoScreen() {
   const phone = watch('phone');
   const pushAgree = watch('pushAgree');
 
-  const canSubmit = formState.isValid && Boolean(name && birth && phone);
+
+  const canSubmit = formState.isValid && Boolean(name);
 
   const handleSubmit = async () => {
     try {
       const formData = {
         name: name,
-        birthday: birth, // 이미 - 형식으로 입력받음
-        phone: phone,
         isPushConsent: pushAgree,
+        // birthday, phone은 값이 있을 때만 포함
+        ...(birth && birth.trim() !== '' && { birthday: birth.trim() }),
+        ...(phone && phone.trim() !== '' && { phone: phone.trim() }),
       };
 
       console.log('[EDIT_INFO] 마이페이지 수정 요청:', formData);
@@ -120,14 +122,19 @@ export default function EditInfoScreen() {
         </View>
 
         <View className="mt-8">
-          <CalendarField control={control as any} label="생년월일" />
+          <CalendarField
+            control={control as any}
+            label="생년월일 (선택)"
+            requiredField={false}
+          />
         </View>
 
         <View className="mt-8">
           <PhoneField
             control={control as any}
             name="phone"
-            label="핸드폰 번호"
+            label="핸드폰 번호 (선택)"
+            requiredField={false}
           />
         </View>
 
@@ -135,7 +142,7 @@ export default function EditInfoScreen() {
 
         <View className="mt-8">
           <ToggleSwitch
-            label="앱 알림 동의"
+            label="앱 알림 동의 (선택)"
             value={pushAgree}
             onValueChange={(v) =>
               setValue('pushAgree', v, {
@@ -143,7 +150,7 @@ export default function EditInfoScreen() {
                 shouldDirty: true,
               })
             }
-            description="(설명 문구 필요)"
+            description="복약 시간을 놓치지 않도록 알림을 보내드립니다."
           />
         </View>
       </ScrollView>

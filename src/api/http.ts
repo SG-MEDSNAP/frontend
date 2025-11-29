@@ -1,20 +1,44 @@
 import axios from 'axios';
-import { API_BASE_URL } from '@env';
+import Constants from 'expo-constants';
 import * as SecureStore from 'expo-secure-store';
 import { getAccessToken, shouldRefreshToken, refreshToken } from './auth';
 
 // Base API URL with versioning
+// 빌드 시점에 process.env.API_BASE_URL이 실제 값으로 치환됨 (babel-plugin-transform-inline-environment-variables)
+const getApiBaseUrl = () => {
+  if (typeof process !== 'undefined' && process.env?.API_BASE_URL) {
+    return process.env.API_BASE_URL as string;
+  }
+  // 기본값 (개발 환경)
+  return 'https://hiedu.site';
+};
+
+const API_BASE_URL = getApiBaseUrl();
 const BASE_URL = `${API_BASE_URL}/api/v1`;
 
 // JSON client
 export const jsonAxios = axios.create({
   baseURL: BASE_URL,
   headers: { 'Content-Type': 'application/json' },
+  timeout: 30000, // 30초 타임아웃
+});
+
+console.log('[HTTP] Axios 초기화 완료:', {
+  baseURL: BASE_URL,
+  API_BASE_URL,
 });
 
 // Request 인터셉터: 토큰 미리 재발급
 jsonAxios.interceptors.request.use(
   async (config) => {
+    console.log('[HTTP] 요청 시작:', {
+      url: config.url,
+      baseURL: config.baseURL,
+      fullURL: `${config.baseURL}${config.url}`,
+      method: config.method,
+      headers: config.headers,
+    });
+
     // refresh 엔드포인트는 토큰 체크 제외
     if (config.url?.includes('/auth/refresh')) {
       return config;
@@ -39,17 +63,34 @@ jsonAxios.interceptors.request.use(
 
     return config;
   },
-  (error) => Promise.reject(error),
+  (error) => {
+    console.error('[HTTP] 요청 인터셉터 에러:', error);
+    return Promise.reject(error);
+  },
 );
 
 // Response 인터셉터: 401 에러 시 토큰 재발급 후 재시도
 jsonAxios.interceptors.response.use(
-  (r) => (
-    console.log('[API res]', r.status, r.config.url?.split('/').pop()),
-    r
-  ),
+  (r) => {
+    console.log('[HTTP] 응답 성공:', {
+      status: r.status,
+      url: r.config.url,
+      data: r.data,
+    });
+    return r;
+  },
   async (e) => {
     const endpoint = e?.config?.url?.split('/').pop() || 'unknown';
+
+    console.error('[HTTP] 응답 에러:', {
+      endpoint,
+      message: e?.message,
+      code: e?.code,
+      status: e?.response?.status,
+      data: e?.response?.data,
+      url: e?.config?.url,
+      baseURL: e?.config?.baseURL,
+    });
 
     // 401 에러이고 refresh 엔드포인트가 아닌 경우 재발급 시도
     if (e?.response?.status === 401 && !endpoint.includes('refresh')) {
@@ -67,7 +108,6 @@ jsonAxios.interceptors.response.use(
       }
     }
 
-    console.log('[API err]', endpoint, e?.response?.status, e?.response?.data);
     throw e;
   },
 );

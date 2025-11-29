@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Text, ScrollView, Alert } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useForm } from 'react-hook-form';
@@ -8,6 +8,7 @@ import { PersonNameField } from '../components/field/PersonNameField';
 import { PhoneField } from '../components/field/PhoneField';
 import { CalendarField } from '../components/field/CalendarField';
 import { signupWithIdToken, loginWithIdToken, Provider } from '../api/auth';
+import { setupPushNotifications } from '../lib/notifications';
 
 type JoinForm = {
   name: string;
@@ -22,17 +23,18 @@ interface JoinScreenProps {
     params: {
       idToken: string;
       provider: Provider;
+      nameHint?: string; // 404 응답에서 받은 이름 힌트
     };
   };
   navigation: any;
 }
 
 export default function JoinScreen({ route, navigation }: JoinScreenProps) {
-  const { idToken, provider } = route.params;
+  const { idToken, provider, nameHint } = route.params;
   const [isLoading, setIsLoading] = useState(false);
   const { control, watch, setValue, formState } = useForm<JoinForm>({
     defaultValues: {
-      name: '',
+      name: nameHint || '', // nameHint가 있으면 이름 필드에 자동 채우기
       birth: '',
       phone: '',
       // caregiverPhone: '',
@@ -41,13 +43,25 @@ export default function JoinScreen({ route, navigation }: JoinScreenProps) {
     mode: 'onChange',
   });
 
+  // nameHint가 있으면 이름 필드에 자동 채우기
+  useEffect(() => {
+    if (nameHint && nameHint.trim() !== '') {
+      setValue('name', nameHint.trim(), {
+        shouldValidate: true,
+        shouldDirty: true,
+      });
+      console.log('[JOIN] nameHint로 이름 필드 채움:', nameHint);
+    }
+  }, [nameHint, setValue]);
+
   const name = watch('name');
   const birth = watch('birth');
   const phone = watch('phone');
-//   const caregiverPhone = watch('caregiverPhone');
+  //   const caregiverPhone = watch('caregiverPhone');
   const pushAgree = watch('pushAgree');
 
-  const canSubmit = formState.isValid && Boolean(name && birth && phone);
+  // 생년월일과 전화번호는 선택사항 (App Store 가이드라인 5.1.1 준수)
+  const canSubmit = formState.isValid && Boolean(name);
 
   const handleSubmit = async () => {
     if (!canSubmit) return;
@@ -55,29 +69,45 @@ export default function JoinScreen({ route, navigation }: JoinScreenProps) {
     setIsLoading(true);
 
     try {
-      // birthday 포맷 정규화: 2002.08.19 -> 2002-08-19
-      const normalizedBirthday = birth.replace(/\./g, '-');
-
-      // caregiverPhone 정규화: 값 없으면 필드 자체를 생략
-      const signupData: any = {
+      const signupData = {
         name,
         idToken,
         provider,
-        birthday: normalizedBirthday,
-        phone: phone,
         isPushConsent: pushAgree,
+        ...(birth && birth.trim() !== '' && { birthday: birth.replace(/\./g, '-') }),
+        ...(phone && phone.trim() !== '' && { phone: phone.trim() }),
       };
 
       await signupWithIdToken(signupData);
+
+      // 사용자가 알림에 동의한 경우에만 푸시 알림 설정 (App Store Guideline 4.5.4)
+      if (pushAgree) {
+        setupPushNotifications()
+          .then((success) => {
+            if (success) {
+              console.log('[JOIN] 푸시 알림 설정 완료');
+            } else {
+              console.warn('[JOIN] 푸시 알림 설정 실패 또는 권한 거부');
+            }
+          })
+          .catch((error) => {
+            console.error('[JOIN] 푸시 알림 설정 중 예외 발생:', error);
+          });
+      }
 
       navigation.replace('MainTabs');
     } catch (e: any) {
       if (e?.response?.status === 409) {
         // 이미 가입됨 → 로그인 재시도
         try {
-          await loginWithIdToken(idToken, provider);
-          navigation.replace('MainTabs');
-          return;
+          const loginResult = await loginWithIdToken({
+            idToken,
+            provider,
+          });
+          if (loginResult?.success && loginResult.data) {
+            navigation.replace('MainTabs');
+            return;
+          }
         } catch (loginError) {
           console.error('로그인 재시도 실패:', loginError);
         }
@@ -110,14 +140,19 @@ export default function JoinScreen({ route, navigation }: JoinScreenProps) {
         </View>
 
         <View className="mt-8">
-          <CalendarField control={control as any} label="생년월일" />
+          <CalendarField
+            control={control as any}
+            label="생년월일 (선택)"
+            requiredField={false}
+          />
         </View>
 
         <View className="mt-8">
           <PhoneField
             control={control as any}
             name="phone"
-            label="핸드폰 번호"
+            label="핸드폰 번호 (선택)"
+            requiredField={false}
           />
         </View>
 
@@ -132,7 +167,7 @@ export default function JoinScreen({ route, navigation }: JoinScreenProps) {
 
         <View className="mt-8">
           <ToggleSwitch
-            label="앱 알림 동의"
+            label="앱 알림 동의 (선택)"
             value={pushAgree}
             onValueChange={(v) =>
               setValue('pushAgree', v, {
@@ -140,7 +175,7 @@ export default function JoinScreen({ route, navigation }: JoinScreenProps) {
                 shouldDirty: true,
               })
             }
-            description="(설명 문구 필요)"
+            description="복약 시간을 놓치지 않도록 알림을 보내드립니다."
           />
         </View>
       </ScrollView>

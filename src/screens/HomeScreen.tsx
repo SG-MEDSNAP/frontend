@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { View, Text, Image, ScrollView } from 'react-native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -12,7 +12,10 @@ import TodayTimeLine from '../components/TodayTimeLine';
 
 // API
 import { useMedicationRecordsQuery } from '../api/medication/queries';
-import { MedicationRecordItem } from '../api/medication/types';
+import { useUserQuery } from '../api/user';
+
+// Notifications
+import { setupPushNotifications } from '../lib/notifications';
 
 // images
 import HeaderLogo from '../../assets/images/header_logo.svg';
@@ -31,6 +34,30 @@ export default function HomeScreen({ navigation }: Props) {
   // 약물 복용 기록 조회 (오늘 날짜)
   const { data, isLoading, error } = useMedicationRecordsQuery(today);
 
+  // 사용자 정보 조회
+  const { data: user } = useUserQuery();
+
+  // 푸시 알림 설정 (한 번만 실행)
+  const pushSetupDone = useRef(false);
+
+  useEffect(() => {
+    // 사용자가 알림에 동의했고, 아직 설정하지 않았다면 푸시 알림 설정 (App Store Guideline 4.5.4)
+    if (user?.isPushConsent && !pushSetupDone.current) {
+      pushSetupDone.current = true;
+      setupPushNotifications()
+        .then((success) => {
+          if (success) {
+            console.log('[HOME] 푸시 알림 설정 완료');
+          } else {
+            console.warn('[HOME] 푸시 알림 설정 실패 또는 권한 거부');
+          }
+        })
+        .catch((error) => {
+          console.error('[HOME] 푸시 알림 설정 중 예외 발생:', error);
+        });
+    }
+  }, [user?.isPushConsent]);
+
   // const handleTakeMedication = (id: string) => {
   //   setMedications((prev) =>
   //     prev.map((med) => (med.id === id ? { ...med, taken: !med.taken } : med)),
@@ -42,20 +69,19 @@ export default function HomeScreen({ navigation }: Props) {
   };
 
   return (
-    <SafeAreaView className="flex-1 bg-[#F8F9FA]">
-      {/* 헤더 */}
-      <View className="flex-row items-center px-4 bg-white h-[60px]">
-        <HeaderLogo />
-      </View>
+    <SafeAreaView className="flex-1 bg-[#F8F9FA]" edges={['top']}>
+      <ScrollView
+        className="flex-1"
+        contentContainerClassName="pb-6 bg-[#F2F4FF]"
+      >
+        {/* 헤더 */}
+        <View className="flex-row items-center px-4 bg-white h-[60px]">
+          <HeaderLogo />
+        </View>
 
-      {/* 메인  영역 */}
-      <View className="flex-col bg-[#F2F4FF]">
-        {/* 안내 */}
-        {/* 360*937 기준  h-[337px] */}
-        <ScrollView
-          showsVerticalScrollIndicator={false}
-          alwaysBounceVertical={false}
-        >
+        {/* 메인 영역 */}
+        <View className="flex-col bg-[#F2F4FF]">
+          {/* 안내 섹션 */}
           <View className="grow mx-4">
             <View className="mt-12">
               <Text className="text-[34px]/[46px] font-bold text-[#404040]">
@@ -83,7 +109,8 @@ export default function HomeScreen({ navigation }: Props) {
               />
             </View>
           </View>
-          {/* 타임 라인 */}
+
+          {/* 타임라인 섹션 */}
           <View className="grow mx-4">
             <View className="mb-4">
               <Text className="text-[24px] font-bold text-[#333]">
@@ -102,11 +129,8 @@ export default function HomeScreen({ navigation }: Props) {
               <TodayTimeLine medications={data?.items || []} />
             )}
           </View>
-
-          {/* 하단 여백 */}
-          {/* <View className="h-6" /> */}
-        </ScrollView>
-      </View>
+        </View>
+      </ScrollView>
     </SafeAreaView>
   );
 }

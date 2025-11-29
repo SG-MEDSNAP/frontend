@@ -8,10 +8,12 @@ export function CalendarField({
   control,
   name = 'birth',
   label = '생년월일',
+  requiredField = true,
 }: {
   control: Control<any>;
   name?: string;
   label?: string;
+  requiredField?: boolean;
 }) {
   const prevFormattedRef = React.useRef<string>('');
   const prevDigitsRef = React.useRef<string>('');
@@ -20,8 +22,9 @@ export function CalendarField({
       control={control}
       name={name as any}
       rules={{
-        required: '생년월일을 입력해 주세요.',
+        required: requiredField ? '생년월일을 입력해 주세요.' : false,
         validate: (v) =>
+          (!v && !requiredField) ||
           isValidBirthYYYYMMDD(v || '') ||
           '유효한 생년월일(YYYY-MM-DD) 형식이 아닙니다.',
       }}

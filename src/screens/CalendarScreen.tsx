@@ -167,81 +167,81 @@ export default function CalendarScreen() {
   }, [selected, recordDates]);
 
   return (
-    <SafeAreaView className="flex-1 bg-[#F4F7FF]">
-      <View className="flex-row items-center px-4 bg-white h-[60px]">
-        <HeaderLogo />
-      </View>
-      <Calendar
-        style={styles.calendarbox}
-        onDayPress={(day) => {
-          setSelected(day.dateString);
-        }}
-        onMonthChange={(month) => {
-          setCurrentMonth({
-            year: month.year,
-            month: month.month,
-          });
-        }}
-        monthFormat="yyyy년 M월"
-        hideExtraDays={true} // 이전달, 다음달 날짜 표시 여부.
-        enableSwipeMonths={true} // 달력 스와이프 가능 여부
-        firstDay={0} // 0: 일요일, 1: 월요일
-        markingType={'custom'}
-        markedDates={markedDates}
-        theme={{
-          dotStyle: {
-            width: 8,
-            height: 8,
-            borderRadius: 4,
-            backgroundColor: selected ? 'white' : colors.primary[500],
-          },
-          stylesheet: {
-            calendar: {
-              main: {
-                width: 32,
-                height: 32,
+    <SafeAreaView className="flex-1 bg-[#F4F7FF]" edges={['top']}>
+      <ScrollView className="flex-1" contentContainerClassName="pb-6">
+        <View className="flex-row items-center px-4 bg-white h-[60px]">
+          <HeaderLogo />
+        </View>
+        <Calendar
+          style={styles.calendarbox}
+          onDayPress={(day) => {
+            setSelected(day.dateString);
+          }}
+          onMonthChange={(month) => {
+            setCurrentMonth({
+              year: month.year,
+              month: month.month,
+            });
+          }}
+          monthFormat="yyyy년 M월"
+          hideExtraDays={true} // 이전달, 다음달 날짜 표시 여부.
+          enableSwipeMonths={true} // 달력 스와이프 가능 여부
+          firstDay={0} // 0: 일요일, 1: 월요일
+          markingType={'custom'}
+          markedDates={markedDates}
+          theme={{
+            dotStyle: {
+              width: 8,
+              height: 8,
+              borderRadius: 4,
+              backgroundColor: selected ? 'white' : colors.primary[500],
+            },
+            stylesheet: {
+              calendar: {
+                main: {
+                  width: 32,
+                  height: 32,
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                },
+                header: {
+                  gap: 16,
+                },
+              },
+
+              // day: {
+              //   basic: {
+              //     base: {
+              //       width: 36,
+              //       height: 44,
+              //       alignItems: 'center',
+              //       justifyContent: 'center',
+              //     },
+              //   },
+              // },
+            },
+            arrowColor: colors.gray[900],
+            monthTextColor: colors.gray[900],
+            // textMonthFontFamily: 'Pretendard', // 이걸 안해야 굵기가 적용됨
+            textMonthFontWeight: '700',
+            textMonthFontSize: 28,
+            textDayHeaderFontWeight: '400',
+            textDayHeaderFontSize: 18,
+            // textDayFontFamily: 'Pretendard', // 이걸 안해야 굵기가 적용됨
+            textDayFontWeight: '600',
+            textDayFontSize: 20,
+            selectedDayBackgroundColor: '#111111',
+            todayTextColor: '#597AFF',
+            'stylesheet.day.basic': {
+              base: {
+                width: 36,
+                height: 44,
                 alignItems: 'center',
                 justifyContent: 'center',
               },
-              header: {
-                gap: 16,
-              },
             },
-
-            // day: {
-            //   basic: {
-            //     base: {
-            //       width: 36,
-            //       height: 44,
-            //       alignItems: 'center',
-            //       justifyContent: 'center',
-            //     },
-            //   },
-            // },
-          },
-          arrowColor: colors.gray[900],
-          monthTextColor: colors.gray[900],
-          // textMonthFontFamily: 'Pretendard', // 이걸 안해야 굵기가 적용됨
-          textMonthFontWeight: '700',
-          textMonthFontSize: 28,
-          textDayHeaderFontWeight: '400',
-          textDayHeaderFontSize: 18,
-          // textDayFontFamily: 'Pretendard', // 이걸 안해야 굵기가 적용됨
-          textDayFontWeight: '600',
-          textDayFontSize: 20,
-          selectedDayBackgroundColor: '#111111',
-          todayTextColor: '#597AFF',
-          'stylesheet.day.basic': {
-            base: {
-              width: 36,
-              height: 44,
-              alignItems: 'center',
-              justifyContent: 'center',
-            },
-          },
-        }}
-      />
-      <ScrollView>
+          }}
+        />
         <View className="grow mx-4 mt-12">
           <View className="mb-5 flex-row justify-between">
             <View className="flex-row items-center gap-2">

@@ -159,7 +159,7 @@ export default function SupportScreen({ navigation }: Props) {
       className="flex-1"
       accessible={false}
     >
-      <SafeAreaView className="flex-1 bg-[#F8F9FA]">
+      <SafeAreaView className="flex-1 bg-[#F8F9FA] " edges={['top']}>
         <View className="flex-row items-center px-4 bg-white h-[60px]">
           <HeaderLogo />
         </View>

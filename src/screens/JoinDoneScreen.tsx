@@ -13,7 +13,10 @@ export default function JoinDoneScreen() {
       title={'회원가입이 \n완료되었습니다'}
       primaryAction={{
         label: '확인',
-        onPress: () => navigation.navigate('MainTabs'),
+        onPress: () => {
+          // 푸시 알림은 사용자가 동의한 경우에만 JoinScreen에서 설정됨 (App Store Guideline 4.5.4)
+          navigation.navigate('MainTabs');
+        },
       }}
     />
   );

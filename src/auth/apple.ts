@@ -4,12 +4,17 @@ import { jwtDecode } from 'jwt-decode';
 
 const BUNDLE_ID = 'com.qkrb8019.medsnap';
 
-export async function signInWithApple(): Promise<string> {
-  // iOS에서만 지원
-  if (Platform.OS !== 'ios') {
-    throw new Error('Apple 로그인은 iOS에서만 지원됩니다.');
-  }
+// Apple 로그인 및 사용자 정보 반환 (fullName 포함)
+export interface AppleLoginResult {
+  idToken: string;
+  fullName?: {
+    givenName: string | null;
+    familyName: string | null;
+  } | null;
+}
 
+// Apple 로그인 메인 함수 (idToken과 fullName 모두 반환)
+export async function signInWithAppleAndGetUserInfo(): Promise<AppleLoginResult> {
   try {
     // Apple 로그인 가능 여부 확인
     const isAvailable = await AppleAuthentication.isAvailableAsync();
@@ -24,6 +29,8 @@ export async function signInWithApple(): Promise<string> {
         AppleAuthentication.AppleAuthenticationScope.EMAIL,
       ],
     });
+    console.log('user', response.user);
+    console.log('결과', response);
 
     const { identityToken, user, fullName, email } = response;
 
@@ -77,27 +84,35 @@ export async function signInWithApple(): Promise<string> {
     }
 
     // 첫 로그인 시 받은 정보 로그 (개발용)
-    if (fullName || email) {
-      console.log('[APPLE] 첫 로그인 정보:', {
-        fullName: fullName
-          ? `${fullName.givenName} ${fullName.familyName}`
-          : null,
-        email,
-        user, // Apple user ID
-      });
-    }
+    console.log('[APPLE] signInWithAppleAndGetUserInfo 응답값:', {
+      idToken: identityToken ? `${identityToken.substring(0, 50)}...` : 'null',
+      user, // Apple user ID
+      fullName: fullName,
+      givenName: fullName?.givenName,
+      familyName: fullName?.familyName,
+      email,
+      fullNameString: fullName
+        ? `${fullName.givenName || ''} ${fullName.familyName || ''}`.trim()
+        : null,
+    });
 
-    return identityToken;
-  } catch (e: any) {
-    if (e.code === 'ERR_REQUEST_CANCELED') {
+    return {
+      idToken: identityToken,
+      fullName: fullName || null,
+    };
+  } catch (e) {
+    const error = e as { code?: string; message?: string };
+    if (error.code === 'ERR_REQUEST_CANCELED') {
       throw new Error('Apple 로그인이 취소되었습니다.');
     }
-    if (e.code === 'ERR_REQUEST_NOT_HANDLED') {
+    if (error.code === 'ERR_REQUEST_NOT_HANDLED') {
       throw new Error('Apple 로그인을 처리할 수 없습니다.');
     }
-    if (e.code === 'ERR_REQUEST_NOT_INTERACTIVE') {
+    if (error.code === 'ERR_REQUEST_NOT_INTERACTIVE') {
       throw new Error('Apple 로그인 상호작용을 할 수 없습니다.');
     }
-    throw new Error(`Apple 로그인 실패: ${e?.message || '알 수 없는 오류'}`);
+    throw new Error(
+      `Apple 로그인 실패: ${error?.message || '알 수 없는 오류'}`,
+    );
   }
 }
