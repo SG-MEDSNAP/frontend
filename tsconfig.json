@@ -5,6 +5,7 @@
     "lib": ["ES2020"],
     "jsx": "react-jsx",
     "jsxImportSource": "nativewind",
+    "module": "esnext",
     "moduleResolution": "Bundler",
     "allowJs": true,
     "noEmit": true,
