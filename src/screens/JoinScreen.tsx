@@ -59,7 +59,8 @@ export default function JoinScreen({ route, navigation }: JoinScreenProps) {
   //   const caregiverPhone = watch('caregiverPhone');
   const pushAgree = watch('pushAgree');
 
-  const canSubmit = formState.isValid && Boolean(name && birth && phone);
+  // 생년월일과 전화번호는 선택사항 (App Store 가이드라인 5.1.1 준수)
+  const canSubmit = formState.isValid && Boolean(name);
 
   const handleSubmit = async () => {
     if (!canSubmit) return;
@@ -67,17 +68,13 @@ export default function JoinScreen({ route, navigation }: JoinScreenProps) {
     setIsLoading(true);
 
     try {
-      // birthday 포맷 정규화: 2002.08.19 -> 2002-08-19
-      const normalizedBirthday = birth.replace(/\./g, '-');
-
-      // caregiverPhone 정규화: 값 없으면 필드 자체를 생략
-      const signupData: any = {
+      const signupData = {
         name,
         idToken,
         provider,
-        birthday: normalizedBirthday,
-        phone: phone,
         isPushConsent: pushAgree,
+        ...(birth && birth.trim() !== '' && { birthday: birth.replace(/\./g, '-') }),
+        ...(phone && phone.trim() !== '' && { phone: phone.trim() }),
       };
 
       await signupWithIdToken(signupData);
@@ -127,14 +124,19 @@ export default function JoinScreen({ route, navigation }: JoinScreenProps) {
         </View>
 
         <View className="mt-8">
-          <CalendarField control={control as any} label="생년월일" />
+          <CalendarField
+            control={control as any}
+            label="생년월일 (선택)"
+            requiredField={false}
+          />
         </View>
 
         <View className="mt-8">
           <PhoneField
             control={control as any}
             name="phone"
-            label="핸드폰 번호"
+            label="핸드폰 번호 (선택)"
+            requiredField={false}
           />
         </View>
 
@@ -149,7 +151,7 @@ export default function JoinScreen({ route, navigation }: JoinScreenProps) {
 
         <View className="mt-8">
           <ToggleSwitch
-            label="앱 알림 동의"
+            label="앱 알림 동의 (선택)"
             value={pushAgree}
             onValueChange={(v) =>
               setValue('pushAgree', v, {
@@ -157,7 +159,7 @@ export default function JoinScreen({ route, navigation }: JoinScreenProps) {
                 shouldDirty: true,
               })
             }
-            description="(설명 문구 필요)"
+            description="복약 시간을 놓치지 않도록 알림을 보내드립니다."
           />
         </View>
       </ScrollView>

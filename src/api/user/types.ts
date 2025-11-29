@@ -44,8 +44,8 @@ export interface UserUpdateResponse {
 // 마이페이지 수정 요청 타입
 export interface MyPageUpdateRequest {
   name: string;
-  birthday: string;
-  phone: string;
+  birthday?: string;
+  phone?: string;
   isPushConsent: boolean;
 }
 

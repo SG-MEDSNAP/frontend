@@ -17,8 +17,8 @@ export interface SignupRequest {
   idToken: string;
   provider: Provider;
   name: string;
-  birthday: string;
-  phone: string;
+  birthday?: string;
+  phone?: string;
   caregiverPhone?: string;
   isPushConsent: boolean;
 }
