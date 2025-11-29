@@ -13,7 +13,7 @@ import LoginButton from '../components/LoginButton';
 import { useSocialLoginMutation } from '../features/socialLogin';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../../App';
-import { setupPushNotifications } from '../lib/notifications';
+// 푸시 알림은 사용자 동의 시에만 설정 (App Store Guideline 4.5.4)
 
 const { KeyHashModule } = NativeModules;
 
@@ -58,19 +58,8 @@ export default function LoginScreen({ navigation }: Props) {
         }
 
         if (result.next === 'HOME') {
-          // 로그인 성공 후 푸시 알림 설정
-          setupPushNotifications()
-            .then((success) => {
-              if (success) {
-                console.log('[LOGIN] 푸시 알림 설정 완료');
-              } else {
-                console.warn('[LOGIN] 푸시 알림 설정 실패 또는 권한 거부');
-              }
-            })
-            .catch((error) => {
-              console.error('[LOGIN] 푸시 알림 설정 중 예외 발생:', error);
-            });
-
+          // 푸시 알림은 사용자 동의가 있을 때만 설정 (App Store Guideline 4.5.4)
+          // 기존 회원의 isPushConsent 여부는 MainTabs에서 확인 후 처리
           navigation.replace('MainTabs');
         } else {
           navigation.navigate('Join', {

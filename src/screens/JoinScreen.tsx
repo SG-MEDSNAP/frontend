@@ -8,6 +8,7 @@ import { PersonNameField } from '../components/field/PersonNameField';
 import { PhoneField } from '../components/field/PhoneField';
 import { CalendarField } from '../components/field/CalendarField';
 import { signupWithIdToken, loginWithIdToken, Provider } from '../api/auth';
+import { setupPushNotifications } from '../lib/notifications';
 
 type JoinForm = {
   name: string;
@@ -78,6 +79,21 @@ export default function JoinScreen({ route, navigation }: JoinScreenProps) {
       };
 
       await signupWithIdToken(signupData);
+
+      // 사용자가 알림에 동의한 경우에만 푸시 알림 설정 (App Store Guideline 4.5.4)
+      if (pushAgree) {
+        setupPushNotifications()
+          .then((success) => {
+            if (success) {
+              console.log('[JOIN] 푸시 알림 설정 완료');
+            } else {
+              console.warn('[JOIN] 푸시 알림 설정 실패 또는 권한 거부');
+            }
+          })
+          .catch((error) => {
+            console.error('[JOIN] 푸시 알림 설정 중 예외 발생:', error);
+          });
+      }
 
       navigation.replace('MainTabs');
     } catch (e: any) {

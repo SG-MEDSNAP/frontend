@@ -3,7 +3,6 @@ import { useNavigation } from '@react-navigation/native';
 import type { StackNavigationProp } from '@react-navigation/stack';
 import StatusContent from '../components/StatusContent';
 import PillIcon from '../assets/PillIcon.native';
-import { setupPushNotifications } from '../lib/notifications';
 
 export default function JoinDoneScreen() {
   const navigation = useNavigation<StackNavigationProp<any>>();
@@ -15,19 +14,7 @@ export default function JoinDoneScreen() {
       primaryAction={{
         label: '확인',
         onPress: () => {
-          // 회원가입 완료 후 푸시 알림 설정
-          setupPushNotifications()
-            .then((success) => {
-              if (success) {
-                console.log('[JOIN] 푸시 알림 설정 완료');
-              } else {
-                console.warn('[JOIN] 푸시 알림 설정 실패 또는 권한 거부');
-              }
-            })
-            .catch((error) => {
-              console.error('[JOIN] 푸시 알림 설정 중 예외 발생:', error);
-            });
-
+          // 푸시 알림은 사용자가 동의한 경우에만 JoinScreen에서 설정됨 (App Store Guideline 4.5.4)
           navigation.navigate('MainTabs');
         },
       }}
