@@ -8,7 +8,8 @@ import { PersonNameField } from '../components/field/PersonNameField';
 import { PhoneField } from '../components/field/PhoneField';
 import { CalendarField } from '../components/field/CalendarField';
 import { signupWithIdToken, loginWithIdToken, Provider } from '../api/auth';
-import { setupPushNotifications } from '../lib/notifications';
+// [App Store Guideline 4.5.4] 푸시 알림 권한은 회원가입 시 요청하지 않음
+// 사용자가 복약 리마인더를 활성화할 때만 요청함
 
 type JoinForm = {
   name: string;
@@ -80,20 +81,10 @@ export default function JoinScreen({ route, navigation }: JoinScreenProps) {
 
       await signupWithIdToken(signupData);
 
-      // 사용자가 알림에 동의한 경우에만 푸시 알림 설정 (App Store Guideline 4.5.4)
-      if (pushAgree) {
-        setupPushNotifications()
-          .then((success) => {
-            if (success) {
-              console.log('[JOIN] 푸시 알림 설정 완료');
-            } else {
-              console.warn('[JOIN] 푸시 알림 설정 실패 또는 권한 거부');
-            }
-          })
-          .catch((error) => {
-            console.error('[JOIN] 푸시 알림 설정 중 예외 발생:', error);
-          });
-      }
+      // [App Store Guideline 4.5.4]
+      // 푸시 알림 동의 여부만 서버에 저장
+      // 실제 알림 권한 요청은 사용자가 복약 리마인더를 활성화할 때 수행
+      console.log('[JOIN] 회원가입 완료 - 알림 동의 상태:', pushAgree);
 
       navigation.replace('MainTabs');
     } catch (e: any) {
@@ -167,7 +158,7 @@ export default function JoinScreen({ route, navigation }: JoinScreenProps) {
 
         <View className="mt-8">
           <ToggleSwitch
-            label="앱 알림 동의 (선택)"
+            label="복약 리마인더 알림 (선택)"
             value={pushAgree}
             onValueChange={(v) =>
               setValue('pushAgree', v, {
@@ -175,7 +166,7 @@ export default function JoinScreen({ route, navigation }: JoinScreenProps) {
                 shouldDirty: true,
               })
             }
-            description="복약 시간을 놓치지 않도록 알림을 보내드립니다."
+            description="알림은 선택 기능입니다. 약 등록 시 복약 시간을 알려드립니다. 알림 없이도 앱의 모든 기능을 사용할 수 있습니다."
           />
         </View>
       </ScrollView>

@@ -142,7 +142,7 @@ export default function EditInfoScreen() {
 
         <View className="mt-8">
           <ToggleSwitch
-            label="앱 알림 동의 (선택)"
+            label="복약 리마인더 알림 (선택)"
             value={pushAgree}
             onValueChange={(v) =>
               setValue('pushAgree', v, {
@@ -150,7 +150,7 @@ export default function EditInfoScreen() {
                 shouldDirty: true,
               })
             }
-            description="복약 시간을 놓치지 않도록 알림을 보내드립니다."
+            description="알림은 선택 기능입니다. 약 등록 시 복약 시간을 알려드립니다. 알림 없이도 앱의 모든 기능을 사용할 수 있습니다."
           />
         </View>
       </ScrollView>

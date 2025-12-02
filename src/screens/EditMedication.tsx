@@ -307,15 +307,16 @@ export default function EditMedicationScreen({ navigation, route }: Props) {
               <TimePickField control={control} />
             </View>
 
-            {/* 10분 전 알림 */}
+            {/* 10분 전 알림 (선택 기능) */}
             <ToggleSwitch
-              label="10분전 알림"
+              label="10분전 미리 알림 (선택)"
               value={tenMinuteReminder}
               onValueChange={setTenMinuteReminder}
               description={
                 <>
                   지정 시간에 알려드려요, 체크하시면{'\n'}
-                  10분전에도 알림을 받아보실 수 있어요
+                  10분 전에도 미리 알림을 받아보실 수 있어요.{'\n'}
+                  (알림은 선택 기능입니다)
                 </>
               }
             />

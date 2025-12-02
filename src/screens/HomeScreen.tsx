@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react';
+import React from 'react';
 import { View, Text, Image, ScrollView } from 'react-native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -12,16 +12,15 @@ import TodayTimeLine from '../components/TodayTimeLine';
 
 // API
 import { useMedicationRecordsQuery } from '../api/medication/queries';
-import { useUserQuery } from '../api/user';
-
-// Notifications
-import { setupPushNotifications } from '../lib/notifications';
 
 // images
 import HeaderLogo from '../../assets/images/header_logo.svg';
 
+// [App Store Guideline 4.5.4]
+// 푸시 알림 권한은 앱 실행 시 자동 요청하지 않음
+// 사용자가 복약 리마인더를 활성화할 때만 요청함
+
 type HomeScreenNavigationProp = NativeStackNavigationProp<RootStackParamList>;
-// 'Home'
 
 interface Props {
   navigation: HomeScreenNavigationProp;
@@ -33,30 +32,6 @@ export default function HomeScreen({ navigation }: Props) {
 
   // 약물 복용 기록 조회 (오늘 날짜)
   const { data, isLoading, error } = useMedicationRecordsQuery(today);
-
-  // 사용자 정보 조회
-  const { data: user } = useUserQuery();
-
-  // 푸시 알림 설정 (한 번만 실행)
-  const pushSetupDone = useRef(false);
-
-  useEffect(() => {
-    // 사용자가 알림에 동의했고, 아직 설정하지 않았다면 푸시 알림 설정 (App Store Guideline 4.5.4)
-    if (user?.isPushConsent && !pushSetupDone.current) {
-      pushSetupDone.current = true;
-      setupPushNotifications()
-        .then((success) => {
-          if (success) {
-            console.log('[HOME] 푸시 알림 설정 완료');
-          } else {
-            console.warn('[HOME] 푸시 알림 설정 실패 또는 권한 거부');
-          }
-        })
-        .catch((error) => {
-          console.error('[HOME] 푸시 알림 설정 중 예외 발생:', error);
-        });
-    }
-  }, [user?.isPushConsent]);
 
   // const handleTakeMedication = (id: string) => {
   //   setMedications((prev) =>

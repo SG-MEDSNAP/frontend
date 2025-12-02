@@ -13,7 +13,7 @@ type RouteParams = {
   imageUri: string; // 촬영된 이미지 URI
   recordId: number; // 복약 기록 ID
   result?: ResultCode; // 테스트용 결과 코드 (실제 API 연동 시에는 사용하지 않음)
-  delayMs?: number; // 분석중 모션 유지 시간 (기본 1200ms)
+  delayMs?: number; // 확인중 모션 유지 시간 (기본 1200ms)
 };
 
 export default function VerifyResultScreen() {
@@ -78,7 +78,7 @@ export default function VerifyResultScreen() {
     }
   }, []);
 
-  // 로딩 중 (분석 중)
+  // 로딩 중 (사진 확인 중)
   if (isLoading || (!isSuccess && !isError && !testResult)) {
     return (
       <StatusContent
@@ -88,9 +88,9 @@ export default function VerifyResultScreen() {
             color="currentColor"
           />
         }
-        title="사진을 분석중입니다"
+        title="사진을 확인하고 있어요"
         subtitle="조금만 기다려주세요!"
-        // 분석중에는 버튼 없음
+        // 확인 중에는 버튼 없음
       />
     );
   }
@@ -106,7 +106,7 @@ export default function VerifyResultScreen() {
               color="currentColor"
             />
           }
-          title="사진 분석이 완료되었습니다"
+          title="복약 확인이 완료되었습니다"
           subtitle="약을 잘 챙겨드셨어요. 다음 복용도 응원할게요!"
           primaryAction={{
             label: '확인',
@@ -132,7 +132,7 @@ export default function VerifyResultScreen() {
               color="currentColor"
             />
           }
-          title="사진 분석이 완료되었습니다"
+          title="복약 확인이 완료되었습니다"
           subtitle="앗, 아직 약을 안 드셨어요! 복용하신 뒤 다시 사진을 찍어주세요."
           tone="error"
           primaryAction={{
@@ -151,7 +151,7 @@ export default function VerifyResultScreen() {
               color="currentColor"
             />
           }
-          title="사진 분석 중 오류가 발생했습니다"
+          title="사진 확인 중 오류가 발생했습니다"
           subtitle="네트워크 연결을 확인하고 다시 시도해주세요."
           tone="error"
           primaryAction={{
@@ -163,7 +163,7 @@ export default function VerifyResultScreen() {
     }
   }
 
-  // 성공했을 때
+  // 성공했을 때 (약을 복용함)
   if (isSuccess && data?.status === 'TAKEN') {
     return (
       <StatusContent
@@ -173,7 +173,7 @@ export default function VerifyResultScreen() {
             color="currentColor"
           />
         }
-        title="사진 분석이 완료되었습니다"
+        title="복약 확인이 완료되었습니다"
         subtitle="약을 잘 챙겨드셨어요. 다음 복용도 응원할게요!"
         primaryAction={{
           label: '확인',
@@ -202,7 +202,7 @@ export default function VerifyResultScreen() {
             color="currentColor"
           />
         }
-        title="사진 분석이 완료되었습니다"
+        title="복약 확인이 완료되었습니다"
         subtitle="앗, 아직 약을 안 드셨어요! 복용하신 뒤 다시 사진을 찍어주세요."
         tone="error"
         primaryAction={{
@@ -222,7 +222,7 @@ export default function VerifyResultScreen() {
           color="currentColor"
         />
       }
-      title="사진 분석 중 오류가 발생했습니다"
+      title="사진 확인 중 오류가 발생했습니다"
       subtitle="네트워크 연결을 확인하고 다시 시도해주세요."
       tone="error"
       primaryAction={{

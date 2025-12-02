@@ -231,12 +231,13 @@ export const deleteMedicationAlarms = async (
   }
 };
 
-// POST /medication-records/{recordId}/verify - 복약 인증
+// POST /medication-records/{recordId}/verify - 복약 확인
+// 약통 사진을 업로드하여 약을 복용했는지 확인 (약 성분 분석 아님)
 export const verifyMedicationRecord = async (
   recordId: number,
   imageUri: string,
 ): Promise<MedicationRecordItem> => {
-  console.log('[API] 복약 인증 요청 시작', { recordId, imageUri });
+  console.log('[API] 복약 확인 요청 시작', { recordId, imageUri });
 
   const formData = new FormData();
 
@@ -253,9 +254,9 @@ export const verifyMedicationRecord = async (
     try {
       const RNFS = require('react-native-fs');
       const fileExists = await RNFS.exists(imageUri);
-      console.log('[API] 인증 이미지 파일 존재 여부:', fileExists);
+      console.log('[API] 복약 확인 이미지 파일 존재 여부:', fileExists);
       if (!fileExists) {
-        console.error('[API] 인증 이미지 파일이 존재하지 않습니다:', imageUri);
+        console.error('[API] 복약 확인 이미지 파일이 존재하지 않습니다:', imageUri);
       }
     } catch (fsError) {
       console.log('[API] 파일 존재 여부 확인 건너뜀');
@@ -266,10 +267,10 @@ export const verifyMedicationRecord = async (
       formData,
     );
 
-    console.log('[API] 복약 인증 응답:', res.data);
+    console.log('[API] 복약 확인 응답:', res.data);
     return res.data.data;
   } catch (error: any) {
-    console.error('[API] 복약 인증 에러:', error);
+    console.error('[API] 복약 확인 에러:', error);
     console.error('[API] 에러 응답:', error.response?.data);
     console.error('[API] 에러 상태:', error.response?.status);
     throw error;

@@ -68,7 +68,7 @@ export default function PhotoRegisterScreen({ navigation }: Props) {
 
       if (!result.canceled && result.assets && result.assets.length > 0) {
         setPickedImage(result.assets[0]);
-        // 필요하면 여기서 서버 업로드/분석 API 호출 가능
+        // 필요하면 여기서 서버 업로드 API 호출 가능
         // console.log(result.assets[0].uri);
       }
     } catch (error) {
@@ -126,7 +126,7 @@ export default function PhotoRegisterScreen({ navigation }: Props) {
               처방 받은 약을{'\n'}촬영해주세요
             </Text>
             <Text className="text-[16px]/[24px] mt-[15px] font-normal text-[#404040]">
-              정확한 분석을 위해 제공된 약통에 약을 담아{'\n'}
+              약통이 잘 보이도록{'\n'}
               예시와 같이 사진을 찍어주세요
             </Text>
           </View>

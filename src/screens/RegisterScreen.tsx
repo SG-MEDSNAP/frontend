@@ -17,7 +17,7 @@ import { TimePickField } from 'src/components/field/TimePickField'; // declarati
 import ToggleSwitch from '../components/ToggleSwitch';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import * as Notifications from 'expo-notifications';
-import { scheduleWeeklyNotifications } from '../lib/notifications';
+import { setupPushNotifications } from '../lib/notifications';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 
 type RegisterScreenNavigationProp = NativeStackNavigationProp<
@@ -90,17 +90,38 @@ export default function RegisterScreen({ navigation, route }: Props) {
     // 매일이면 DAILY 타입 사용, 아니면 선택된 개별 요일들 사용
 
     try {
-      // 1) 권한 보장 (iOS/Android 공통)
+      // [App Store Guideline 4.5.4] 알림 권한은 선택 사항
+      // 사용자가 복약 리마인더를 활성화하는 시점(약 등록)에만 권한 요청
       const perm = await Notifications.getPermissionsAsync();
-      if (perm.status !== 'granted') {
+      let notificationEnabled = perm.status === 'granted';
+
+      if (!notificationEnabled) {
         const req = await Notifications.requestPermissionsAsync();
-        if (req.status !== 'granted') {
+        notificationEnabled = req.status === 'granted';
+
+        if (!notificationEnabled) {
+          // 알림 권한이 거부되어도 약 등록은 계속 진행 (알림 없이 사용 가능)
+          console.log('[REGISTER] 알림 권한 거부됨 - 알림 없이 등록 진행');
           Alert.alert(
-            '알림 권한 필요',
-            '알림 권한을 허용해야 예약이 가능합니다.',
+            '알림 권한 안내',
+            '알림 권한이 거부되어 복약 리마인더를 받을 수 없습니다. 약 등록은 정상 진행됩니다. 나중에 설정에서 알림을 켤 수 있습니다.',
           );
-          return;
         }
+      }
+
+      // 알림 권한이 허용된 경우에만 푸시 토큰 등록
+      if (notificationEnabled) {
+        setupPushNotifications()
+          .then((success) => {
+            if (success) {
+              console.log('[REGISTER] 푸시 알림 설정 및 토큰 등록 완료');
+            } else {
+              console.warn('[REGISTER] 푸시 알림 설정 실패');
+            }
+          })
+          .catch((error) => {
+            console.error('[REGISTER] 푸시 알림 설정 중 예외:', error);
+          });
       }
 
       // 2) API로 약 등록
@@ -247,15 +268,16 @@ export default function RegisterScreen({ navigation, route }: Props) {
               <TimePickField control={control} />
             </View>
 
-            {/* 10분 전 알림 */}
+            {/* 10분 전 알림 (선택 기능) */}
             <ToggleSwitch
-              label="10분전 알림"
+              label="10분전 미리 알림 (선택)"
               value={tenMinuteReminder}
               onValueChange={setTenMinuteReminder}
               description={
                 <>
                   지정 시간에 알려드려요, 체크하시면{'\n'}
-                  10분전에도 알림을 받아보실 수 있어요
+                  10분 전에도 미리 알림을 받아보실 수 있어요.{'\n'}
+                  (알림은 선택 기능입니다)
                 </>
               }
             />

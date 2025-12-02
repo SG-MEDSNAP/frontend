@@ -111,7 +111,7 @@ export default function MedicationDetailCard({
     if (image) {
       console.log('촬영된 이미지:', image.uri);
 
-      // recordId가 있는 경우에만 촬영 후 분석 화면으로 이동
+      // recordId가 있는 경우에만 촬영 후 복약 확인 화면으로 이동
       if (recordId) {
         // 촬영 이미지와 recordId를 파라미터로 VerifyResultScreen으로 이동
         navigation.navigate('VerifyIntakeResult', {
