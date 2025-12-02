@@ -293,13 +293,13 @@ export async function signupWithIdToken(
     isPushConsent,
   } = input;
 
-  // caregiverPhone이 undefined이거나 빈 문자열이면 필드 자체를 제거
+  // 선택 필드(birthday, phone, caregiverPhone)는 값이 있을 때만 포함
   interface SignupRequestBody {
     idToken: string;
     provider: string;
     name: string;
-    birthday: string;
-    phone: string;
+    birthday?: string;
+    phone?: string;
     isPushConsent: boolean;
     caregiverPhone?: string;
   }
@@ -308,9 +308,9 @@ export async function signupWithIdToken(
     idToken,
     provider,
     name,
-    birthday,
-    phone,
     isPushConsent,
+    ...(birthday && { birthday }),
+    ...(phone && { phone }),
   };
 
   if (caregiverPhone && caregiverPhone.trim() !== '') {
