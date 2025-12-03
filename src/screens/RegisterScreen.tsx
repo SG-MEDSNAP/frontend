@@ -90,41 +90,26 @@ export default function RegisterScreen({ navigation, route }: Props) {
     // 매일이면 DAILY 타입 사용, 아니면 선택된 개별 요일들 사용
 
     try {
-      // [App Store Guideline 4.5.4] 알림 권한은 선택 사항
-      // 사용자가 복약 리마인더를 활성화하는 시점(약 등록)에만 권한 요청
+      // [App Store Guideline 4.5.4] 알림 권한은 완전히 선택 사항
+      // 약 등록 시에는 알림 권한을 요청하지 않음
+      // 이미 권한이 있는 경우에만 푸시 토큰 등록
       const perm = await Notifications.getPermissionsAsync();
-      let notificationEnabled = perm.status === 'granted';
-
-      if (!notificationEnabled) {
-        const req = await Notifications.requestPermissionsAsync();
-        notificationEnabled = req.status === 'granted';
-
-        if (!notificationEnabled) {
-          // 알림 권한이 거부되어도 약 등록은 계속 진행 (알림 없이 사용 가능)
-          console.log('[REGISTER] 알림 권한 거부됨 - 알림 없이 등록 진행');
-          Alert.alert(
-            '알림 권한 안내',
-            '알림 권한이 거부되어 복약 리마인더를 받을 수 없습니다. 약 등록은 정상 진행됩니다. 나중에 설정에서 알림을 켤 수 있습니다.',
-          );
-        }
-      }
-
-      // 알림 권한이 허용된 경우에만 푸시 토큰 등록
-      if (notificationEnabled) {
+      if (perm.status === 'granted') {
+        // 이미 권한이 있는 경우에만 토큰 등록 (권한 요청 없음)
         setupPushNotifications()
           .then((success) => {
             if (success) {
-              console.log('[REGISTER] 푸시 알림 설정 및 토큰 등록 완료');
-            } else {
-              console.warn('[REGISTER] 푸시 알림 설정 실패');
+              console.log('[REGISTER] 푸시 알림 토큰 등록 완료 (기존 권한 사용)');
             }
           })
           .catch((error) => {
             console.error('[REGISTER] 푸시 알림 설정 중 예외:', error);
           });
+      } else {
+        console.log('[REGISTER] 알림 권한 없음 - 알림 없이 등록 진행');
       }
 
-      // 2) API로 약 등록
+      // API로 약 등록
       console.log('[REGISTER] 약 등록 API 호출 시작');
       console.log('[REGISTER] 폼 데이터:', form);
       console.log('[REGISTER] 매일 토글:', everyDay);

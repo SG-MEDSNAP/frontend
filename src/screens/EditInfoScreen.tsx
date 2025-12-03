@@ -9,6 +9,8 @@ import ToggleSwitch from '../components/ToggleSwitch';
 import { PersonNameField } from '../components/field/PersonNameField';
 import { PhoneField } from '../components/field/PhoneField';
 import { CalendarField } from '../components/field/CalendarField';
+import * as Notifications from 'expo-notifications';
+import { setupPushNotifications } from '../lib/notifications';
 
 type EditForm = {
   name: string;
@@ -144,13 +146,30 @@ export default function EditInfoScreen() {
           <ToggleSwitch
             label="복약 리마인더 알림 (선택)"
             value={pushAgree}
-            onValueChange={(v) =>
+            onValueChange={async (v) => {
+              // [App Store Guideline 4.5.4] 사용자가 명시적으로 토글을 켤 때만 권한 요청
+              if (v) {
+                const perm = await Notifications.getPermissionsAsync();
+                if (perm.status !== 'granted') {
+                  const req = await Notifications.requestPermissionsAsync();
+                  if (req.status !== 'granted') {
+                    // 권한 거부 시 토글을 켜지 않음
+                    Alert.alert(
+                      '알림 권한 필요',
+                      '복약 리마인더를 받으려면 알림 권한이 필요합니다. 설정에서 알림을 허용해주세요.',
+                    );
+                    return; // 토글 상태 변경하지 않음
+                  }
+                }
+                // 권한 허용 시 푸시 토큰 등록
+                setupPushNotifications().catch(console.error);
+              }
               setValue('pushAgree', v, {
                 shouldValidate: true,
                 shouldDirty: true,
-              })
-            }
-            description="알림은 선택 기능입니다. 약 등록 시 복약 시간을 알려드립니다. 알림 없이도 앱의 모든 기능을 사용할 수 있습니다."
+              });
+            }}
+            description="알림은 선택 기능입니다. 알림 없이도 앱의 모든 기능을 사용할 수 있습니다."
           />
         </View>
       </ScrollView>
