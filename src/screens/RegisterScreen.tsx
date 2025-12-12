@@ -32,6 +32,7 @@ export default function RegisterScreen({ navigation, route }: Props) {
   const days = ['월', '화', '수', '목', '금', '토', '일'];
   const [selectedDays, setSelectedDays] = useState<string[]>([]);
   const [everyDay, setEveryDay] = useState(false);
+  const [notificationEnabled, setNotificationEnabled] = useState(false);
   const [tenMinuteReminder, setTenMinuteReminder] = useState(false);
 
   const toggleDay = (day: string) => {
@@ -91,22 +92,19 @@ export default function RegisterScreen({ navigation, route }: Props) {
 
     try {
       // [App Store Guideline 4.5.4] 알림 권한은 완전히 선택 사항
-      // 약 등록 시에는 알림 권한을 요청하지 않음
-      // 이미 권한이 있는 경우에만 푸시 토큰 등록
-      const perm = await Notifications.getPermissionsAsync();
-      if (perm.status === 'granted') {
-        // 이미 권한이 있는 경우에만 토큰 등록 (권한 요청 없음)
+      // 사용자가 알림 토글을 켠 경우에만 푸시 토큰 등록
+      if (notificationEnabled) {
         setupPushNotifications()
           .then((success) => {
             if (success) {
-              console.log('[REGISTER] 푸시 알림 토큰 등록 완료 (기존 권한 사용)');
+              console.log('[REGISTER] 푸시 알림 토큰 등록 완료');
             }
           })
           .catch((error) => {
             console.error('[REGISTER] 푸시 알림 설정 중 예외:', error);
           });
       } else {
-        console.log('[REGISTER] 알림 권한 없음 - 알림 없이 등록 진행');
+        console.log('[REGISTER] 알림 미선택 - 알림 없이 등록 진행');
       }
 
       // API로 약 등록
@@ -253,19 +251,43 @@ export default function RegisterScreen({ navigation, route }: Props) {
               <TimePickField control={control} />
             </View>
 
-            {/* 10분 전 알림 (선택 기능) */}
+            {/* 복약 알림 받기 (선택) - App Store Guideline 4.5.4 준수 */}
             <ToggleSwitch
-              label="10분전 미리 알림 (선택)"
-              value={tenMinuteReminder}
-              onValueChange={setTenMinuteReminder}
-              description={
-                <>
-                  지정 시간에 알려드려요, 체크하시면{'\n'}
-                  10분 전에도 미리 알림을 받아보실 수 있어요.{'\n'}
-                  (알림은 선택 기능입니다)
-                </>
-              }
+              label="복약 알림 받기 (선택)"
+              value={notificationEnabled}
+              onValueChange={async (v) => {
+                if (v) {
+                  // 토글을 켤 때만 알림 권한 요청
+                  const perm = await Notifications.getPermissionsAsync();
+                  if (perm.status !== 'granted') {
+                    const req = await Notifications.requestPermissionsAsync();
+                    if (req.status !== 'granted') {
+                      Alert.alert(
+                        '알림 권한 필요',
+                        '복약 알림을 받으려면 알림 권한이 필요합니다. 설정에서 알림을 허용해주세요.',
+                      );
+                      return; // 토글 상태 변경하지 않음
+                    }
+                  }
+                }
+                setNotificationEnabled(v);
+                // 알림을 끄면 10분 전 알림도 끄기
+                if (!v) {
+                  setTenMinuteReminder(false);
+                }
+              }}
+              description="복약 시간에 알림을 받습니다. 알림 없이도 약 등록이 가능합니다."
             />
+
+            {/* 10분 전 알림 (알림이 켜져있을 때만 표시) */}
+            {notificationEnabled && (
+              <ToggleSwitch
+                label="10분 전 미리 알림"
+                value={tenMinuteReminder}
+                onValueChange={setTenMinuteReminder}
+                description="지정 시간 10분 전에도 미리 알림을 받습니다."
+              />
+            )}
 
             {/* 등록 버튼 */}
             <Button

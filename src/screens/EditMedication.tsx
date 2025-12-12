@@ -20,6 +20,8 @@ import ToggleSwitch from '../components/ToggleSwitch';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import type { DoseDay } from '../api/medication/types';
+import * as Notifications from 'expo-notifications';
+import { setupPushNotifications } from '../lib/notifications';
 
 type EditMedicationNavigationProp = NativeStackNavigationProp<
   RootStackParamList,
@@ -44,6 +46,7 @@ export default function EditMedicationScreen({ navigation, route }: Props) {
   const days = ['월', '화', '수', '목', '금', '토', '일'];
   const [selectedDays, setSelectedDays] = useState<string[]>([]);
   const [everyDay, setEveryDay] = useState(false);
+  const [notificationEnabled, setNotificationEnabled] = useState(false);
   const [tenMinuteReminder, setTenMinuteReminder] = useState(false);
 
   const {
@@ -64,8 +67,8 @@ export default function EditMedicationScreen({ navigation, route }: Props) {
   // 약 정보 로드 시 폼에 데이터 설정
   useEffect(() => {
     if (medication) {
-      setValue('name', medication.name);
-      setValue('times', medication.doseTimes);
+      setValue('name', medication.name, { shouldValidate: true });
+      setValue('times', medication.doseTimes, { shouldValidate: true });
 
       // doseDays 처리
       if (medication.doseDays.includes('DAILY')) {
@@ -89,6 +92,10 @@ export default function EditMedicationScreen({ navigation, route }: Props) {
       }
 
       setTenMinuteReminder(medication.preNotify);
+      // 기존에 알림 권한이 있으면 알림 활성화 상태로 설정
+      Notifications.getPermissionsAsync().then((perm) => {
+        setNotificationEnabled(perm.status === 'granted');
+      });
     }
   }, [medication, setValue]);
 
@@ -307,19 +314,45 @@ export default function EditMedicationScreen({ navigation, route }: Props) {
               <TimePickField control={control} />
             </View>
 
-            {/* 10분 전 알림 (선택 기능) */}
+            {/* 복약 알림 받기 (선택) - App Store Guideline 4.5.4 준수 */}
             <ToggleSwitch
-              label="10분전 미리 알림 (선택)"
-              value={tenMinuteReminder}
-              onValueChange={setTenMinuteReminder}
-              description={
-                <>
-                  지정 시간에 알려드려요, 체크하시면{'\n'}
-                  10분 전에도 미리 알림을 받아보실 수 있어요.{'\n'}
-                  (알림은 선택 기능입니다)
-                </>
-              }
+              label="복약 알림 받기 (선택)"
+              value={notificationEnabled}
+              onValueChange={async (v) => {
+                if (v) {
+                  // 토글을 켤 때만 알림 권한 요청
+                  const perm = await Notifications.getPermissionsAsync();
+                  if (perm.status !== 'granted') {
+                    const req = await Notifications.requestPermissionsAsync();
+                    if (req.status !== 'granted') {
+                      Alert.alert(
+                        '알림 권한 필요',
+                        '복약 알림을 받으려면 알림 권한이 필요합니다. 설정에서 알림을 허용해주세요.',
+                      );
+                      return; // 토글 상태 변경하지 않음
+                    }
+                  }
+                  // 권한 허용 시 푸시 토큰 등록
+                  setupPushNotifications().catch(console.error);
+                }
+                setNotificationEnabled(v);
+                // 알림을 끄면 10분 전 알림도 끄기
+                if (!v) {
+                  setTenMinuteReminder(false);
+                }
+              }}
+              description="복약 시간에 알림을 받습니다. 알림 없이도 약 수정이 가능합니다."
             />
+
+            {/* 10분 전 알림 (알림이 켜져있을 때만 표시) */}
+            {notificationEnabled && (
+              <ToggleSwitch
+                label="10분 전 미리 알림"
+                value={tenMinuteReminder}
+                onValueChange={setTenMinuteReminder}
+                description="지정 시간 10분 전에도 미리 알림을 받습니다."
+              />
+            )}
 
             {/* 수정 완료 버튼 */}
             <Button
